@@ -26,6 +26,7 @@ public class Chord implements CanvasItem {
 	}
 	
 	private final int CSCALENUMBER = new Pitch("C4").getScaleNumber();
+	private final int ACCIDENTALSPACING = 25;
 	
 	private List<Note> notes;
 	private Duration duration;
@@ -36,11 +37,84 @@ public class Chord implements CanvasItem {
 	}
 
 	public void draw(GC gc, int startX, int startY) {
-		Stem stem = getStem(startX, startY);
+		List<List<Note>> accidentalLayout = getAccidentalLayout();
 		
-		drawNotes(gc, stem, startX, startY);
+		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY);
+		
+		Set<Note> flippedNotes = getFlippedNotes(stem);
+		
+		boolean shiftStemRight = (!flippedNotes.isEmpty() && stem.direction == StemDirection.DOWN);
+		
+		drawAccidentals(gc, accidentalLayout, startX, startY);
+		
+		drawNotes(gc, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTALSPACING + (shiftStemRight ? 19 : 0), startY);
+		
+		if(shiftStemRight) {
+			stem.startX += 19;
+		}
 		
 		drawStem(gc, stem);
+	}
+	
+	private void drawAccidentals(GC gc, List<List<Note>> accidentalLayout, int startX, int startY) {
+		int x = startX + accidentalLayout.size() * ACCIDENTALSPACING;
+		for(List<Note> notes:accidentalLayout) {
+			for(Note note:notes) {
+				int sharps = note.getSharps();
+				int scaleNumber = note.getScaleNumber() - CSCALENUMBER;
+				if(sharps != 0) {
+					gc.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71, true);
+				}
+			}
+			x -= ACCIDENTALSPACING;
+		}
+	}
+	
+	private List<List<Note>> getAccidentalLayout() {
+		List<List<Note>> layout = new ArrayList<>();
+		
+		List<Note> notesRemaining = new ArrayList<>();
+		for(Note note:notes) {
+			if(note.getSharps() != 0) {
+				notesRemaining.add(note);
+			}
+		}
+		
+		Collections.sort(notesRemaining, Comparator.comparing(note -> note.getSharps()));
+		
+		while(!notesRemaining.isEmpty()) {
+			Set<Integer> usedScaleNumbers = new HashSet<>();
+			List<Note> nextNotes = new ArrayList<>();
+			for(Note note:notesRemaining) {
+				int scaleNumber = note.getScaleNumber();
+				
+				boolean occupied = false;
+				for(int i = -3; i <= 3; i++) {
+					if(usedScaleNumbers.contains(scaleNumber + i)) {
+						occupied = true;
+					}
+				}
+				
+				if(!occupied) {
+					usedScaleNumbers.add(scaleNumber);
+					nextNotes.add(note);
+				}
+			}
+			notesRemaining.removeAll(nextNotes);
+			layout.add(nextNotes);
+		}
+		
+		return layout;
+	}
+
+	private static String getAccidental(int sharps) {
+		switch(sharps) {
+			case 1: return FetaFont.SHARP;
+			case 2: return FetaFont.DOUBLESHARP;
+			case -1: return FetaFont.FLAT;
+			case -2: return FetaFont.DOUBLEFLAT;
+			default: throw new IllegalArgumentException("Unknown sharps: " + sharps);
+		}
 	}
 	
 	private String getFlags(StemDirection direction) {
@@ -63,14 +137,16 @@ public class Chord implements CanvasItem {
 	public Rectangle getBoundingBox(int startX, int startY) {
 		Stem stem = getStem(startX, startY);
 		
+		List<List<Note>> accidentalLayout = getAccidentalLayout();
+		
 		Set<Note> flippedNotes = getFlippedNotes(stem);
 		
 		Rectangle box = notes.get(0).getBoundingBox(startX, startY);
 		for(Note note:notes) {
 			if(flippedNotes.contains(note)) {
-				box.add(note.getBoundingBox((stem.direction == StemDirection.UP) ? startX + 19 : startX - 19, startY));
+				box.add(note.getBoundingBox(startX + 19 + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			} else {
-				box.add(note.getBoundingBox(startX, startY));
+				box.add(note.getBoundingBox(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			}
 		}
 		return box;
@@ -121,13 +197,11 @@ public class Chord implements CanvasItem {
 		gc.drawText(getFlags(stem.direction), stem.startX, stem.endY - 150, true);
 	}
 
-	private void drawNotes(GC gc, Stem stem, int startX, int startY) {
+	private void drawNotes(GC gc, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
 		int ledgersAbove = 0;
 		int ledgersBelow = 0;
 		int fatLedgersAbove = 0;
 		int fatLedgersBelow = 0;
-		
-		Set<Note> flippedNotes = getFlippedNotes(stem);
 		
 		for(Note note:notes) {
 			ledgersBelow = Math.max(ledgersBelow, -((note.getScaleNumber() - CSCALENUMBER) - 2) / 2);

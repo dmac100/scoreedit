@@ -6,7 +6,11 @@ public class Pitch {
 	private final int sharps;
 
 	public Pitch(String pitch) {
-		this(pitch.charAt(0), pitch.charAt(1) - '0', 0);
+		this(pitch, 0);
+	}
+	
+	public Pitch(String pitch, int sharps) {
+		this(pitch.charAt(0), pitch.charAt(1) - '0', sharps);
 	}
 	
 	public Pitch(char name, int octave, int sharps) {

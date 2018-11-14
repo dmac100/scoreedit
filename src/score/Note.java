@@ -75,4 +75,8 @@ public class Note {
 	public int getScaleNumber() {
 		return pitch.getScaleNumber();
 	}
+
+	public int getSharps() {
+		return pitch.getSharps();
+	}
 }
