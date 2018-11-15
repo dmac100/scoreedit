@@ -229,12 +229,16 @@ public class Chord implements CanvasItem {
 		}
 		
 		int prevScaleNumber = Integer.MIN_VALUE;
+		boolean prevFlipped = false;
 		
 		Set<Note> flippedNotes = new HashSet<>();
 		
 		for(Note note:sortedNotes) {
-			if(Math.abs(note.getScaleNumber() - prevScaleNumber) <= 1) {
+			if(Math.abs(note.getScaleNumber() - prevScaleNumber) <= 1 && !prevFlipped) {
 				flippedNotes.add(note);
+				prevFlipped = true;
+			} else {
+				prevFlipped = false;
 			}
 			
 			prevScaleNumber = note.getScaleNumber();
