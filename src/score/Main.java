@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.SWT;
@@ -23,6 +24,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+
+import score.MeasureLayout.Row;
+import util.CollectionUtil;
 
 public class Main {
 	private final Shell shell;
@@ -87,29 +91,72 @@ public class Main {
 				gc.setTransform(transform);
 				
 				gc.setAlpha(255);
-				gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(0, 0, 2000, 3000);
-				gc.drawRectangle(0, 0, 2000, 3000);
 				
-				drawStaff(gc, 50, 1950, 100);
+				List<Row> rows = new MeasureLayout(1950 - 200, model.getMeasures()).getRows();
 				
-				int spacing = 60;
+				int pageHeight = Math.max(3000, 200 * rows.size() + 100);
 				
-				int x = 220;
-				for(CanvasItem item:model.getItems()) {
-					int startX = x + 50;
-					int startY = 100;
+				drawPage(gc, 0, 0, 2000, pageHeight);
+				
+				int measureSpacing = 60;
+
+				int startY = 150;
+				
+				for(Row row:rows) {
+					drawStaff(gc, 50, 1950, startY);
 					
-					item.draw(gc, startX, startY);
-					drawBoundingBox(gc, item.getBoundingBox(startX, startY));
-					x += item.getBoundingBox(startX, startY).width;
-					x += spacing;
+					int extraMeasureWidth = row.getExtraWidth() / row.getMeasures().size();
+					
+					int x = 200;
+					for(Measure measure:row.getMeasures()) {
+						x += measureSpacing;
+						//drawMeasureBoundingBox(gc, x, startY, measure);
+						drawMeasure(gc, x, startY, measure, extraMeasureWidth);
+						x += measure.getWidth() + extraMeasureWidth;
+						if(measure == CollectionUtil.getLast(row.getMeasures())) {
+							x = 1950;
+						}
+						drawBarLine(gc, x, startY);
+					}
+					
+					startY += 200;
 				}
 				
 				gc.setAlpha(255);
 				currentTool.paint(gc);
 				
 				transform.dispose();
+			}
+
+			private void drawPage(GC gc, int startX, int startY, int pageWidth, int pageHeight) {
+				gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(startX, startY, pageWidth, pageHeight);
+				gc.drawRectangle(startX, startY, pageWidth, pageHeight);
+			}
+
+			private void drawBarLine(GC gc, int startX, int startY) {
+				gc.setLineCap(SWT.CAP_SQUARE);
+				gc.setLineWidth(3);
+				gc.drawLine(startX, startY + 1, startX, startY + 8 * 8 - 2);
+			}
+
+			private void drawMeasureBoundingBox(GC gc, int startX, int startY, Measure measure) {
+				gc.setLineWidth(5);
+				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+				gc.drawRectangle(startX, startY, measure.getWidth(), 8*8);
+				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+			}
+			
+			private void drawMeasure(GC gc, int startX, int startY, Measure measure, int extraWidth) {
+				int noteSpacing = 60;
+
+				for(CanvasItem item:measure.getItems()) {
+					item.draw(gc, startX, startY);
+					drawBoundingBox(gc, item.getBoundingBox(startX, startY));
+					startX += item.getBoundingBox(startX, startY).width + noteSpacing;
+					
+					startX += extraWidth / measure.getItems().size();
+				}
 			}
 
 			private void drawBoundingBox(GC gc, Rectangle box) {
@@ -119,6 +166,8 @@ public class Main {
 			}
 
 			private void drawStaff(GC gc, int startX, int endX, int startY) {
+				gc.setLineWidth(2);
+				
 				for(int y = 0; y <= 64; y += 16) {
 					gc.drawLine(startX, y + startY, endX, y + startY);
 				}

@@ -1,5 +1,10 @@
 package score;
 
+import static score.Duration.DurationType.EIGHTH;
+import static score.Duration.DurationType.HALF;
+import static score.Duration.DurationType.QUARTER;
+import static score.Duration.DurationType.WHOLE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,93 +12,79 @@ import java.util.List;
 import score.Duration.DurationType;
 
 class Model {
-	private final List<CanvasItem> items = new ArrayList<>();
+	private final List<Measure> measures = new ArrayList<>();
 	
 	public Model() {
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("C4", 1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("D4", 1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("G4", 1), new Duration(DurationType.EIGHTH))
+		for(int x = 0; x < 20; x++) {
+			measures.add(measure(
+				chord(
+					EIGHTH,
+					note("C4", 1, EIGHTH),
+					note("D4", 1, EIGHTH),
+					note("G4", 1, EIGHTH)
 				),
-				new Duration(DurationType.EIGHTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("D5", -1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("E5", -1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("A5", -1), new Duration(DurationType.EIGHTH))
+				chord(
+					EIGHTH,
+					note("D5", -1, EIGHTH),
+					note("E5", -1, EIGHTH),
+					note("A5", -1, EIGHTH)
+				)
+			));
+			
+			measures.add(measure(
+				chord(
+					EIGHTH,
+					note("D4", -1, EIGHTH),
+					note("E4", 1, EIGHTH),
+					note("F4", 1, EIGHTH)
 				),
-				new Duration(DurationType.EIGHTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("C3", 1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("D3", -1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("G2", 1), new Duration(DurationType.EIGHTH))
-				),
-				new Duration(DurationType.EIGHTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("D6", -1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("E6", 1), new Duration(DurationType.EIGHTH)),
-					new Note(new Pitch("A6", -1), new Duration(DurationType.EIGHTH))
-				),
-				new Duration(DurationType.EIGHTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("A4", 2), new Duration(DurationType.HALF)),
-					new Note(new Pitch("C4", 2), new Duration(DurationType.HALF)),
-					new Note(new Pitch("E5", 2), new Duration(DurationType.HALF))
-				),
-				new Duration(DurationType.HALF)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("A4", -2), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("D5", -2), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("G5", -2), new Duration(DurationType.SIXTEENTH))
-				),
-				new Duration(DurationType.SIXTEENTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("A4", 0), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("D5", 0), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("G5", 0), new Duration(DurationType.SIXTEENTH))
-				),
-				new Duration(DurationType.SIXTEENTH)
-			)
-		);
-		items.add(
-			new Chord(
-				Arrays.asList(
-					new Note(new Pitch("B4", 0), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("E5", 0), new Duration(DurationType.SIXTEENTH)),
-					new Note(new Pitch("A5", 0), new Duration(DurationType.SIXTEENTH))
-				),
-				new Duration(DurationType.SIXTEENTH)
-			)
-		);
+				chord(
+					EIGHTH,
+					note("D5", -1, EIGHTH),
+					note("A5", 0, EIGHTH),
+					note("G5", 1, EIGHTH)
+				)
+			));
+			
+			measures.add(measure(
+				chord(EIGHTH, note("B5", 0, EIGHTH)),
+				chord(QUARTER, note("B5", 0, QUARTER))
+			));
+			
+			measures.add(measure(chord(EIGHTH, note("A4", 1, EIGHTH))));
+			measures.add(measure(chord(WHOLE, note("B4", -1, WHOLE))));
+			measures.add(measure(chord(HALF, note("E5", 0, HALF))));
+			measures.add(measure(chord(EIGHTH, note("D5", 1, EIGHTH))));
+			measures.add(measure(chord(EIGHTH, note("E5", -1, EIGHTH))));
+			
+			measures.add(measure(
+				chord(EIGHTH, note("A4", 0, EIGHTH)),
+				chord(QUARTER, note("C4", 0, QUARTER)),
+				chord(QUARTER, note("D4", 0, QUARTER))
+			));
+			
+			measures.add(measure(
+				chord(EIGHTH, note("B3", 1, EIGHTH)),
+				chord(QUARTER, note("D3", 1, QUARTER)),
+				chord(QUARTER, note("F3", 1, QUARTER))
+			));
+		}
 	}
-
-	public List<CanvasItem> getItems() {
-		return items;
+	
+	private static Measure measure(CanvasItem... canvasItems) {
+		return new Measure(Arrays.asList(canvasItems));
+	}
+	
+	private static Chord chord(DurationType durationType, Note... notes) {
+		return new Chord(Arrays.asList(notes), new Duration(durationType));
+	}
+	
+	private static Note note(String pitch, int flats, DurationType durationType) {
+		return new Note(new Pitch(pitch, flats), new Duration(durationType));
+	}
+	
+	public List<Measure> getMeasures() {
+		return measures;
 	}
 
 	public void selectBox(float x, float y, float width, float height) {
