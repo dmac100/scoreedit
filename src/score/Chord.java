@@ -25,15 +25,19 @@ public class Chord implements CanvasItem {
 		int endY;
 	}
 	
-	private final int CSCALENUMBER = new Pitch("C4").getScaleNumber();
 	private final int ACCIDENTALSPACING = 25;
 	
 	private List<Note> notes;
 	private Duration duration;
+	private Clef clef = Clef.TREBLE;
 
 	public Chord(List<Note> notes, Duration duration) {
 		this.notes = notes;
 		this.duration = duration;
+	}
+	
+	public void setClef(Clef clef) {
+		this.clef = clef;
 	}
 
 	public void draw(GC gc, int startX, int startY) {
@@ -61,7 +65,7 @@ public class Chord implements CanvasItem {
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
 				int sharps = note.getSharps();
-				int scaleNumber = note.getScaleNumber() - CSCALENUMBER;
+				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
 				if(sharps != 0) {
 					gc.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71, true);
 				}
@@ -141,12 +145,12 @@ public class Chord implements CanvasItem {
 		
 		Set<Note> flippedNotes = getFlippedNotes(stem);
 		
-		Rectangle box = notes.get(0).getBoundingBox(startX, startY);
+		Rectangle box = notes.get(0).getBoundingBox(clef, startX, startY);
 		for(Note note:notes) {
 			if(flippedNotes.contains(note)) {
-				box.add(note.getBoundingBox(startX + 19 + accidentalLayout.size() * ACCIDENTALSPACING, startY));
+				box.add(note.getBoundingBox(clef, startX + 19 + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			} else {
-				box.add(note.getBoundingBox(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
+				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			}
 		}
 		return box;
@@ -156,7 +160,7 @@ public class Chord implements CanvasItem {
 		Stem stem = new Stem();
 		int downCount = 0;
 		for(Note note:notes) {
-			if(note.getScaleNumber() - CSCALENUMBER > 5) {
+			if(note.getScaleNumber() - clef.getLowScaleNumber() > 5) {
 				downCount++;
 			} else {
 				downCount--;
@@ -174,12 +178,12 @@ public class Chord implements CanvasItem {
 		}
 		
 		if(stem.direction == StemDirection.DOWN) {
-			stem.startY = startY + -((maxScaleNumber - CSCALENUMBER) * 8) + 81;
-			stem.endY = startY + -((minScaleNumber - CSCALENUMBER) * 8) + 80 + 60;
+			stem.startY = startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81;
+			stem.endY = startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60;
 			stem.endY = Math.max(stem.endY, startY + 33);
 		} else {
-			stem.startY = startY + -((minScaleNumber - CSCALENUMBER) * 8) + 80;
-			stem.endY = startY + -((maxScaleNumber - CSCALENUMBER) * 8) + 80 - 60;
+			stem.startY = startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80;
+			stem.endY = startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60;
 			stem.endY = Math.min(stem.endY, startY + 33);
 		}
 		
@@ -204,16 +208,16 @@ public class Chord implements CanvasItem {
 		int fatLedgersBelow = 0;
 		
 		for(Note note:notes) {
-			ledgersBelow = Math.max(ledgersBelow, -((note.getScaleNumber() - CSCALENUMBER) - 2) / 2);
-			ledgersAbove = Math.max(ledgersAbove, ((note.getScaleNumber() - CSCALENUMBER) - 10) / 2);
+			ledgersBelow = Math.max(ledgersBelow, -((note.getScaleNumber() - clef.getLowScaleNumber()) - 2) / 2);
+			ledgersAbove = Math.max(ledgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
 			
 			if(flippedNotes.contains(note)) {
-				note.draw(gc, (stem.direction == StemDirection.UP) ? startX + 19 : startX - 19, startY);
+				note.draw(gc, clef, (stem.direction == StemDirection.UP) ? startX + 19 : startX - 19, startY);
 				
-				fatLedgersBelow = Math.max(fatLedgersBelow, -((note.getScaleNumber() - CSCALENUMBER) - 2) / 2);
-				fatLedgersAbove = Math.max(fatLedgersAbove, ((note.getScaleNumber() - CSCALENUMBER) - 10) / 2);
+				fatLedgersBelow = Math.max(fatLedgersBelow, -((note.getScaleNumber() - clef.getLowScaleNumber()) - 2) / 2);
+				fatLedgersAbove = Math.max(fatLedgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
 			} else {
-				note.draw(gc, startX, startY);
+				note.draw(gc, clef, startX, startY);
 			}
 		}
 		

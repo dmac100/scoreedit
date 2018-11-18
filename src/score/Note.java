@@ -6,8 +6,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import score.Duration.DurationType;
 
 public class Note {
-	private final int CSCALENUMBER = new Pitch("C4").getScaleNumber();
-	
 	private Pitch pitch;
 	private Duration duration;
 
@@ -16,8 +14,8 @@ public class Note {
 		this.duration = duration;
 	}
 	
-	public void draw(GC gc, int startX, int startY) {
-		int scaleNumber = pitch.getScaleNumber() - CSCALENUMBER;
+	public void draw(GC gc, Clef clef, int startX, int startY) {
+		int scaleNumber = pitch.getScaleNumber() - clef.getLowScaleNumber();
 		
 		drawNoteHead(gc, startX, startY, scaleNumber);
 		
@@ -61,8 +59,8 @@ public class Note {
 		}
 	}
 	
-	public Rectangle getBoundingBox(int startX, int startY) {
-		int scaleNumber = pitch.getScaleNumber() - CSCALENUMBER;
+	public Rectangle getBoundingBox(Clef clef, int startX, int startY) {
+		int scaleNumber = pitch.getScaleNumber() - clef.getLowScaleNumber();
 		
 		return new Rectangle(
 			startX - 2,

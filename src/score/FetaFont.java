@@ -2,6 +2,7 @@ package score;
 
 public class FetaFont {
 	public static final String TREBLECLEF = "\uE050";
+	public static final String BASSCLEF = "\uE062";
 	
 	public static final String SHARP = "\uE262";
 	public static final String FLAT = "\uE260";

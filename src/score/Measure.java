@@ -2,26 +2,50 @@ package score;
 
 import java.util.List;
 
-public class Measure {
-	private List<CanvasItem> items;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
-	public Measure(List<CanvasItem> items) {
-		this.items = items;
+public class Measure {
+	private List<Voice> voices;
+
+	public Measure(List<Voice> voices) {
+		this.voices = voices;
 	}
 
-	public List<CanvasItem> getItems() {
-		return items;
+	public void drawMeasure(GC gc, int startX, int startY, int extraWidth) {
+		int noteSpacing = 60;
+
+		for(Voice voice:voices) {
+			int x = startX;
+			for(CanvasItem item:voice.getItems()) {
+				item.draw(gc, x, startY + voice.getClef().getOffset());
+				
+				x += item.getBoundingBox(startX, startY).width + noteSpacing;
+				
+				x += extraWidth / voice.getItems().size();
+			}
+		}
+	}
+	
+	public Rectangle getBoundingBox(GC gc, int startX, int startY) {
+		return new Rectangle(startX, startY, getWidth(), 8*8);
 	}
 	
 	public int getWidth() {
-		int noteSpacing = 60;
+		int maxWidth = 0;
 		
-		int width = 0;
-		
-		for(CanvasItem item:items) {
-			width += item.getBoundingBox(0, 0).width + noteSpacing;
+		for(Voice voice:voices) {
+			int noteSpacing = 60;
+			
+			int width = 0;
+			
+			for(CanvasItem item:voice.getItems()) {
+				width += item.getBoundingBox(0, 0).width + noteSpacing;
+			}
+			
+			maxWidth = Math.max(maxWidth, width);
 		}
 		
-		return width;
+		return maxWidth;
 	}
 }

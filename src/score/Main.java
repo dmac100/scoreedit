@@ -18,7 +18,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -103,15 +102,14 @@ public class Main {
 				int startY = 150;
 				
 				for(Row row:rows) {
-					drawStaff(gc, 50, 1950, startY);
+					drawSystem(gc, 50, 1950, startY);
 					
 					int extraMeasureWidth = row.getExtraWidth() / row.getMeasures().size();
 					
 					int x = 200;
 					for(Measure measure:row.getMeasures()) {
 						x += measureSpacing;
-						//drawMeasureBoundingBox(gc, x, startY, measure);
-						drawMeasure(gc, x, startY, measure, extraMeasureWidth);
+						measure.drawMeasure(gc, x, startY, extraMeasureWidth);
 						x += measure.getWidth() + extraMeasureWidth;
 						if(measure == CollectionUtil.getLast(row.getMeasures())) {
 							x = 1950;
@@ -119,7 +117,7 @@ public class Main {
 						drawBarLine(gc, x, startY);
 					}
 					
-					startY += 200;
+					startY += 350;
 				}
 				
 				gc.setAlpha(255);
@@ -135,46 +133,33 @@ public class Main {
 			}
 
 			private void drawBarLine(GC gc, int startX, int startY) {
+				int staffSpacing = 80;
 				gc.setLineCap(SWT.CAP_SQUARE);
-				gc.setLineWidth(3);
-				gc.drawLine(startX, startY + 1, startX, startY + 8 * 8 - 2);
-			}
-
-			private void drawMeasureBoundingBox(GC gc, int startX, int startY, Measure measure) {
-				gc.setLineWidth(5);
-				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-				gc.drawRectangle(startX, startY, measure.getWidth(), 8*8);
-				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+				gc.setLineWidth(2);
+				gc.drawLine(startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
 			}
 			
-			private void drawMeasure(GC gc, int startX, int startY, Measure measure, int extraWidth) {
-				int noteSpacing = 60;
-
-				for(CanvasItem item:measure.getItems()) {
-					item.draw(gc, startX, startY);
-					drawBoundingBox(gc, item.getBoundingBox(startX, startY));
-					startX += item.getBoundingBox(startX, startY).width + noteSpacing;
-					
-					startX += extraWidth / measure.getItems().size();
-				}
+			private void drawSystem(GC gc, int startX, int endX, int startY) {
+				int staffSpacing = 80;
+				gc.setLineWidth(2);
+				gc.setLineCap(SWT.CAP_SQUARE);
+				gc.drawLine(startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
+				drawStaff(gc, Clef.TREBLE, startX, endX, startY);
+				drawStaff(gc, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
 			}
 
-			private void drawBoundingBox(GC gc, Rectangle box) {
-				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-				//gc.drawRectangle(box);
-				gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-			}
-
-			private void drawStaff(GC gc, int startX, int endX, int startY) {
+			private void drawStaff(GC gc, Clef clef, int startX, int endX, int startY) {
 				gc.setLineWidth(2);
 				
 				for(int y = 0; y <= 64; y += 16) {
 					gc.drawLine(startX, y + startY, endX, y + startY);
 				}
 				
-				gc.drawText(FetaFont.TREBLECLEF, startX + 40, startY - 102, true);
-				gc.drawText(FetaFont.SHARP, startX + 100, startY - 152, true);
-				gc.drawText(FetaFont.CUTCOMMON, startX + 140, startY - 119, true);
+				if(clef == Clef.TREBLE) {
+					gc.drawText(FetaFont.TREBLECLEF, startX + 40, startY - 102, true);
+				} else if(clef == Clef.BASS) {
+					gc.drawText(FetaFont.BASSCLEF, startX + 40, startY - 135, true);
+				}
 			}
 		});
 		

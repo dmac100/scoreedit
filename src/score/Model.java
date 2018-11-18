@@ -1,9 +1,7 @@
 package score;
 
 import static score.Duration.DurationType.EIGHTH;
-import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
-import static score.Duration.DurationType.WHOLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,64 +13,65 @@ class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	
 	public Model() {
-		for(int x = 0; x < 20; x++) {
+		for(int x = 0; x < 10; x++) {
 			measures.add(measure(
-				chord(
-					EIGHTH,
-					note("C4", 1, EIGHTH),
-					note("D4", 1, EIGHTH),
-					note("G4", 1, EIGHTH)
+				treble(
+					chord(
+						QUARTER,
+						note("C4", 1, QUARTER),
+						note("D4", 1, QUARTER),
+						note("G4", 1, QUARTER)
+					),
+					chord(
+						QUARTER,
+						note("D5", -1, QUARTER),
+						note("E5", -1, QUARTER),
+						note("A5", -1, QUARTER)
+					)
 				),
-				chord(
-					EIGHTH,
-					note("D5", -1, EIGHTH),
-					note("E5", -1, EIGHTH),
-					note("A5", -1, EIGHTH)
+				bass(
+					chord(EIGHTH, note("C3", 1, EIGHTH)),
+					chord(EIGHTH, note("D3", 1, EIGHTH)),
+					chord(EIGHTH, note("E3", 1, EIGHTH)),
+					chord(EIGHTH, note("F3", 1, EIGHTH))
 				)
 			));
-			
 			measures.add(measure(
-				chord(
-					EIGHTH,
-					note("D4", -1, EIGHTH),
-					note("E4", 1, EIGHTH),
-					note("F4", 1, EIGHTH)
+				treble(
+					chord(
+						QUARTER,
+						note("F4", 0, QUARTER),
+						note("E4", 0, QUARTER),
+						note("B4", 0, QUARTER)
+					),
+					chord(
+						QUARTER,
+						note("D5", 0, QUARTER),
+						note("E5", 0, QUARTER),
+						note("A5", 0, QUARTER)
+					)
 				),
-				chord(
-					EIGHTH,
-					note("D5", -1, EIGHTH),
-					note("A5", 0, EIGHTH),
-					note("G5", 1, EIGHTH)
+				bass(
+					chord(EIGHTH, note("F3", 0, EIGHTH)),
+					chord(EIGHTH, note("G3", 0, EIGHTH)),
+					chord(QUARTER, note("A3", 0, QUARTER))
 				)
-			));
-			
-			measures.add(measure(
-				chord(EIGHTH, note("B5", 0, EIGHTH)),
-				chord(QUARTER, note("B5", 0, QUARTER))
-			));
-			
-			measures.add(measure(chord(EIGHTH, note("A4", 1, EIGHTH))));
-			measures.add(measure(chord(WHOLE, note("B4", -1, WHOLE))));
-			measures.add(measure(chord(HALF, note("E5", 0, HALF))));
-			measures.add(measure(chord(EIGHTH, note("D5", 1, EIGHTH))));
-			measures.add(measure(chord(EIGHTH, note("E5", -1, EIGHTH))));
-			
-			measures.add(measure(
-				chord(EIGHTH, note("A4", 0, EIGHTH)),
-				chord(QUARTER, note("C4", 0, QUARTER)),
-				chord(QUARTER, note("D4", 0, QUARTER))
-			));
-			
-			measures.add(measure(
-				chord(EIGHTH, note("B3", 1, EIGHTH)),
-				chord(QUARTER, note("D3", 1, QUARTER)),
-				chord(QUARTER, note("F3", 1, QUARTER))
 			));
 		}
 	}
 	
-	private static Measure measure(CanvasItem... canvasItems) {
-		return new Measure(Arrays.asList(canvasItems));
+	private static Measure measure(Voice... voices) {
+		return new Measure(Arrays.asList(voices));
+	}
+	
+	private static Voice treble(CanvasItem... canvasItems) {
+		Arrays.asList(canvasItems).forEach(item -> item.setClef(Clef.TREBLE));
+		return new Voice(Clef.TREBLE, Arrays.asList(canvasItems));
+	}
+	
+	private static Voice bass(CanvasItem... canvasItems) {
+		Arrays.asList(canvasItems).forEach(item -> item.setClef(Clef.BASS));
+		return new Voice(Clef.BASS, Arrays.asList(canvasItems));
 	}
 	
 	private static Chord chord(DurationType durationType, Note... notes) {
