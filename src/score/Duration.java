@@ -1,5 +1,7 @@
 package score;
 
+import static org.apache.commons.lang3.StringUtils.repeat;
+
 public class Duration {
 	public enum DurationType {
 		WHOLE(1),
@@ -9,11 +11,15 @@ public class Duration {
 		SIXTEENTH(16),
 		THIRTYSECOND(32);
 		
+		int denominator;
+		
 		DurationType(int denominator) {
 			this.denominator = denominator;
 		}
 		
-		int denominator;
+		public int getDenominator() {
+			return denominator;
+		}
 	}
 	
 	private final DurationType type;;
@@ -28,11 +34,25 @@ public class Duration {
 		this.dots = dots;
 	}
 	
+	public int getDurationCount() {
+		int count = 32 / type.getDenominator();
+		int dotValue = count;
+		for(int dot = 0; dot < dots; dot++) {
+			dotValue /= 2;
+			count += dotValue;
+		}
+		return count;
+	}
+	
 	public DurationType getType() {
 		return type;
 	}
 
 	public int getDots() {
 		return dots;
+	}
+	
+	public String toString() {
+		return type.toString() + repeat(".", dots);
 	}
 }

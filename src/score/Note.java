@@ -77,4 +77,8 @@ public class Note {
 	public int getSharps() {
 		return pitch.getSharps();
 	}
+	
+	public String toString() {
+		return pitch.toString() + "-" + duration.toString();
+	}
 }

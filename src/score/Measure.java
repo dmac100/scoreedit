@@ -1,6 +1,10 @@
 package score;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -14,16 +18,18 @@ public class Measure {
 
 	public void drawMeasure(GC gc, int startX, int startY, int extraWidth) {
 		int noteSpacing = 60;
-
-		for(Voice voice:voices) {
-			int x = startX;
-			for(CanvasItem item:voice.getItems()) {
-				item.draw(gc, x, startY + voice.getClef().getOffset());
-				
-				x += item.getBoundingBox(startX, startY).width + noteSpacing;
-				
-				x += extraWidth / voice.getItems().size();
+		
+		List<List<Voice>> noteLayout = getNoteLayout();
+		
+		int x = startX;
+		for(List<Voice> voices:noteLayout) {
+			for(Voice voice:voices) {
+				for(CanvasItem item:voice.getItems()) {
+					item.draw(gc, x, startY + voice.getClef().getOffset());
+				}
 			}
+			x += extraWidth / noteLayout.size();
+			x += getWidth(voices) + noteSpacing;
 		}
 	}
 	
@@ -32,20 +38,38 @@ public class Measure {
 	}
 	
 	public int getWidth() {
-		int maxWidth = 0;
+		int noteSpacing = 60;
+		
+		int totalWidth = 0;
+		for(List<Voice> voices:getNoteLayout()) {
+			totalWidth += getWidth(voices) + noteSpacing;
+		}
+		return totalWidth;
+	}
+	
+	private int getWidth(List<Voice> voices) {
+		int width = 0;
+		for(Voice voice:voices) {
+			for(CanvasItem item:voice.getItems()) {
+				width = Math.max(width, item.getBoundingBox(0, 0).width);
+			}
+		}
+		return width;
+	}
+	
+	private List<List<Voice>> getNoteLayout() {
+		Map<Integer, List<Voice>> map = new TreeMap<>();
 		
 		for(Voice voice:voices) {
-			int noteSpacing = 60;
-			
-			int width = 0;
-			
+			int count = 0;
 			for(CanvasItem item:voice.getItems()) {
-				width += item.getBoundingBox(0, 0).width + noteSpacing;
+				map.computeIfAbsent(count, ArrayList::new);
+				map.get(count).add(new Voice(voice.getClef(), Arrays.asList(item)));
+				
+				count += item.getDuration().getDurationCount();
 			}
-			
-			maxWidth = Math.max(maxWidth, width);
 		}
 		
-		return maxWidth;
+		return new ArrayList<>(map.values());
 	}
 }

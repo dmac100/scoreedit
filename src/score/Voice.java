@@ -18,4 +18,8 @@ public class Voice {
 	public List<CanvasItem> getItems() {
 		return items;
 	}
+	
+	public String toString() {
+		return items.toString();
+	}
 }

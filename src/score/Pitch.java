@@ -1,5 +1,9 @@
 package score;
 
+import static org.apache.commons.lang3.StringUtils.repeat;
+
+import org.apache.commons.lang3.StringUtils;
+
 public class Pitch {
 	private final char name;
 	private final int octave;
@@ -46,6 +50,6 @@ public class Pitch {
 	}
 	
 	public String toString() {
-		return String.valueOf(name) + octave;
+		return String.valueOf(name) + octave + repeat("#", sharps) + repeat("b", -sharps);
 	}
 }

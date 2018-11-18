@@ -39,6 +39,11 @@ public class Chord implements CanvasItem {
 	public void setClef(Clef clef) {
 		this.clef = clef;
 	}
+	
+	@Override
+	public Duration getDuration() {
+		return duration;
+	}
 
 	public void draw(GC gc, int startX, int startY) {
 		List<List<Note>> accidentalLayout = getAccidentalLayout();
@@ -272,5 +277,9 @@ public class Chord implements CanvasItem {
 				startY + ((5 + i) * 16)
 			);
 		}
+	}
+	
+	public String toString() {
+		return notes.toString();
 	}
 }
