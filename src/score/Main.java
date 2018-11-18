@@ -93,7 +93,9 @@ public class Main {
 				
 				List<Row> rows = new MeasureLayout(1950 - 200, model.getMeasures()).getRows();
 				
-				int pageHeight = Math.max(3000, 200 * rows.size() + 100);
+				int systemSpacing = 350;
+				
+				int pageHeight = Math.max(3000, systemSpacing * rows.size() + 100);
 				
 				drawPage(gc, 0, 0, 2000, pageHeight);
 				
@@ -117,7 +119,7 @@ public class Main {
 						drawBarLine(gc, x, startY);
 					}
 					
-					startY += 350;
+					startY += systemSpacing;
 				}
 				
 				gc.setAlpha(255);
