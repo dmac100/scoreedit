@@ -143,7 +143,10 @@ public class Chord implements CanvasItem {
 		}
 	}
 
-	public AlignmentBox getAlignmentBox(int startX, int startY) {
+	public AlignmentBox getAlignmentBox() {
+		int startX = 0;
+		int startY = 0;
+		
 		Stem stem = getStem(startX, startY);
 		
 		List<List<Note>> accidentalLayout = getAccidentalLayout();
@@ -158,7 +161,7 @@ public class Chord implements CanvasItem {
 				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			}
 		}
-		return new AlignmentBox(box, accidentalLayout.size() * ACCIDENTALSPACING);
+		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTALSPACING);
 	}
 	
 	private Stem getStem(int startX, int startY) {

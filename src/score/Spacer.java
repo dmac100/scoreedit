@@ -19,8 +19,8 @@ public class Spacer implements CanvasItem {
 	}
 
 	@Override
-	public AlignmentBox getAlignmentBox(int startX, int startY) {
-		return new AlignmentBox(new Rectangle(startX, startY, spacing, 0), 0);
+	public AlignmentBox getAlignmentBox() {
+		return new AlignmentBox(spacing, 0, 0);
 	}
 
 	@Override

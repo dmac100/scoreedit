@@ -19,7 +19,7 @@ public class Measure {
 				//item.getAlignmentBox(x, startY + voice.getClef().getOffset()).draw(gc);
 				item.draw(gc, x, startY + voice.getClef().getOffset());
 				
-				x += item.getAlignmentBox(0, 0).getWidth();
+				x += item.getAlignmentBox().getWidth();
 			}
 		});
 	}
@@ -34,7 +34,7 @@ public class Measure {
 		for(List<CanvasItem> items:new NoteLayout(voices, 0).getVoiceItems().values()) {
 			int width = 0;
 			for(CanvasItem item:items) {
-				width += item.getAlignmentBox(0, 0).getWidth();
+				width += item.getAlignmentBox().getWidth();
 			}
 			maxWidth = Math.max(maxWidth, width);
 		}

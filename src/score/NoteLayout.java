@@ -43,7 +43,7 @@ public class NoteLayout {
 		itemsAtCount.forEach((count, voiceAndItems) -> {
 			int center = max(map(voiceAndItems, voiceAndItem -> {
 				int voiceWidth = voiceWidths.get(voiceAndItem.voice);
-				int itemCenter = voiceAndItem.item.getAlignmentBox(0, 0).getCenter();
+				int itemCenter = voiceAndItem.item.getAlignmentBox().getCenter();
 				
 				return voiceWidth + itemCenter + (voiceWidth == 0 ? 0 : minSpacing);
 			}));
@@ -52,8 +52,8 @@ public class NoteLayout {
 			
 			voiceAndItems.forEach(voiceAndItem -> {
 				int lineWidth = voiceWidths.get(voiceAndItem.voice);
-				int itemWidth = voiceAndItem.item.getAlignmentBox(0, 0).getWidth();
-				int itemCenter = voiceAndItem.item.getAlignmentBox(0, 0).getCenter();
+				int itemWidth = voiceAndItem.item.getAlignmentBox().getWidth();
+				int itemCenter = voiceAndItem.item.getAlignmentBox().getCenter();
 				
 				int spacing = center - (lineWidth + itemCenter) + currentExtraSpacing;
 				
