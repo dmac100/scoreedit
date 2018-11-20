@@ -91,7 +91,7 @@ public class Main {
 				
 				gc.setAlpha(255);
 				
-				List<Row> rows = new MeasureLayout(1950 - 200, model.getMeasures()).getRows();
+				List<Row> rows = new MeasureLayout(1950 - 120, model.getMeasures()).getRows();
 				
 				int systemSpacing = 350;
 				
@@ -106,16 +106,15 @@ public class Main {
 				for(Row row:rows) {
 					drawSystem(gc, 50, 1950, startY);
 					
-					int extraMeasureWidth = row.getExtraWidth() / row.getMeasures().size();
+					Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
 					
-					int x = 200;
+					int x = 120;
 					for(Measure measure:row.getMeasures()) {
+						int extraMeasureWidth = measureSpacingDividor.next();
+						
 						x += measureSpacing;
 						measure.drawMeasure(gc, x, startY, extraMeasureWidth);
 						x += measure.getWidth() + extraMeasureWidth;
-						if(measure == CollectionUtil.getLast(row.getMeasures())) {
-							x = 1950;
-						}
 						drawBarLine(gc, x, startY);
 					}
 					

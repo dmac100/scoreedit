@@ -1,10 +1,6 @@
 package score;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -17,20 +13,15 @@ public class Measure {
 	}
 
 	public void drawMeasure(GC gc, int startX, int startY, int extraWidth) {
-		int noteSpacing = 60;
-		
-		List<List<Voice>> noteLayout = getNoteLayout();
-		
-		int x = startX;
-		for(List<Voice> voices:noteLayout) {
-			for(Voice voice:voices) {
-				for(CanvasItem item:voice.getItems()) {
-					item.draw(gc, x, startY + voice.getClef().getOffset());
-				}
+		new NoteLayout(voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+			int x = startX;
+			for(CanvasItem item:items) {
+				//item.getAlignmentBox(x, startY + voice.getClef().getOffset()).draw(gc);
+				item.draw(gc, x, startY + voice.getClef().getOffset());
+				
+				x += item.getAlignmentBox(0, 0).getWidth();
 			}
-			x += extraWidth / noteLayout.size();
-			x += getWidth(voices) + noteSpacing;
-		}
+		});
 	}
 	
 	public Rectangle getBoundingBox(GC gc, int startX, int startY) {
@@ -38,38 +29,16 @@ public class Measure {
 	}
 	
 	public int getWidth() {
-		int noteSpacing = 60;
+		int maxWidth = 0;
 		
-		int totalWidth = 0;
-		for(List<Voice> voices:getNoteLayout()) {
-			totalWidth += getWidth(voices) + noteSpacing;
-		}
-		return totalWidth;
-	}
-	
-	private int getWidth(List<Voice> voices) {
-		int width = 0;
-		for(Voice voice:voices) {
-			for(CanvasItem item:voice.getItems()) {
-				width = Math.max(width, item.getBoundingBox(0, 0).width);
+		for(List<CanvasItem> items:new NoteLayout(voices, 0).getVoiceItems().values()) {
+			int width = 0;
+			for(CanvasItem item:items) {
+				width += item.getAlignmentBox(0, 0).getWidth();
 			}
-		}
-		return width;
-	}
-	
-	private List<List<Voice>> getNoteLayout() {
-		Map<Integer, List<Voice>> map = new TreeMap<>();
-		
-		for(Voice voice:voices) {
-			int count = 0;
-			for(CanvasItem item:voice.getItems()) {
-				map.computeIfAbsent(count, ArrayList::new);
-				map.get(count).add(new Voice(voice.getClef(), Arrays.asList(item)));
-				
-				count += item.getDuration().getDurationCount();
-			}
+			maxWidth = Math.max(maxWidth, width);
 		}
 		
-		return new ArrayList<>(map.values());
+		return maxWidth;
 	}
 }

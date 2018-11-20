@@ -41,8 +41,8 @@ public class Chord implements CanvasItem {
 	}
 	
 	@Override
-	public Duration getDuration() {
-		return duration;
+	public int getDuration() {
+		return duration.getDurationCount();
 	}
 
 	public void draw(GC gc, int startX, int startY) {
@@ -143,7 +143,7 @@ public class Chord implements CanvasItem {
 		}
 	}
 
-	public Rectangle getBoundingBox(int startX, int startY) {
+	public AlignmentBox getAlignmentBox(int startX, int startY) {
 		Stem stem = getStem(startX, startY);
 		
 		List<List<Note>> accidentalLayout = getAccidentalLayout();
@@ -158,7 +158,7 @@ public class Chord implements CanvasItem {
 				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			}
 		}
-		return box;
+		return new AlignmentBox(box, accidentalLayout.size() * ACCIDENTALSPACING);
 	}
 	
 	private Stem getStem(int startX, int startY) {
