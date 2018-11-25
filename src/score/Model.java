@@ -14,7 +14,7 @@ class Model {
 	
 	public Model() {
 		for(int x = 0; x < 10; x++) {
-			measures.add(measure(
+			measures.add(measure(timeSig(3, 4),
 				treble(
 					chord(
 						QUARTER,
@@ -36,7 +36,7 @@ class Model {
 					chord(EIGHTH, note("F3", 1, EIGHTH))
 				)
 			));
-			measures.add(measure(
+			measures.add(measure(timeSig(3, 4),
 				treble(
 					chord(
 						QUARTER,
@@ -58,10 +58,24 @@ class Model {
 				)
 			));
 		}
+		
+		refreshPreviousMeasures();
 	}
 	
-	private static Measure measure(Voice... voices) {
-		return new Measure(Arrays.asList(voices));
+	private void refreshPreviousMeasures() {
+		Measure previousMeasure = null;
+		for(Measure measure:measures) {
+			measure.setPreviousMeasure(previousMeasure);
+			previousMeasure = measure;
+		}
+	}
+
+	private TimeSig timeSig(int upper, int lower) {
+		return new TimeSig(upper, lower);
+	}
+
+	private static Measure measure(TimeSig timeSig, Voice... voices) {
+		return new Measure(Arrays.asList(voices), timeSig);
 	}
 	
 	private static Voice treble(CanvasItem... canvasItems) {

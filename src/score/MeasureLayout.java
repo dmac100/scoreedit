@@ -21,7 +21,7 @@ public class MeasureLayout {
 	private final List<Row> rows = new ArrayList<>();
 	
 	public MeasureLayout(int pageWidth, List<Measure> measures) {
-		int measureSpacing = 60;
+		int measureSpacing = 30;
 		
 		Row row = new Row();
 		rows.add(row);

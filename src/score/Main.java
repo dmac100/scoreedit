@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import score.MeasureLayout.Row;
-import util.CollectionUtil;
 
 public class Main {
 	private final Shell shell;
@@ -91,7 +90,7 @@ public class Main {
 				
 				gc.setAlpha(255);
 				
-				List<Row> rows = new MeasureLayout(1950 - 120, model.getMeasures()).getRows();
+				List<Row> rows = new MeasureLayout(1950 - 100, model.getMeasures()).getRows();
 				
 				int systemSpacing = 350;
 				
@@ -99,7 +98,7 @@ public class Main {
 				
 				drawPage(gc, 0, 0, 2000, pageHeight);
 				
-				int measureSpacing = 60;
+				int measureSpacing = 30;
 
 				int startY = 150;
 				
@@ -108,7 +107,7 @@ public class Main {
 					
 					Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
 					
-					int x = 120;
+					int x = 100;
 					for(Measure measure:row.getMeasures()) {
 						int extraMeasureWidth = measureSpacingDividor.next();
 						
@@ -157,9 +156,9 @@ public class Main {
 				}
 				
 				if(clef == Clef.TREBLE) {
-					gc.drawText(FetaFont.TREBLECLEF, startX + 40, startY - 102, true);
+					gc.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102, true);
 				} else if(clef == Clef.BASS) {
-					gc.drawText(FetaFont.BASSCLEF, startX + 40, startY - 135, true);
+					gc.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135, true);
 				}
 			}
 		});
