@@ -6,7 +6,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class Measure {
-	private Measure previousMeasure;
 	private List<Voice> voices;
 	private TimeSig timeSig;
 	private KeySig keySig;
@@ -17,17 +16,13 @@ public class Measure {
 		this.keySig = keySig;
 	}
 	
-	public void setPreviousMeasure(Measure previousMeasure) {
-		this.previousMeasure = previousMeasure;
-	}
-
-	public void drawMeasure(GC gc, int startX, int startY, int extraWidth) {
-		int timeSigWidth = getTimeSigWidth();
-		int keySigWidth = getKeySigWidth();
+	public void drawMeasure(GC gc, int startX, int startY, int extraWidth, Measure previousMeasureOnLine, Measure previousMeasure) {
+		int timeSigWidth = getTimeSigWidth(previousMeasureOnLine, previousMeasure);
+		int keySigWidth = getKeySigWidth(previousMeasureOnLine, previousMeasure);
 		
-		drawTimeSig(gc, startX, startY);
+		drawKeySig(gc, startX, startY, previousMeasureOnLine, previousMeasure);
 		
-		drawKeySig(gc, startX + timeSigWidth, startY);
+		drawTimeSig(gc, startX + keySigWidth, startY, previousMeasure);
 		
 		new NoteLayout(voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
 			int x = startX + timeSigWidth + keySigWidth;
@@ -41,7 +36,7 @@ public class Measure {
 		});
 	}
 	
-	private void drawTimeSig(GC gc, int startX, int startY) {
+	private void drawTimeSig(GC gc, int startX, int startY, Measure previousMeasure) {
 		for(Clef clef:Clef.values()) {
 			if(previousMeasure == null || !previousMeasure.timeSig.equals(timeSig)) {
 				if(timeSig.isCommonTime()) {
@@ -56,12 +51,12 @@ public class Measure {
 		}
 	}
 	
-	private void drawKeySig(GC gc, int startX, int startY) {
+	private void drawKeySig(GC gc, int startX, int startY, Measure previousMeasureOnLine, Measure previousMeasure) {
 		for(Clef clef:Clef.values()) {
 			int extraClefOffset = (clef == Clef.BASS) ? 2*8 : 0;
 			
 			int x = startX;
-			if(previousMeasure == null || !previousMeasure.keySig.equals(keySig)) {
+			if(previousMeasureOnLine == null || !previousMeasureOnLine.keySig.equals(keySig)) {
 				String text = (keySig.getFifths() > 0) ? FetaFont.SHARP : FetaFont.FLAT;
 				for(Pitch pitch:keySig.getPitches()) {
 					gc.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset, true);
@@ -71,15 +66,15 @@ public class Measure {
 		}
 	}
 
-	public Rectangle getBoundingBox(GC gc, int startX, int startY) {
-		return new Rectangle(startX, startY, getWidth(), 8*8);
+	public Rectangle getBoundingBox(GC gc, int startX, int startY, Measure previousMeasureOnLine, Measure previousMeasure) {
+		return new Rectangle(startX, startY, getWidth(previousMeasureOnLine, previousMeasure), 8*8);
 	}
 	
-	public int getWidth() {
+	public int getWidth(Measure previousMeasureOnLine, Measure previousMeasure) {
 		int maxWidth = 0;
 		
-		int timeSigWidth = getTimeSigWidth();
-		int keySigWidth = getKeySigWidth();
+		int timeSigWidth = getTimeSigWidth(previousMeasureOnLine, previousMeasure);
+		int keySigWidth = getKeySigWidth(previousMeasureOnLine, previousMeasure);
 		
 		for(List<CanvasItem> items:new NoteLayout(voices, 0).getVoiceItems().values()) {
 			int width = timeSigWidth + keySigWidth;
@@ -92,17 +87,17 @@ public class Measure {
 		return maxWidth;
 	}
 	
-	public int getTimeSigWidth() {
+	public int getTimeSigWidth(Measure previousMeasureOnLine, Measure previousMeasure) {
 		if(previousMeasure == null || !previousMeasure.timeSig.equals(timeSig)) {
-			return 50;
+			return 40;
 		} else {
 			return 0;
 		}
 	}
 	
-	public int getKeySigWidth() {
-		if(previousMeasure == null || !previousMeasure.keySig.equals(keySig)) {
-			return Math.abs(keySig.getFifths()) * 20;
+	public int getKeySigWidth(Measure previousMeasureOnLine, Measure previousMeasure) {
+		if(previousMeasureOnLine == null || !previousMeasureOnLine.keySig.equals(keySig)) {
+			return Math.abs(keySig.getFifths()) * 20 + 30;
 		} else {
 			return 0;
 		}

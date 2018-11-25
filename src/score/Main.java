@@ -102,7 +102,11 @@ public class Main {
 
 				int startY = 150;
 				
+				Measure previousMeasure = null;
+				
 				for(Row row:rows) {
+					Measure previousMeasureOnLine = null;
+					
 					drawSystem(gc, 50, 1950, startY);
 					
 					Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
@@ -112,9 +116,12 @@ public class Main {
 						int extraMeasureWidth = measureSpacingDividor.next();
 						
 						x += measureSpacing;
-						measure.drawMeasure(gc, x, startY, extraMeasureWidth);
-						x += measure.getWidth() + extraMeasureWidth;
+						measure.drawMeasure(gc, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
+						x += measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
 						drawBarLine(gc, x, startY);
+						
+						previousMeasure = measure;
+						previousMeasureOnLine = measure;
 					}
 					
 					startY += systemSpacing;

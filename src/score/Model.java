@@ -58,18 +58,8 @@ class Model {
 				)
 			));
 		}
-		
-		refreshPreviousMeasures();
 	}
 	
-	private void refreshPreviousMeasures() {
-		Measure previousMeasure = null;
-		for(Measure measure:measures) {
-			measure.setPreviousMeasure(previousMeasure);
-			previousMeasure = measure;
-		}
-	}
-
 	private KeySig keySig(int fifths) {
 		return new KeySig(fifths);
 	}

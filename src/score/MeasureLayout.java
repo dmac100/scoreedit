@@ -27,19 +27,29 @@ public class MeasureLayout {
 		rows.add(row);
 		int width = 0;
 		
+		Measure previousMeasure = null;
+		
+		Measure previousMeasureOnLine = null;
+		
 		for(Measure measure:measures) {
-			int measureWidth = measure.getWidth();
+			int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
 			if(width + measureWidth + measureSpacing > pageWidth) {
 				row = new Row();
 				rows.add(row);
 				width = 0;
+				previousMeasureOnLine = null;
 			}
+			
+			measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
 			width += measureWidth + measureSpacing;
 			row.measures.add(measure);
 			row.width = width;
 			row.extraWidth = pageWidth - row.width;
+			
+			previousMeasure = measure;
+			previousMeasureOnLine = measure;
 		}
 		
 		if(row.measures.isEmpty()) {
