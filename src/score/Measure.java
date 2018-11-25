@@ -9,10 +9,12 @@ public class Measure {
 	private Measure previousMeasure;
 	private List<Voice> voices;
 	private TimeSig timeSig;
+	private KeySig keySig;
 
-	public Measure(List<Voice> voices, TimeSig timeSig) {
+	public Measure(List<Voice> voices, TimeSig timeSig, KeySig keySig) {
 		this.voices = voices;
 		this.timeSig = timeSig;
+		this.keySig = keySig;
 	}
 	
 	public void setPreviousMeasure(Measure previousMeasure) {
@@ -20,6 +22,26 @@ public class Measure {
 	}
 
 	public void drawMeasure(GC gc, int startX, int startY, int extraWidth) {
+		int timeSigWidth = getTimeSigWidth();
+		int keySigWidth = getKeySigWidth();
+		
+		drawTimeSig(gc, startX, startY);
+		
+		drawKeySig(gc, startX + timeSigWidth, startY);
+		
+		new NoteLayout(voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+			int x = startX + timeSigWidth + keySigWidth;
+			for(CanvasItem item:items) {
+				//item.getAlignmentBox().draw(gc, x, startY + voice.getClef().getOffset());
+				
+				item.draw(gc, x, startY + voice.getClef().getOffset());
+				
+				x += item.getAlignmentBox().getWidth();
+			}
+		});
+	}
+	
+	private void drawTimeSig(GC gc, int startX, int startY) {
 		for(Clef clef:Clef.values()) {
 			if(previousMeasure == null || !previousMeasure.timeSig.equals(timeSig)) {
 				if(timeSig.isCommonTime()) {
@@ -32,18 +54,23 @@ public class Measure {
 				}
 			}
 		}
-		
-		new NoteLayout(voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
-			int x = startX + getTimeSigWidth();
-			for(CanvasItem item:items) {
-				//item.getAlignmentBox(x, startY + voice.getClef().getOffset()).draw(gc);
-				item.draw(gc, x, startY + voice.getClef().getOffset());
-				
-				x += item.getAlignmentBox().getWidth();
-			}
-		});
 	}
 	
+	private void drawKeySig(GC gc, int startX, int startY) {
+		for(Clef clef:Clef.values()) {
+			int extraClefOffset = (clef == Clef.BASS) ? 2*8 : 0;
+			
+			int x = startX;
+			if(previousMeasure == null || !previousMeasure.keySig.equals(keySig)) {
+				String text = (keySig.getFifths() > 0) ? FetaFont.SHARP : FetaFont.FLAT;
+				for(Pitch pitch:keySig.getPitches()) {
+					gc.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset, true);
+					x += 20;
+				}
+			}
+		}
+	}
+
 	public Rectangle getBoundingBox(GC gc, int startX, int startY) {
 		return new Rectangle(startX, startY, getWidth(), 8*8);
 	}
@@ -51,8 +78,11 @@ public class Measure {
 	public int getWidth() {
 		int maxWidth = 0;
 		
+		int timeSigWidth = getTimeSigWidth();
+		int keySigWidth = getKeySigWidth();
+		
 		for(List<CanvasItem> items:new NoteLayout(voices, 0).getVoiceItems().values()) {
-			int width = getTimeSigWidth();
+			int width = timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
 				width += item.getAlignmentBox().getWidth();
 			}
@@ -65,6 +95,14 @@ public class Measure {
 	public int getTimeSigWidth() {
 		if(previousMeasure == null || !previousMeasure.timeSig.equals(timeSig)) {
 			return 50;
+		} else {
+			return 0;
+		}
+	}
+	
+	public int getKeySigWidth() {
+		if(previousMeasure == null || !previousMeasure.keySig.equals(keySig)) {
+			return Math.abs(keySig.getFifths()) * 20;
 		} else {
 			return 0;
 		}

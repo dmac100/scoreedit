@@ -14,7 +14,7 @@ class Model {
 	
 	public Model() {
 		for(int x = 0; x < 10; x++) {
-			measures.add(measure(timeSig(3, 4),
+			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
 					chord(
 						QUARTER,
@@ -36,7 +36,7 @@ class Model {
 					chord(EIGHTH, note("F3", 1, EIGHTH))
 				)
 			));
-			measures.add(measure(timeSig(3, 4),
+			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
 					chord(
 						QUARTER,
@@ -70,12 +70,16 @@ class Model {
 		}
 	}
 
+	private KeySig keySig(int fifths) {
+		return new KeySig(fifths);
+	}
+	
 	private TimeSig timeSig(int upper, int lower) {
 		return new TimeSig(upper, lower);
 	}
 
-	private static Measure measure(TimeSig timeSig, Voice... voices) {
-		return new Measure(Arrays.asList(voices), timeSig);
+	private static Measure measure(TimeSig timeSig, KeySig keySig, Voice... voices) {
+		return new Measure(Arrays.asList(voices), timeSig, keySig);
 	}
 	
 	private static Voice treble(CanvasItem... canvasItems) {
