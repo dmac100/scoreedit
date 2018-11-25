@@ -93,6 +93,14 @@ public class Chord implements CanvasItem {
 		
 		Collections.sort(notesRemaining, Comparator.comparing(note -> note.getSharps()));
 		
+		Collections.sort(notesRemaining, (a, b) -> {
+			if(a.getPitch().getScaleNumber() == b.getPitch().getScaleNumber()) {
+				return Integer.compare(notes.indexOf(b), notes.indexOf(a));
+			}
+			
+			return 0;
+		});
+		
 		while(!notesRemaining.isEmpty()) {
 			Set<Integer> usedScaleNumbers = new HashSet<>();
 			List<Note> nextNotes = new ArrayList<>();
