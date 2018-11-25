@@ -80,12 +80,15 @@ public class Chord implements CanvasItem {
 	private List<List<Note>> getAccidentalLayout(MeasureAccidentals measureAccidentals) {
 		List<List<Note>> layout = new ArrayList<>();
 	
+		measureAccidentals = new MeasureAccidentals(measureAccidentals);
+		
 		List<Note> notesRemaining = new ArrayList<>();
 		for(Note note:notes) {
 			Accidental accidental = measureAccidentals.getAccidental(note.getPitch());
 			if(accidental != Accidental.NONE) {
 				notesRemaining.add(note);
 			}
+			measureAccidentals.setAccidental(note.getPitch());
 		}
 		
 		Collections.sort(notesRemaining, Comparator.comparing(note -> note.getSharps()));

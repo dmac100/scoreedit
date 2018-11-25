@@ -8,9 +8,15 @@ public class MeasureAccidentals {
 		NONE, NATURAL, SHARP, FLAT, DOUBLESHARP, DOUBLEFLAT
 	}
 	
-	private final Map<Pitch, Integer> sharps = new LinkedHashMap<>();
+	private final Map<Pitch, Integer> sharps;
+	
+	public MeasureAccidentals(MeasureAccidentals measureAccidentals) {
+		this.sharps = new LinkedHashMap<>(measureAccidentals.sharps);
+	}
 	
 	public MeasureAccidentals(KeySig keySig) {
+		this.sharps = new LinkedHashMap<>();
+		
 		for(int octave = 0; octave <= 10; octave++) {
 			for(char name = 'A'; name <= 'G'; name++) {
 				sharps.put(new Pitch(name, octave, 0), 0);

@@ -14,6 +14,30 @@ class Model {
 	
 	public Model() {
 		for(int x = 0; x < 10; x++) {
+			measures.add(measure(timeSig(4, 4), keySig(0),
+				treble(
+					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER)),
+					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER))
+				)
+			));
+			measures.add(measure(timeSig(4, 4), keySig(0),
+				treble(
+					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER)),
+					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER))
+				)
+			));
+			measures.add(measure(timeSig(4, 4), keySig(0),
+				treble(
+					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER)),
+					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER))
+				)
+			));
+			measures.add(measure(timeSig(4, 4), keySig(0),
+				treble(
+					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER)),
+					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER))
+				)
+			));
 			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
 					chord(
