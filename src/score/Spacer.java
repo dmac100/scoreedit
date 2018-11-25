@@ -1,7 +1,6 @@
 package score;
 
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class Spacer implements CanvasItem {
 	private final int spacing;
@@ -15,16 +14,20 @@ public class Spacer implements CanvasItem {
 	}
 
 	@Override
-	public void draw(GC gc, int startX, int startY) {
+	public void draw(GC gc, int startX, int startY, MeasureAccidentals measureAccidentals) {
 	}
 
 	@Override
-	public AlignmentBox getAlignmentBox() {
+	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
 		return new AlignmentBox(spacing, 0, 0);
 	}
 
 	@Override
 	public int getDuration() {
 		return 0;
+	}
+
+	@Override
+	public void setAccidentals(MeasureAccidentals measureAccidentals) {
 	}
 }

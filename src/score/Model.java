@@ -57,6 +57,24 @@ class Model {
 					chord(QUARTER, note("A3", 0, QUARTER))
 				)
 			));
+			measures.add(measure(timeSig(3, 4), keySig(3),
+				treble(
+					chord(EIGHTH, note("C4", 0, EIGHTH)),
+					chord(EIGHTH, note("C4", 0, EIGHTH)),
+					chord(EIGHTH, note("C4", 1, EIGHTH)),
+					chord(EIGHTH, note("C4", 1, EIGHTH))
+				),
+				bass(
+					chord(EIGHTH, note("C3", 0, EIGHTH)),
+					chord(EIGHTH, note("D3", 0, EIGHTH)),
+					chord(EIGHTH, note("E3", 0, EIGHTH)),
+					chord(EIGHTH, note("F3", 0, EIGHTH)),
+					chord(EIGHTH, note("G3", 0, EIGHTH)),
+					chord(EIGHTH, note("A3", 0, EIGHTH)),
+					chord(EIGHTH, note("B3", 0, EIGHTH)),
+					chord(EIGHTH, note("C4", 0, EIGHTH))
+				)
+			));
 		}
 	}
 	

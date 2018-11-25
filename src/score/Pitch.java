@@ -2,7 +2,7 @@ package score;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
 
 public class Pitch {
 	private final char name;
@@ -51,5 +51,17 @@ public class Pitch {
 	
 	public String toString() {
 		return String.valueOf(name) + octave + repeat("#", sharps) + repeat("b", -sharps);
+	}
+	
+	public boolean equals(Object other) {
+		return (other instanceof Pitch) && equals((Pitch) other);
+	}
+	
+	public boolean equals(Pitch other) {
+		return (name == other.name) && (octave == other.octave) && (sharps == other.sharps);
+	}
+	
+	public int hashCode() {
+		return Objects.hash(name, octave, sharps);
 	}
 }

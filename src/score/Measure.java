@@ -24,14 +24,17 @@ public class Measure {
 		
 		timeSig.draw(gc, startX + keySigWidth, startY, previousMeasure);
 		
-		new NoteLayout(voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+		new NoteLayout(keySig, voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
 				//item.getAlignmentBox().draw(gc, x, startY + voice.getClef().getOffset());
 				
-				item.draw(gc, x, startY + voice.getClef().getOffset());
+				item.draw(gc, x, startY + voice.getClef().getOffset(), measureAccidentals);
 				
-				x += item.getAlignmentBox().getWidth();
+				x += item.getAlignmentBox(measureAccidentals).getWidth();
+				
+				item.setAccidentals(measureAccidentals);
 			}
 		});
 	}
@@ -46,10 +49,11 @@ public class Measure {
 		int timeSigWidth = timeSig.getWidth(previousMeasureOnLine, previousMeasure);
 		int keySigWidth = keySig.getWidth(previousMeasureOnLine, previousMeasure);
 		
-		for(List<CanvasItem> items:new NoteLayout(voices, 0).getVoiceItems().values()) {
+		for(List<CanvasItem> items:new NoteLayout(keySig, voices, 0).getVoiceItems().values()) {
+			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int width = timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
-				width += item.getAlignmentBox().getWidth();
+				width += item.getAlignmentBox(measureAccidentals).getWidth();
 			}
 			maxWidth = Math.max(maxWidth, width);
 		}

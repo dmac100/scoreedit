@@ -13,25 +13,30 @@ public class NoteLayout {
 	private static class VoiceAndItem {
 		private final Voice voice;
 		private final CanvasItem item;
+		private final AlignmentBox alignmentBox;
 		
-		public VoiceAndItem(Voice voice, CanvasItem item) {
+		public VoiceAndItem(Voice voice, CanvasItem item, AlignmentBox alignmentBox) {
 			this.voice = voice;
 			this.item = item;
+			this.alignmentBox = alignmentBox;
 		}
 	}
 	
 	private final Map<Voice, List<CanvasItem>> spacedItems = new LinkedHashMap<>();
 	
-	public NoteLayout(List<Voice> voices, int extraSpacing) {
+	public NoteLayout(KeySig keySig, List<Voice> voices, int extraSpacing) {
 		Map<Voice, Integer> voiceWidths = new LinkedHashMap<>();
 		voices.forEach(line -> voiceWidths.put(line, 0));
 		
 		Map<Integer, List<VoiceAndItem>> itemsAtCount = new TreeMap<>();
 		for(Voice voice:voices) {
 			int count = 0;
+			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			for(CanvasItem item:voice.getItems()) {
 				itemsAtCount.computeIfAbsent(count, c -> new ArrayList<>());
-				itemsAtCount.get(count).add(new VoiceAndItem(voice, item));
+				AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
+				item.setAccidentals(measureAccidentals);
+				itemsAtCount.get(count).add(new VoiceAndItem(voice, item, alignmentBox));
 				count += item.getDuration();
 			}
 		}
@@ -43,7 +48,7 @@ public class NoteLayout {
 		itemsAtCount.forEach((count, voiceAndItems) -> {
 			int center = max(map(voiceAndItems, voiceAndItem -> {
 				int voiceWidth = voiceWidths.get(voiceAndItem.voice);
-				int itemCenter = voiceAndItem.item.getAlignmentBox().getCenter();
+				int itemCenter = voiceAndItem.alignmentBox.getCenter();
 				
 				return voiceWidth + itemCenter + (voiceWidth == 0 ? 0 : minSpacing);
 			}));
@@ -52,8 +57,8 @@ public class NoteLayout {
 			
 			voiceAndItems.forEach(voiceAndItem -> {
 				int lineWidth = voiceWidths.get(voiceAndItem.voice);
-				int itemWidth = voiceAndItem.item.getAlignmentBox().getWidth();
-				int itemCenter = voiceAndItem.item.getAlignmentBox().getCenter();
+				int itemWidth = voiceAndItem.alignmentBox.getWidth();
+				int itemCenter = voiceAndItem.alignmentBox.getCenter();
 				
 				int spacing = center - (lineWidth + itemCenter) + currentExtraSpacing;
 				

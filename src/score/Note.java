@@ -69,6 +69,10 @@ public class Note {
 			24
 		);
 	}
+
+	public Pitch getPitch() {
+		return pitch;
+	}
 	
 	public int getScaleNumber() {
 		return pitch.getScaleNumber();

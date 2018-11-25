@@ -57,7 +57,6 @@ public class MeasureLayout {
 		}
 	}
 	
-	
 	public List<Row> getRows() {
 		return rows;
 	}

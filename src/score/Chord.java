@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 import score.Duration.DurationType;
+import score.MeasureAccidentals.Accidental;
 
 public class Chord implements CanvasItem {
 	private enum StemDirection {
@@ -45,8 +46,8 @@ public class Chord implements CanvasItem {
 		return duration.getDurationCount();
 	}
 
-	public void draw(GC gc, int startX, int startY) {
-		List<List<Note>> accidentalLayout = getAccidentalLayout();
+	public void draw(GC gc, int startX, int startY, MeasureAccidentals measureAccidentals) {
+		List<List<Note>> accidentalLayout = getAccidentalLayout(measureAccidentals);
 		
 		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY);
 		
@@ -69,22 +70,20 @@ public class Chord implements CanvasItem {
 		int x = startX + accidentalLayout.size() * ACCIDENTALSPACING;
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
-				int sharps = note.getSharps();
 				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
-				if(sharps != 0) {
-					gc.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71, true);
-				}
+				gc.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71, true);
 			}
 			x -= ACCIDENTALSPACING;
 		}
 	}
 	
-	private List<List<Note>> getAccidentalLayout() {
+	private List<List<Note>> getAccidentalLayout(MeasureAccidentals measureAccidentals) {
 		List<List<Note>> layout = new ArrayList<>();
-		
+	
 		List<Note> notesRemaining = new ArrayList<>();
 		for(Note note:notes) {
-			if(note.getSharps() != 0) {
+			Accidental accidental = measureAccidentals.getAccidental(note.getPitch());
+			if(accidental != Accidental.NONE) {
 				notesRemaining.add(note);
 			}
 		}
@@ -118,6 +117,7 @@ public class Chord implements CanvasItem {
 
 	private static String getAccidental(int sharps) {
 		switch(sharps) {
+			case 0: return FetaFont.NATURAL;
 			case 1: return FetaFont.SHARP;
 			case 2: return FetaFont.DOUBLESHARP;
 			case -1: return FetaFont.FLAT;
@@ -143,13 +143,13 @@ public class Chord implements CanvasItem {
 		}
 	}
 
-	public AlignmentBox getAlignmentBox() {
+	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
 		int startX = 0;
 		int startY = 0;
 		
 		Stem stem = getStem(startX, startY);
 		
-		List<List<Note>> accidentalLayout = getAccidentalLayout();
+		List<List<Note>> accidentalLayout = getAccidentalLayout(measureAccidentals);
 		
 		Set<Note> flippedNotes = getFlippedNotes(stem);
 		
@@ -161,6 +161,7 @@ public class Chord implements CanvasItem {
 				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
 			}
 		}
+		
 		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTALSPACING);
 	}
 	
@@ -284,5 +285,12 @@ public class Chord implements CanvasItem {
 	
 	public String toString() {
 		return notes.toString();
+	}
+
+	@Override
+	public void setAccidentals(MeasureAccidentals measureAccidentals) {
+		for(Note note:notes) {
+			measureAccidentals.setAccidental(note.getPitch());
+		}
 	}
 }
