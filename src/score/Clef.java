@@ -1,7 +1,7 @@
 package score;
 
 public enum Clef {
-	BASS("E3", 80 + 8*8), TREBLE("C4", 0);
+	BASS("E2", 80 + 8*8), TREBLE("C4", 0);
 	
 	private int lowScaleNumber;
 	private int offset;
