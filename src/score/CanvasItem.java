@@ -8,4 +8,5 @@ public interface CanvasItem {
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals);
 	public int getDuration();
 	public void setAccidentals(MeasureAccidentals measureAccidentals);
+	public Beam getBeam();
 }

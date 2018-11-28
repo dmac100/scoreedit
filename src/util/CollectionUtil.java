@@ -1,5 +1,6 @@
 package util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -7,6 +8,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CollectionUtil {
+	public static <T> T getFirst(List<T> list) {
+		return list.get(0);
+	}
+	
 	public static <T> T getLast(List<T> list) {
 		return list.get(list.size() - 1);
 	}
@@ -17,5 +22,12 @@ public class CollectionUtil {
 	
 	public static <A extends Comparable<? super A>> A max(Collection<A> collection) {
 		return collection.stream().max(Comparator.naturalOrder()).get();
+	}
+
+	public static <T> List<T> concat(List<T> list1, List<T> list2) {
+		List<T> list = new ArrayList<>();
+		list.addAll(list1);
+		list.addAll(list2);
+		return list;
 	}
 }

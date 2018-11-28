@@ -30,4 +30,9 @@ public class Spacer implements CanvasItem {
 	@Override
 	public void setAccidentals(MeasureAccidentals measureAccidentals) {
 	}
+
+	@Override
+	public Beam getBeam() {
+		return null;
+	}
 }

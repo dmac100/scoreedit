@@ -13,24 +13,15 @@ import org.eclipse.swt.graphics.Rectangle;
 
 import score.Duration.DurationType;
 import score.MeasureAccidentals.Accidental;
+import score.Stem.StemDirection;
 
 public class Chord implements CanvasItem {
-	private enum StemDirection {
-		UP, DOWN
-	}
-
-	private static class Stem {
-		StemDirection direction;
-		int startX;
-		int startY;
-		int endY;
-	}
-	
 	private final int ACCIDENTALSPACING = 25;
 	
 	private List<Note> notes;
 	private Duration duration;
 	private Clef clef = Clef.TREBLE;
+	private Beam beam;
 
 	public Chord(List<Note> notes, Duration duration) {
 		this.notes = notes;
@@ -39,6 +30,14 @@ public class Chord implements CanvasItem {
 	
 	public void setClef(Clef clef) {
 		this.clef = clef;
+	}
+
+	public Beam getBeam() {
+		return beam;
+	}
+	
+	public void setBeam(Beam beam) {
+		this.beam = beam;
 	}
 	
 	@Override
@@ -51,19 +50,25 @@ public class Chord implements CanvasItem {
 		
 		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY);
 		
+		stem.setDuration(duration);
+		
 		Set<Note> flippedNotes = getFlippedNotes(stem);
 		
-		boolean shiftStemRight = (!flippedNotes.isEmpty() && stem.direction == StemDirection.DOWN);
+		boolean shiftStemRight = (!flippedNotes.isEmpty() && stem.getDirection() == StemDirection.DOWN);
 		
 		drawAccidentals(gc, accidentalLayout, startX, startY);
 		
 		drawNotes(gc, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTALSPACING + (shiftStemRight ? 19 : 0), startY);
 		
 		if(shiftStemRight) {
-			stem.startX += 19;
+			stem.setStartX(stem.getStartX() + 19);
 		}
 		
-		drawStem(gc, stem);
+		if(beam != null) {
+			beam.addStem(stem);
+		} else {
+			drawStem(gc, stem);
+		}
 	}
 	
 	private void drawAccidentals(GC gc, List<List<Note>> accidentalLayout, int startX, int startY) {
@@ -100,7 +105,7 @@ public class Chord implements CanvasItem {
 			
 			return 0;
 		});
-		
+	
 		while(!notesRemaining.isEmpty()) {
 			Set<Integer> usedScaleNumbers = new HashSet<>();
 			List<Note> nextNotes = new ArrayList<>();
@@ -186,9 +191,9 @@ public class Chord implements CanvasItem {
 				downCount--;
 			}
 		}
-		stem.direction = (downCount > 0) ? StemDirection.DOWN : StemDirection.UP;
+		stem.setDirection((downCount > 0) ? StemDirection.DOWN : StemDirection.UP);
 		
-		stem.startX = (stem.direction == StemDirection.DOWN) ? (startX + 1) : startX + 19;
+		stem.setStartX((stem.getDirection() == StemDirection.DOWN) ? (startX + 1) : startX + 19);
 
 		int minScaleNumber = Integer.MAX_VALUE;
 		int maxScaleNumber = Integer.MIN_VALUE;
@@ -197,14 +202,14 @@ public class Chord implements CanvasItem {
 			maxScaleNumber = Math.max(maxScaleNumber, note.getScaleNumber());
 		}
 		
-		if(stem.direction == StemDirection.DOWN) {
-			stem.startY = startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81;
-			stem.endY = startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60;
-			stem.endY = Math.max(stem.endY, startY + 33);
+		if(stem.getDirection() == StemDirection.DOWN) {
+			stem.setStartY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81);
+			stem.setEndY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60);
+			stem.setEndY(Math.max(stem.getEndY(), startY + 33));
 		} else {
-			stem.startY = startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80;
-			stem.endY = startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60;
-			stem.endY = Math.min(stem.endY, startY + 33);
+			stem.setStartY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80);
+			stem.setEndY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60);
+			stem.setEndY(Math.min(stem.getEndY(), startY + 33));
 		}
 		
 		return stem;
@@ -217,8 +222,8 @@ public class Chord implements CanvasItem {
 		
 		gc.setLineWidth(3);
 		gc.setLineCap(SWT.CAP_ROUND);
-		gc.drawLine(stem.startX, stem.startY, stem.startX, stem.endY);
-		gc.drawText(getFlags(stem.direction), stem.startX, stem.endY - 150, true);
+		gc.drawLine(stem.getStartX(), stem.getStartY(), stem.getStartX(), stem.getEndY());
+		gc.drawText(getFlags(stem.getDirection()), stem.getStartX(), stem.getEndY() - 150, true);
 	}
 
 	private void drawNotes(GC gc, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
@@ -232,7 +237,7 @@ public class Chord implements CanvasItem {
 			ledgersAbove = Math.max(ledgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
 			
 			if(flippedNotes.contains(note)) {
-				note.draw(gc, clef, (stem.direction == StemDirection.UP) ? startX + 19 : startX - 19, startY);
+				note.draw(gc, clef, (stem.getDirection() == StemDirection.UP) ? startX + 19 : startX - 19, startY);
 				
 				fatLedgersBelow = Math.max(fatLedgersBelow, -((note.getScaleNumber() - clef.getLowScaleNumber()) - 2) / 2);
 				fatLedgersAbove = Math.max(fatLedgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
@@ -248,7 +253,7 @@ public class Chord implements CanvasItem {
 		List<Note> sortedNotes = new ArrayList<>(notes);
 		
 		Collections.sort(sortedNotes, Comparator.comparingInt(note -> note.getScaleNumber()));
-		if((stem.direction == StemDirection.DOWN)) {
+		if((stem.getDirection() == StemDirection.DOWN)) {
 			Collections.reverse(sortedNotes);
 		}
 		
@@ -277,18 +282,18 @@ public class Chord implements CanvasItem {
 		
 		for(int i = 0; i < ledgersAbove; i++) {
 			gc.drawLine(
-				startX - ((i < fatLedgersAbove && stem.direction == StemDirection.DOWN) ? 27 : 7),
+				startX - ((i < fatLedgersAbove && stem.getDirection() == StemDirection.DOWN) ? 27 : 7),
 				startY - ((i + 1) * 16),
-				startX + ((i < fatLedgersAbove && stem.direction == StemDirection.UP) ? 47 : 27),
+				startX + ((i < fatLedgersAbove && stem.getDirection() == StemDirection.UP) ? 47 : 27),
 				startY - ((i + 1) * 16)
 			);
 		}
 		
 		for(int i = 0; i < ledgersBelow; i++) {
 			gc.drawLine(
-				startX - ((i < fatLedgersBelow && stem.direction == StemDirection.DOWN) ? 27 : 7),
+				startX - ((i < fatLedgersBelow && stem.getDirection() == StemDirection.DOWN) ? 27 : 7),
 				startY + ((5 + i) * 16),
-				startX + ((i < fatLedgersBelow && stem.direction == StemDirection.UP) ? 47 : 27),
+				startX + ((i < fatLedgersBelow && stem.getDirection() == StemDirection.UP) ? 47 : 27),
 				startY + ((5 + i) * 16)
 			);
 		}

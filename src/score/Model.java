@@ -2,42 +2,21 @@ package score;
 
 import static score.Duration.DurationType.EIGHTH;
 import static score.Duration.DurationType.QUARTER;
+import static score.Duration.DurationType.SIXTEENTH;
+import static score.Duration.DurationType.THIRTYSECOND;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import score.Duration.DurationType;
+import util.CollectionUtil;
 
 class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	
 	public Model() {
 		for(int x = 0; x < 10; x++) {
-			measures.add(measure(timeSig(4, 4), keySig(0),
-				treble(
-					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER)),
-					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER))
-				)
-			));
-			measures.add(measure(timeSig(4, 4), keySig(0),
-				treble(
-					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER)),
-					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER))
-				)
-			));
-			measures.add(measure(timeSig(4, 4), keySig(0),
-				treble(
-					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER)),
-					chord(QUARTER, note("C4", 0, QUARTER), note("C4", 1, QUARTER))
-				)
-			));
-			measures.add(measure(timeSig(4, 4), keySig(0),
-				treble(
-					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER)),
-					chord(QUARTER, note("C4", 1, QUARTER), note("C4", 0, QUARTER))
-				)
-			));
 			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
 					chord(
@@ -54,10 +33,12 @@ class Model {
 					)
 				),
 				bass(
-					chord(EIGHTH, note("C3", 1, EIGHTH)),
-					chord(EIGHTH, note("D3", 1, EIGHTH)),
-					chord(EIGHTH, note("E3", 1, EIGHTH)),
-					chord(EIGHTH, note("F3", 1, EIGHTH))
+					beam(
+						chord(THIRTYSECOND, note("C3", 1, THIRTYSECOND)),
+						chord(SIXTEENTH, note("D3", 1, SIXTEENTH)),
+						chord(SIXTEENTH, note("E3", 1, SIXTEENTH)),
+						chord(THIRTYSECOND, note("F3", 1, THIRTYSECOND))
+					)
 				)
 			));
 			measures.add(measure(timeSig(3, 4), keySig(3),
@@ -76,32 +57,40 @@ class Model {
 					)
 				),
 				bass(
-					chord(EIGHTH, note("F3", 0, EIGHTH)),
-					chord(EIGHTH, note("G3", 0, EIGHTH)),
+					beam(
+						chord(EIGHTH, note("F3", 0, EIGHTH)),
+						chord(EIGHTH, note("G3", 0, EIGHTH))
+					),
 					chord(QUARTER, note("A3", 0, QUARTER))
 				)
 			));
 			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
-					chord(EIGHTH, note("C4", 0, EIGHTH)),
-					chord(EIGHTH, note("C4", 0, EIGHTH)),
-					chord(EIGHTH, note("C4", 1, EIGHTH)),
-					chord(EIGHTH, note("C4", 1, EIGHTH))
+					beam(
+						chord(EIGHTH, note("C4", 0, EIGHTH)),
+						chord(SIXTEENTH, note("C4", 0, SIXTEENTH)),
+						chord(SIXTEENTH, note("C4", 1, SIXTEENTH)),
+						chord(THIRTYSECOND, note("C4", 1, THIRTYSECOND))
+					)
 				),
 				bass(
-					chord(EIGHTH, note("C3", 0, EIGHTH)),
-					chord(EIGHTH, note("D3", 0, EIGHTH)),
-					chord(EIGHTH, note("E3", 0, EIGHTH)),
-					chord(EIGHTH, note("F3", 0, EIGHTH)),
-					chord(EIGHTH, note("G3", 0, EIGHTH)),
-					chord(EIGHTH, note("A3", 0, EIGHTH)),
-					chord(EIGHTH, note("B3", 0, EIGHTH)),
-					chord(EIGHTH, note("C4", 0, EIGHTH))
+					beam(
+						chord(EIGHTH, note("C3", 0, EIGHTH)),
+						chord(EIGHTH, note("D3", 0, EIGHTH)),
+						chord(EIGHTH, note("E3", 0, EIGHTH)),
+						chord(EIGHTH, note("F3", 0, EIGHTH))
+					)
 				)
 			));
 		}
 	}
 	
+	private Voice bass(CanvasItem[] beam, CanvasItem chord) {
+		List<CanvasItem> items = (CollectionUtil.concat(Arrays.asList(beam), Arrays.asList(chord)));
+		items.forEach(item -> item.setClef(Clef.BASS));
+		return new Voice(Clef.BASS, items);
+	}
+
 	private KeySig keySig(int fifths) {
 		return new KeySig(fifths);
 	}
@@ -112,6 +101,14 @@ class Model {
 
 	private static Measure measure(TimeSig timeSig, KeySig keySig, Voice... voices) {
 		return new Measure(Arrays.asList(voices), timeSig, keySig);
+	}
+	
+	private static Chord[] beam(Chord... chords) {
+		Beam beam = new Beam();
+		for(Chord chord:chords) {
+			chord.setBeam(beam);
+		}
+		return chords;
 	}
 	
 	private static Voice treble(CanvasItem... canvasItems) {

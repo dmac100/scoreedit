@@ -1,6 +1,9 @@
 package score;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -25,6 +28,10 @@ public class Measure {
 		timeSig.draw(gc, startX + keySigWidth, startY, previousMeasure);
 		
 		new NoteLayout(keySig, voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+			List<Beam> beams = getBeams(items);
+			
+			beams.forEach(beam -> beam.clearStems());
+			
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
@@ -36,9 +43,24 @@ public class Measure {
 				
 				item.setAccidentals(measureAccidentals);
 			}
+			
+			for(Beam beam:beams) {
+				beam.draw(gc);
+			}
 		});
 	}
 	
+	private static List<Beam> getBeams(List<CanvasItem> items) {
+		Set<Beam> beams = new LinkedHashSet<>();
+		for(CanvasItem item:items) {
+			Beam beam = item.getBeam();
+			if(beam != null) {
+				beams.add(beam);
+			}
+		}
+		return new ArrayList<>(beams);
+	}
+
 	public Rectangle getBoundingBox(GC gc, int startX, int startY, Measure previousMeasureOnLine, Measure previousMeasure) {
 		return new Rectangle(startX, startY, getWidth(previousMeasureOnLine, previousMeasure), 8*8);
 	}
