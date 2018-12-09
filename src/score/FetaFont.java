@@ -16,6 +16,13 @@ public class FetaFont {
 	public static final String HALFNOTEHEAD = "\uE0A3";
 	public static final String QUARTERNOTEHEAD = "\uE0A4";
 	
+	public static final String WHOLEREST = "\uE4e3";
+	public static final String HALFREST = "\uE4E4";
+	public static final String QUARTERREST = "\uE4E5";
+	public static final String EIGHTHREST = "\uE4E6";
+	public static final String SIXTEENTHREST = "\uE4E7";
+	public static final String THIRTYSECONDREST = "\uE4E8";
+	
 	public static final String EIGHTHUPFLAG = "\uE240";
 	public static final String EIGHTHDOWNFLAG = "\uE241";
 	public static final String SIXTEENTHUPFLAG = "\uE242";

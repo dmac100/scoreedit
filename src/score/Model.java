@@ -1,9 +1,11 @@
 package score;
 
 import static score.Duration.DurationType.EIGHTH;
+import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
 import static score.Duration.DurationType.SIXTEENTH;
 import static score.Duration.DurationType.THIRTYSECOND;
+import static score.Duration.DurationType.WHOLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,25 +21,23 @@ class Model {
 		for(int x = 0; x < 10; x++) {
 			measures.add(measure(timeSig(3, 4), keySig(3),
 				treble(
-					chord(
-						QUARTER,
-						note("C4", 1, QUARTER),
-						note("D4", 1, QUARTER),
-						note("G4", 1, QUARTER)
-					),
-					chord(
-						QUARTER,
-						note("D5", -1, QUARTER),
-						note("E5", -1, QUARTER),
-						note("A5", -1, QUARTER)
-					)
+					rest(WHOLE),
+					rest(HALF),
+					rest(QUARTER),
+					rest(EIGHTH),
+					rest(SIXTEENTH),
+					rest(THIRTYSECOND)
 				),
 				bass(
 					beam(
-						chord(THIRTYSECOND, note("C3", 1, THIRTYSECOND)),
-						chord(SIXTEENTH, note("D3", 1, SIXTEENTH)),
-						chord(SIXTEENTH, note("E3", 1, SIXTEENTH)),
-						chord(THIRTYSECOND, note("F3", 1, THIRTYSECOND))
+						chord(QUARTER, note("C3", 1, QUARTER)),
+						chord(QUARTER, note("D3", 1, QUARTER)),
+						chord(QUARTER, note("E3", 1, QUARTER)),
+						chord(QUARTER, note("F3", 1, QUARTER)),
+						chord(QUARTER, note("C3", 1, QUARTER)),
+						chord(QUARTER, note("D3", 1, QUARTER)),
+						chord(QUARTER, note("E3", 1, QUARTER)),
+						chord(QUARTER, note("F3", 1, QUARTER))
 					)
 				)
 			));
@@ -119,6 +119,10 @@ class Model {
 	private static Voice bass(CanvasItem... canvasItems) {
 		Arrays.asList(canvasItems).forEach(item -> item.setClef(Clef.BASS));
 		return new Voice(Clef.BASS, Arrays.asList(canvasItems));
+	}
+	
+	private static Rest rest(DurationType durationType) {
+		return new Rest(new Duration(durationType));
 	}
 	
 	private static Chord chord(DurationType durationType, Note... notes) {

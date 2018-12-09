@@ -35,9 +35,9 @@ public class Measure {
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
-				//item.getAlignmentBox().draw(gc, x, startY + voice.getClef().getOffset());
-				
 				item.draw(gc, x, startY + voice.getClef().getOffset(), measureAccidentals);
+				
+				//item.getAlignmentBox(measureAccidentals).draw(gc, x, startY + voice.getClef().getOffset());
 				
 				x += item.getAlignmentBox(measureAccidentals).getWidth();
 				
