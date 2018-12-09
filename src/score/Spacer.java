@@ -19,7 +19,7 @@ public class Spacer implements CanvasItem {
 
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(spacing, 0, 0);
+		return new AlignmentBox(spacing, 0, 0, 32);
 	}
 
 	@Override

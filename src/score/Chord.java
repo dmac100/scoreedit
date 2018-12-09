@@ -178,7 +178,7 @@ public class Chord implements CanvasItem {
 			}
 		}
 		
-		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTALSPACING);
+		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTALSPACING, box.y);
 	}
 	
 	private Stem getStem(int startX, int startY) {

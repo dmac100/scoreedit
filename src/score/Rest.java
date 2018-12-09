@@ -39,7 +39,7 @@ public class Rest implements CanvasItem {
 
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(25, 50, 0);
+		return new AlignmentBox(25, 50, 0, 7);
 	}
 
 	@Override

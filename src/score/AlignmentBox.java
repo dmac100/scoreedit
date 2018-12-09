@@ -9,11 +9,13 @@ public class AlignmentBox {
 	private final int width;
 	private final int height;
 	private final int center;
+	private int top;
 	
-	public AlignmentBox(int width, int height, int center) {
+	public AlignmentBox(int width, int height, int center, int top) {
 		this.width = width;
 		this.height = height;
 		this.center = center;
+		this.top = top;
 	}
 
 	public int getWidth() {
@@ -27,13 +29,17 @@ public class AlignmentBox {
 	public int getCenter() {
 		return center;
 	}
+	
+	public int getTop() {
+		return top;
+	}
 
 	public void draw(GC gc, int startX, int startY) {
 		gc.setLineWidth(4);
 		gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		
-		gc.drawRectangle(new Rectangle(startX, startY, width, height));
-		gc.drawLine(startX + center, startY, startX + center, startY + height);
+		gc.drawRectangle(new Rectangle(startX, startY + top, width, height));
+		gc.drawLine(startX + center, startY + top, startX + center, startY + top + height);
 		
 		gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 	}
