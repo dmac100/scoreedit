@@ -22,6 +22,14 @@ public class Rest implements CanvasItem {
 		} else {
 			gc.drawText(getRest(), startX, startY - 119, true);
 		}
+		
+		drawDots(gc, startX, startY);
+	}
+	
+	private void drawDots(GC gc, int startX, int startY) {
+		for(int x = 0; x < duration.getDots(); x++) {
+			gc.drawText(FetaFont.DOT, startX + 30 + (x * 10), startY - 119, true);
+		}
 	}
 	
 	private String getRest() {
@@ -39,7 +47,7 @@ public class Rest implements CanvasItem {
 
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(25, 50, 0, 7);
+		return new AlignmentBox(25 + duration.getDots() * 10, 50, 0, 7);
 	}
 
 	@Override
