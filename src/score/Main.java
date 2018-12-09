@@ -37,6 +37,7 @@ public class Main {
 	private final PanAndZoomHandler panAndZoomHandler;
 	private final SelectionTool selectionTool;
 	
+	private final ScoreCanvas canvas = new ScoreCanvas();
 	private final Model model = new Model();
 	
 	public Main(Shell shell) {
@@ -85,16 +86,18 @@ public class Main {
 			public void paintControl(PaintEvent event) {
 				GC gc = event.gc;
 				
+				canvas.reset(gc);
+				
 				Font mscore = new Font(Display.getCurrent(), "MScore", 46, SWT.NORMAL);
 				gc.setFont(mscore);
-
+				
 				Transform transform = panAndZoomHandler.getTransform();
 				
 				gc.setTransform(transform);
 				
 				gc.setAlpha(255);
 				
-				drawScore(gc);
+				drawScore(canvas);
 				
 				gc.setAlpha(255);
 				currentTool.paint(gc);
@@ -103,15 +106,20 @@ public class Main {
 			}
 		});
 		
+		composite.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent event) {
+			}
+		});
+		
 		composite.setFocus();
 	}
 	
-	private void drawScore(GC gc) {
+	private void drawScore(ScoreCanvas canvas) {
 		List<Row> rows = new MeasureLayout(pageWidth - 100, model.getMeasures()).getRows();
 		
 		int pageHeight = Math.max(3000, systemSpacing * rows.size() + 100);
 		
-		drawPage(gc, 0, 0, pageWidth + 50, pageHeight);
+		drawPage(canvas, 0, 0, pageWidth + 50, pageHeight);
 		
 		int startY = 150;
 		
@@ -120,7 +128,7 @@ public class Main {
 		for(Row row:rows) {
 			Measure previousMeasureOnLine = null;
 			
-			drawSystem(gc, 50, pageWidth, startY);
+			drawSystem(canvas, 50, pageWidth, startY);
 			
 			Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
 			
@@ -129,9 +137,9 @@ public class Main {
 				int extraMeasureWidth = measureSpacingDividor.next();
 				
 				x += measureSpacing;
-				measure.drawMeasure(gc, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
+				measure.drawMeasure(canvas, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
 				x += measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
-				drawBarLine(gc, x, startY);
+				drawBarLine(canvas, x, startY);
 				
 				previousMeasure = measure;
 				previousMeasureOnLine = measure;
@@ -141,39 +149,31 @@ public class Main {
 		}
 	}
 
-	private void drawPage(GC gc, int startX, int startY, int pageWidth, int pageHeight) {
-		gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		gc.fillRectangle(startX, startY, pageWidth, pageHeight);
-		gc.drawRectangle(startX, startY, pageWidth, pageHeight);
+	private void drawPage(ScoreCanvas canvas, int startX, int startY, int pageWidth, int pageHeight) {
+		canvas.fillRectangle(startX, startY, pageWidth, pageHeight);
 	}
 
-	private void drawBarLine(GC gc, int startX, int startY) {
+	private void drawBarLine(ScoreCanvas canvas, int startX, int startY) {
 		int staffSpacing = 80;
-		gc.setLineCap(SWT.CAP_SQUARE);
-		gc.setLineWidth(2);
-		gc.drawLine(startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
+		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
 	}
 	
-	private void drawSystem(GC gc, int startX, int endX, int startY) {
+	private void drawSystem(ScoreCanvas canvas, int startX, int endX, int startY) {
 		int staffSpacing = 80;
-		gc.setLineWidth(2);
-		gc.setLineCap(SWT.CAP_SQUARE);
-		gc.drawLine(startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
-		drawStaff(gc, Clef.TREBLE, startX, endX, startY);
-		drawStaff(gc, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
+		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
+		drawStaff(canvas, Clef.TREBLE, startX, endX, startY);
+		drawStaff(canvas, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
 	}
 
-	private void drawStaff(GC gc, Clef clef, int startX, int endX, int startY) {
-		gc.setLineWidth(2);
-		
+	private void drawStaff(ScoreCanvas canvas, Clef clef, int startX, int endX, int startY) {
 		for(int y = 0; y <= 64; y += 16) {
-			gc.drawLine(startX, y + startY, endX, y + startY);
+			canvas.drawLine(2, SWT.CAP_SQUARE, startX, y + startY, endX, y + startY);
 		}
 		
 		if(clef == Clef.TREBLE) {
-			gc.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102, true);
+			canvas.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102);
 		} else if(clef == Clef.BASS) {
-			gc.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135, true);
+			canvas.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135);
 		}
 	}
 	

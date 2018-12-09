@@ -1,6 +1,5 @@
 package score;
 
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 import score.Duration.DurationType;
@@ -14,12 +13,12 @@ public class Note {
 		this.duration = duration;
 	}
 	
-	public void draw(GC gc, Clef clef, int startX, int startY) {
+	public void draw(ScoreCanvas layout, Clef clef, int startX, int startY) {
 		int scaleNumber = pitch.getScaleNumber() - clef.getLowScaleNumber();
 		
-		drawNoteHead(gc, startX, startY, scaleNumber);
+		drawNoteHead(layout, startX, startY, scaleNumber);
 		
-		drawDots(gc, startX, startY, scaleNumber);
+		drawDots(layout, startX, startY, scaleNumber);
 	}
 	
 	private String getNoteHead() {
@@ -38,23 +37,23 @@ public class Note {
 		}
 	}
 	
-	private void drawNoteHead(GC gc, int startX, int startY, int scaleNumber) {
+	private void drawNoteHead(ScoreCanvas canvas, int startX, int startY, int scaleNumber) {
 		if(duration.getType() == DurationType.WHOLE) {
 			startX -= 5;
 		}
-		gc.drawText(getNoteHead(), startX, startY - (scaleNumber * 8) - 71, true);
+		canvas.drawText(getNoteHead(), startX, startY - (scaleNumber * 8) - 71);
 	}
 		
-	private void drawDots(GC gc, int startX, int startY, int scaleNumber) {
+	private void drawDots(ScoreCanvas canvas, int startX, int startY, int scaleNumber) {
 		if(duration.getType() == DurationType.WHOLE) {
 			startX += 5;
 		}
 		
 		for(int x = 0; x < duration.getDots(); x++) {
-			gc.drawText(FetaFont.DOT,
+			canvas.drawText(
+				FetaFont.DOT,
 				startX + 25 + (x * 10),
-				startY - ((scaleNumber + ((Math.abs(scaleNumber + 1)) % 2)) * 8) - 63,
-				true
+				startY - ((scaleNumber + ((Math.abs(scaleNumber + 1)) % 2)) * 8) - 63
 			);
 		}
 	}

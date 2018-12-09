@@ -3,8 +3,6 @@ package score;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.swt.graphics.GC;
-
 public class KeySig {
 	private final List<Pitch> sharps = Arrays.asList(new Pitch("F5"), new Pitch("C5"), new Pitch("G5"), new Pitch("D5"), new Pitch("A4"), new Pitch("E5"), new Pitch("B4"));
 	private final List<Pitch> flats = Arrays.asList(new Pitch("B4"), new Pitch("E5"), new Pitch("A4"), new Pitch("D5"), new Pitch("G4"), new Pitch("C5"), new Pitch("F4"));
@@ -47,7 +45,7 @@ public class KeySig {
 		}
 	}
 	
-	public void draw(GC gc, int startX, int startY, Measure previousMeasureOnLine, Measure previousMeasure) {
+	public void draw(ScoreCanvas canvas, int startX, int startY, Measure previousMeasureOnLine, Measure previousMeasure) {
 		for(Clef clef:Clef.values()) {
 			int extraClefOffset = (clef == Clef.BASS) ? 2*8 : 0;
 			
@@ -55,7 +53,7 @@ public class KeySig {
 			if(previousMeasureOnLine == null || !previousMeasureOnLine.getKeySig().equals(this)) {
 				String text = (fifths > 0) ? FetaFont.SHARP : FetaFont.FLAT;
 				for(Pitch pitch:this.getPitches()) {
-					gc.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset, true);
+					canvas.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset);
 					x += 20;
 				}
 			}

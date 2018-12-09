@@ -19,13 +19,13 @@ public class Measure {
 		this.keySig = keySig;
 	}
 	
-	public void drawMeasure(GC gc, int startX, int startY, int extraWidth, Measure previousMeasureOnLine, Measure previousMeasure) {
+	public void drawMeasure(ScoreCanvas canvas, int startX, int startY, int extraWidth, Measure previousMeasureOnLine, Measure previousMeasure) {
 		int timeSigWidth = timeSig.getWidth(previousMeasureOnLine, previousMeasure);
 		int keySigWidth = keySig.getWidth(previousMeasureOnLine, previousMeasure);
 		
-		keySig.draw(gc, startX, startY, previousMeasureOnLine, previousMeasure);
+		keySig.draw(canvas, startX, startY, previousMeasureOnLine, previousMeasure);
 		
-		timeSig.draw(gc, startX + keySigWidth, startY, previousMeasure);
+		timeSig.draw(canvas, startX + keySigWidth, startY, previousMeasure);
 		
 		new NoteLayout(keySig, voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
 			List<Beam> beams = getBeams(items);
@@ -35,7 +35,7 @@ public class Measure {
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
 			for(CanvasItem item:items) {
-				item.draw(gc, x, startY + voice.getClef().getOffset(), measureAccidentals);
+				item.draw(canvas, x, startY + voice.getClef().getOffset(), measureAccidentals);
 				
 				//item.getAlignmentBox(measureAccidentals).draw(gc, x, startY + voice.getClef().getOffset());
 				
@@ -45,7 +45,7 @@ public class Measure {
 			}
 			
 			for(Beam beam:beams) {
-				beam.draw(gc);
+				beam.draw(canvas);
 			}
 		});
 	}

@@ -1,7 +1,5 @@
 package score;
 
-import org.eclipse.swt.graphics.GC;
-
 public class TimeSig {
 	private final int upperCount;
 	private final int lowerCount;
@@ -35,16 +33,16 @@ public class TimeSig {
 		return (upperCount == other.upperCount) && (lowerCount == other.lowerCount);
 	}
 	
-	public void draw(GC gc, int startX, int startY, Measure previousMeasure) {
+	public void draw(ScoreCanvas canvas, int startX, int startY, Measure previousMeasure) {
 		for(Clef clef:Clef.values()) {
 			if(previousMeasure == null || !previousMeasure.getTimeSig().equals(this)) {
 				if(isCommonTime()) {
-					gc.drawText(FetaFont.COMMON, startX, startY - 122 + clef.getOffset(), true);
+					canvas.drawText(FetaFont.COMMON, startX, startY - 122 + clef.getOffset());
 				} else if(isCutCommonTime()) {
-					gc.drawText(FetaFont.CUTCOMMON, startX, startY - 122 + clef.getOffset(), true);
+					canvas.drawText(FetaFont.CUTCOMMON, startX, startY - 122 + clef.getOffset());
 				} else {
-					gc.drawText(getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset(), true);
-					gc.drawText(getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset(), true);
+					canvas.drawText(getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset());
+					canvas.drawText(getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset());
 				}
 			}
 		}

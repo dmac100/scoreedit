@@ -45,7 +45,7 @@ public class Chord implements CanvasItem {
 		return duration.getDurationCount();
 	}
 
-	public void draw(GC gc, int startX, int startY, MeasureAccidentals measureAccidentals) {
+	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		List<List<Note>> accidentalLayout = getAccidentalLayout(measureAccidentals);
 		
 		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY);
@@ -56,9 +56,9 @@ public class Chord implements CanvasItem {
 		
 		boolean shiftStemRight = (!flippedNotes.isEmpty() && stem.getDirection() == StemDirection.DOWN);
 		
-		drawAccidentals(gc, accidentalLayout, startX, startY);
+		drawAccidentals(canvas, accidentalLayout, startX, startY);
 		
-		drawNotes(gc, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTALSPACING + (shiftStemRight ? 19 : 0), startY);
+		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTALSPACING + (shiftStemRight ? 19 : 0), startY);
 		
 		if(shiftStemRight) {
 			stem.setStartX(stem.getStartX() + 19);
@@ -67,16 +67,16 @@ public class Chord implements CanvasItem {
 		if(beam != null) {
 			beam.addStem(stem);
 		} else {
-			drawStem(gc, stem);
+			drawStem(canvas, stem);
 		}
 	}
 	
-	private void drawAccidentals(GC gc, List<List<Note>> accidentalLayout, int startX, int startY) {
+	private void drawAccidentals(ScoreCanvas layout, List<List<Note>> accidentalLayout, int startX, int startY) {
 		int x = startX + accidentalLayout.size() * ACCIDENTALSPACING;
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
 				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
-				gc.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71, true);
+				layout.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71);
 			}
 			x -= ACCIDENTALSPACING;
 		}
@@ -215,18 +215,16 @@ public class Chord implements CanvasItem {
 		return stem;
 	}
 	
-	private void drawStem(GC gc, Stem stem) {
+	private void drawStem(ScoreCanvas canvas, Stem stem) {
 		if(duration.getType() == DurationType.WHOLE) {
 			return;
 		}
 		
-		gc.setLineWidth(3);
-		gc.setLineCap(SWT.CAP_ROUND);
-		gc.drawLine(stem.getStartX(), stem.getStartY(), stem.getStartX(), stem.getEndY());
-		gc.drawText(getFlags(stem.getDirection()), stem.getStartX(), stem.getEndY() - 150, true);
+		canvas.drawLine(3, SWT.CAP_ROUND, stem.getStartX(), stem.getStartY(), stem.getStartX(), stem.getEndY());
+		canvas.drawText(getFlags(stem.getDirection()), stem.getStartX(), stem.getEndY() - 150);
 	}
 
-	private void drawNotes(GC gc, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
+	private void drawNotes(ScoreCanvas canvas, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
 		int ledgersAbove = 0;
 		int ledgersBelow = 0;
 		int fatLedgersAbove = 0;
@@ -237,16 +235,16 @@ public class Chord implements CanvasItem {
 			ledgersAbove = Math.max(ledgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
 			
 			if(flippedNotes.contains(note)) {
-				note.draw(gc, clef, (stem.getDirection() == StemDirection.UP) ? startX + 19 : startX - 19, startY);
+				note.draw(canvas, clef, (stem.getDirection() == StemDirection.UP) ? startX + 19 : startX - 19, startY);
 				
 				fatLedgersBelow = Math.max(fatLedgersBelow, -((note.getScaleNumber() - clef.getLowScaleNumber()) - 2) / 2);
 				fatLedgersAbove = Math.max(fatLedgersAbove, ((note.getScaleNumber() - clef.getLowScaleNumber()) - 10) / 2);
 			} else {
-				note.draw(gc, clef, startX, startY);
+				note.draw(canvas, clef, startX, startY);
 			}
 		}
 		
-		drawLedgers(gc, stem, startX, startY, ledgersBelow, ledgersAbove, fatLedgersAbove, fatLedgersBelow);
+		drawLedgers(canvas, stem, startX, startY, ledgersBelow, ledgersAbove, fatLedgersAbove, fatLedgersBelow);
 	}
 	
 	private Set<Note> getFlippedNotes(Stem stem) {
@@ -276,12 +274,11 @@ public class Chord implements CanvasItem {
 		return flippedNotes;
 	}
 	
-	private void drawLedgers(GC gc, Stem stem, int startX, int startY, int ledgersBelow, int ledgersAbove, int fatLedgersAbove, int fatLedgersBelow) {
-		gc.setLineWidth(3);
-		gc.setLineCap(SWT.CAP_SQUARE);
-		
+	private void drawLedgers(ScoreCanvas canvas, Stem stem, int startX, int startY, int ledgersBelow, int ledgersAbove, int fatLedgersAbove, int fatLedgersBelow) {
 		for(int i = 0; i < ledgersAbove; i++) {
-			gc.drawLine(
+			canvas.drawLine(
+				3,
+				SWT.CAP_SQUARE,
 				startX - ((i < fatLedgersAbove && stem.getDirection() == StemDirection.DOWN) ? 27 : 7),
 				startY - ((i + 1) * 16),
 				startX + ((i < fatLedgersAbove && stem.getDirection() == StemDirection.UP) ? 47 : 27),
@@ -290,7 +287,9 @@ public class Chord implements CanvasItem {
 		}
 		
 		for(int i = 0; i < ledgersBelow; i++) {
-			gc.drawLine(
+			canvas.drawLine(
+				3,
+				SWT.CAP_SQUARE,
 				startX - ((i < fatLedgersBelow && stem.getDirection() == StemDirection.DOWN) ? 27 : 7),
 				startY + ((5 + i) * 16),
 				startX + ((i < fatLedgersBelow && stem.getDirection() == StemDirection.UP) ? 47 : 27),

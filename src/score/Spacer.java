@@ -1,7 +1,5 @@
 package score;
 
-import org.eclipse.swt.graphics.GC;
-
 public class Spacer implements CanvasItem {
 	private final int spacing;
 	
@@ -14,7 +12,7 @@ public class Spacer implements CanvasItem {
 	}
 
 	@Override
-	public void draw(GC gc, int startX, int startY, MeasureAccidentals measureAccidentals) {
+	public void draw(ScoreCanvas layout, int startX, int startY, MeasureAccidentals measureAccidentals) {
 	}
 
 	@Override

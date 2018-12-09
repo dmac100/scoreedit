@@ -1,7 +1,5 @@
 package score;
 
-import org.eclipse.swt.graphics.GC;
-
 import score.Duration.DurationType;
 
 public class Rest implements CanvasItem {
@@ -16,19 +14,19 @@ public class Rest implements CanvasItem {
 	}
 
 	@Override
-	public void draw(GC gc, int startX, int startY, MeasureAccidentals measureAccidentals) {
+	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		if(duration.getType() == DurationType.WHOLE) {
-			gc.drawText(getRest(), startX, startY - 134, true);
+			canvas.drawText(getRest(), startX, startY - 134);
 		} else {
-			gc.drawText(getRest(), startX, startY - 119, true);
+			canvas.drawText(getRest(), startX, startY - 119);
 		}
 		
-		drawDots(gc, startX, startY);
+		drawDots(canvas, startX, startY);
 	}
 	
-	private void drawDots(GC gc, int startX, int startY) {
+	private void drawDots(ScoreCanvas canvas, int startX, int startY) {
 		for(int x = 0; x < duration.getDots(); x++) {
-			gc.drawText(FetaFont.DOT, startX + 30 + (x * 10), startY - 119, true);
+			canvas.drawText(FetaFont.DOT, startX + 30 + (x * 10), startY - 119);
 		}
 	}
 	
