@@ -27,19 +27,23 @@ import org.eclipse.swt.widgets.Shell;
 import score.MeasureLayout.Row;
 
 public class Main {
+	private static final int pageWidth = 1950;
+	private static final int systemSpacing = 350;
+	private static final int measureSpacing = 30;
+	
 	private final Shell shell;
 	private final Composite composite;
 	
 	private final PanAndZoomHandler panAndZoomHandler;
 	private final SelectionTool selectionTool;
 	
+	private final Model model = new Model();
+	
 	public Main(Shell shell) {
 		this.shell = shell;
 		composite = new Composite(shell, SWT.DOUBLE_BUFFERED);
 		
 		shell.setLayout(new FillLayout());
-		
-		Model model = new Model();
 		
 		panAndZoomHandler = new PanAndZoomHandler(composite);
 		
@@ -90,87 +94,87 @@ public class Main {
 				
 				gc.setAlpha(255);
 				
-				List<Row> rows = new MeasureLayout(1950 - 100, model.getMeasures()).getRows();
-				
-				int systemSpacing = 350;
-				
-				int pageHeight = Math.max(3000, systemSpacing * rows.size() + 100);
-				
-				drawPage(gc, 0, 0, 2000, pageHeight);
-				
-				int measureSpacing = 30;
-
-				int startY = 150;
-				
-				Measure previousMeasure = null;
-				
-				for(Row row:rows) {
-					Measure previousMeasureOnLine = null;
-					
-					drawSystem(gc, 50, 1950, startY);
-					
-					Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
-					
-					int x = 100;
-					for(Measure measure:row.getMeasures()) {
-						int extraMeasureWidth = measureSpacingDividor.next();
-						
-						x += measureSpacing;
-						measure.drawMeasure(gc, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
-						x += measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
-						drawBarLine(gc, x, startY);
-						
-						previousMeasure = measure;
-						previousMeasureOnLine = measure;
-					}
-					
-					startY += systemSpacing;
-				}
+				drawScore(gc);
 				
 				gc.setAlpha(255);
 				currentTool.paint(gc);
 				
 				transform.dispose();
 			}
-
-			private void drawPage(GC gc, int startX, int startY, int pageWidth, int pageHeight) {
-				gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(startX, startY, pageWidth, pageHeight);
-				gc.drawRectangle(startX, startY, pageWidth, pageHeight);
-			}
-
-			private void drawBarLine(GC gc, int startX, int startY) {
-				int staffSpacing = 80;
-				gc.setLineCap(SWT.CAP_SQUARE);
-				gc.setLineWidth(2);
-				gc.drawLine(startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
-			}
-			
-			private void drawSystem(GC gc, int startX, int endX, int startY) {
-				int staffSpacing = 80;
-				gc.setLineWidth(2);
-				gc.setLineCap(SWT.CAP_SQUARE);
-				gc.drawLine(startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
-				drawStaff(gc, Clef.TREBLE, startX, endX, startY);
-				drawStaff(gc, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
-			}
-
-			private void drawStaff(GC gc, Clef clef, int startX, int endX, int startY) {
-				gc.setLineWidth(2);
-				
-				for(int y = 0; y <= 64; y += 16) {
-					gc.drawLine(startX, y + startY, endX, y + startY);
-				}
-				
-				if(clef == Clef.TREBLE) {
-					gc.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102, true);
-				} else if(clef == Clef.BASS) {
-					gc.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135, true);
-				}
-			}
 		});
 		
 		composite.setFocus();
+	}
+	
+	private void drawScore(GC gc) {
+		List<Row> rows = new MeasureLayout(pageWidth - 100, model.getMeasures()).getRows();
+		
+		int pageHeight = Math.max(3000, systemSpacing * rows.size() + 100);
+		
+		drawPage(gc, 0, 0, pageWidth + 50, pageHeight);
+		
+		int startY = 150;
+		
+		Measure previousMeasure = null;
+		
+		for(Row row:rows) {
+			Measure previousMeasureOnLine = null;
+			
+			drawSystem(gc, 50, pageWidth, startY);
+			
+			Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
+			
+			int x = 100;
+			for(Measure measure:row.getMeasures()) {
+				int extraMeasureWidth = measureSpacingDividor.next();
+				
+				x += measureSpacing;
+				measure.drawMeasure(gc, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
+				x += measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
+				drawBarLine(gc, x, startY);
+				
+				previousMeasure = measure;
+				previousMeasureOnLine = measure;
+			}
+			
+			startY += systemSpacing;
+		}
+	}
+
+	private void drawPage(GC gc, int startX, int startY, int pageWidth, int pageHeight) {
+		gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		gc.fillRectangle(startX, startY, pageWidth, pageHeight);
+		gc.drawRectangle(startX, startY, pageWidth, pageHeight);
+	}
+
+	private void drawBarLine(GC gc, int startX, int startY) {
+		int staffSpacing = 80;
+		gc.setLineCap(SWT.CAP_SQUARE);
+		gc.setLineWidth(2);
+		gc.drawLine(startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
+	}
+	
+	private void drawSystem(GC gc, int startX, int endX, int startY) {
+		int staffSpacing = 80;
+		gc.setLineWidth(2);
+		gc.setLineCap(SWT.CAP_SQUARE);
+		gc.drawLine(startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
+		drawStaff(gc, Clef.TREBLE, startX, endX, startY);
+		drawStaff(gc, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
+	}
+
+	private void drawStaff(GC gc, Clef clef, int startX, int endX, int startY) {
+		gc.setLineWidth(2);
+		
+		for(int y = 0; y <= 64; y += 16) {
+			gc.drawLine(startX, y + startY, endX, y + startY);
+		}
+		
+		if(clef == Clef.TREBLE) {
+			gc.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102, true);
+		} else if(clef == Clef.BASS) {
+			gc.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135, true);
+		}
 	}
 	
 	private static File createFont() {

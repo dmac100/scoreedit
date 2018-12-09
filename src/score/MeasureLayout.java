@@ -35,8 +35,10 @@ public class MeasureLayout {
 			int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
 			if(width + measureWidth + measureSpacing > pageWidth) {
-				row = new Row();
-				rows.add(row);
+				if(!row.getMeasures().isEmpty()) {
+					row = new Row();
+					rows.add(row);
+				}
 				width = 0;
 				previousMeasureOnLine = null;
 			}
