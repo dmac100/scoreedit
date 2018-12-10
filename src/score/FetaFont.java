@@ -1,5 +1,7 @@
 package score;
 
+import score.Stem.StemDirection;
+
 public class FetaFont {
 	public static final String TREBLECLEF = "\uE050";
 	public static final String BASSCLEF = "\uE062";
@@ -42,4 +44,77 @@ public class FetaFont {
 	public static final String TIME7 = "\uE087";
 	public static final String TIME8 = "\uE088";
 	public static final String TIME9 = "\uE089";
+	
+	public static String getFlags(Duration duration, StemDirection direction) {
+		switch(duration.getType()) {
+			case WHOLE:
+			case HALF:
+			case QUARTER:
+				return "";
+			case EIGHTH:
+				return (direction == StemDirection.DOWN) ? FetaFont.EIGHTHDOWNFLAG : FetaFont.EIGHTHUPFLAG;
+			case SIXTEENTH:
+				return (direction == StemDirection.DOWN) ? FetaFont.SIXTEENTHDOWNFLAG : FetaFont.SIXTEENTHUPFLAG;
+			case THIRTYSECOND:
+				return (direction == StemDirection.DOWN) ? FetaFont.THIRTYSECONDDOWNFLAG : FetaFont.THIRTYSECONDUPFLAG;
+			default:
+				throw new IllegalStateException("Unknown duration: " + duration.getType());
+		}
+	}
+	
+	public static String getNoteHead(Duration duration) {
+		switch(duration.getType()) {
+			case WHOLE:
+				return FetaFont.WHOLENOTEHEAD;
+			case HALF:
+				return FetaFont.HALFNOTEHEAD;
+			case QUARTER:
+			case EIGHTH:
+			case SIXTEENTH:
+			case THIRTYSECOND:
+				return FetaFont.QUARTERNOTEHEAD;
+			default:
+				throw new IllegalStateException("Unknown duration: " + duration.getType());
+		}
+	}
+	
+	public static String getAccidental(int sharps) {
+		switch(sharps) {
+			case 0: return FetaFont.NATURAL;
+			case 1: return FetaFont.SHARP;
+			case 2: return FetaFont.DOUBLESHARP;
+			case -1: return FetaFont.FLAT;
+			case -2: return FetaFont.DOUBLEFLAT;
+			default: throw new IllegalArgumentException("Unknown sharps: " + sharps);
+		}
+	}
+	
+	public static String getTimeSigText(int count) {
+		switch(count) {
+			case 0: return FetaFont.TIME0;
+			case 1: return FetaFont.TIME1;
+			case 2: return FetaFont.TIME2;
+			case 3: return FetaFont.TIME3;
+			case 4: return FetaFont.TIME4;
+			case 5: return FetaFont.TIME5;
+			case 6: return FetaFont.TIME6;
+			case 7: return FetaFont.TIME7;
+			case 8: return FetaFont.TIME8;
+			case 9: return FetaFont.TIME9;
+			default: throw new IllegalArgumentException("Unknown count: " + count);
+		}
+	}
+	
+	public static String getRest(Duration duration) {
+		switch(duration.getType()) {
+			case WHOLE: return FetaFont.WHOLEREST;
+			case HALF: return FetaFont.HALFREST;
+			case QUARTER: return FetaFont.QUARTERREST;
+			case EIGHTH: return FetaFont.EIGHTHREST;
+			case SIXTEENTH: return FetaFont.SIXTEENTHREST;
+			case THIRTYSECOND: return FetaFont.THIRTYSECONDREST;
+			default:
+				throw new IllegalStateException("Unknown duration: " + duration.getType());
+		}
+	}
 }

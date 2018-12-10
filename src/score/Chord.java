@@ -76,7 +76,7 @@ public class Chord implements CanvasItem {
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
 				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
-				layout.drawText(getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71);
+				layout.drawText(FetaFont.getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71);
 			}
 			x -= ACCIDENTALSPACING;
 		}
@@ -129,34 +129,6 @@ public class Chord implements CanvasItem {
 		}
 		
 		return layout;
-	}
-
-	private static String getAccidental(int sharps) {
-		switch(sharps) {
-			case 0: return FetaFont.NATURAL;
-			case 1: return FetaFont.SHARP;
-			case 2: return FetaFont.DOUBLESHARP;
-			case -1: return FetaFont.FLAT;
-			case -2: return FetaFont.DOUBLEFLAT;
-			default: throw new IllegalArgumentException("Unknown sharps: " + sharps);
-		}
-	}
-	
-	private String getFlags(StemDirection direction) {
-		switch(duration.getType()) {
-			case WHOLE:
-			case HALF:
-			case QUARTER:
-				return "";
-			case EIGHTH:
-				return (direction == StemDirection.DOWN) ? FetaFont.EIGHTHDOWNFLAG : FetaFont.EIGHTHUPFLAG;
-			case SIXTEENTH:
-				return (direction == StemDirection.DOWN) ? FetaFont.SIXTEENTHDOWNFLAG : FetaFont.SIXTEENTHUPFLAG;
-			case THIRTYSECOND:
-				return (direction == StemDirection.DOWN) ? FetaFont.THIRTYSECONDDOWNFLAG : FetaFont.THIRTYSECONDUPFLAG;
-			default:
-				throw new IllegalStateException("Unknown duration: " + duration.getType());
-		}
 	}
 
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
@@ -221,7 +193,7 @@ public class Chord implements CanvasItem {
 		}
 		
 		canvas.drawLine(3, SWT.CAP_ROUND, stem.getStartX(), stem.getStartY(), stem.getStartX(), stem.getEndY());
-		canvas.drawText(getFlags(stem.getDirection()), stem.getStartX(), stem.getEndY() - 150);
+		canvas.drawText(FetaFont.getFlags(duration, stem.getDirection()), stem.getStartX(), stem.getEndY() - 150);
 	}
 
 	private void drawNotes(ScoreCanvas canvas, Stem stem, Set<Note> flippedNotes, int startX, int startY) {

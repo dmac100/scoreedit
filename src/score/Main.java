@@ -36,9 +36,13 @@ public class Main {
 	
 	private final PanAndZoomHandler panAndZoomHandler;
 	private final SelectionTool selectionTool;
+	private final NoteEntryTool noteEntryTool;
 	
 	private final ScoreCanvas canvas = new ScoreCanvas();
 	private final Model model = new Model();
+	
+	private int mouseX = 0;
+	private int mouseY = 0;
 	
 	public Main(Shell shell) {
 		this.shell = shell;
@@ -49,10 +53,11 @@ public class Main {
 		panAndZoomHandler = new PanAndZoomHandler(composite);
 		
 		selectionTool = new SelectionTool(composite, model);
+		noteEntryTool = new NoteEntryTool(composite, model, canvas);
 		
 		Display.getCurrent().loadFont(createFont().getAbsolutePath());
 		
-		Tool currentTool = selectionTool;
+		Tool currentTool = noteEntryTool;
 		
 		composite.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
@@ -108,6 +113,10 @@ public class Main {
 		
 		composite.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent event) {
+				float[] m = transform(event.x, event.y);
+				mouseX = (int) m[0];
+				mouseY = (int) m[1];
+				composite.redraw();
 			}
 		});
 		
@@ -138,7 +147,9 @@ public class Main {
 				
 				x += measureSpacing;
 				measure.drawMeasure(canvas, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
-				x += measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
+				int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
+				canvas.setMeasureBounds(measure, x - measureSpacing, startY, measureWidth + measureSpacing, 8*8 + Clef.BASS.getOffset());
+				x += measureWidth;
 				drawBarLine(canvas, x, startY);
 				
 				previousMeasure = measure;

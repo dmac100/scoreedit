@@ -39,7 +39,11 @@ public class Measure {
 				
 				//item.getAlignmentBox(measureAccidentals).draw(gc, x, startY + voice.getClef().getOffset());
 				
-				x += item.getAlignmentBox(measureAccidentals).getWidth();
+				AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
+				
+				canvas.setItemBounds(item, x + alignmentBox.getCenter(), startY + voice.getClef().getOffset(), alignmentBox.getWidth() - alignmentBox.getCenter(), 8*8);
+				
+				x += alignmentBox.getWidth();
 				
 				item.setAccidentals(measureAccidentals);
 			}
@@ -81,6 +85,14 @@ public class Measure {
 		}
 		
 		return maxWidth;
+	}
+	
+	public Set<CanvasItem> getCanvasItems() {
+		Set<CanvasItem> items = new LinkedHashSet<>();
+		for(Voice voice:voices) {
+			items.addAll(voice.getItems());
+		}
+		return items;
 	}
 	
 	public TimeSig getTimeSig() {

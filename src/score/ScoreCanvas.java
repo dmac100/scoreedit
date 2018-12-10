@@ -1,14 +1,23 @@
 package score;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 public class ScoreCanvas {
 	private GC gc;
+	
+	private final Map<Measure, Rectangle> measureBounds = new HashMap<>();
+	private final Map<CanvasItem, Rectangle> itemBounds = new HashMap<>();
 
 	public void reset(GC gc) {
 		this.gc = gc;
+		itemBounds.clear();
+		measureBounds.clear();
 	}
 
 	public void drawText(String text, int x, int y) {
@@ -26,5 +35,23 @@ public class ScoreCanvas {
 		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(x, y, width, height);
 		gc.drawRectangle(x, y, width, height);
+	}
+
+	public void setMeasureBounds(Measure measure, int x, int y, int width, int height) {
+		measureBounds.put(measure, new Rectangle(x, y, width, height));
+	}
+
+	public void setItemBounds(CanvasItem item, int x, int y, int width, int height) {
+		if(item instanceof Spacer) return;
+		
+		itemBounds.put(item, new Rectangle(x, y, width, height));
+	}
+
+	public Map<Measure, Rectangle> getMeasureBounds() {
+		return measureBounds;
+	}
+	
+	public Map<CanvasItem, Rectangle> getItemBounds() {
+		return itemBounds;
 	}
 }

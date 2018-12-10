@@ -21,27 +21,11 @@ public class Note {
 		drawDots(layout, startX, startY, scaleNumber);
 	}
 	
-	private String getNoteHead() {
-		switch(duration.getType()) {
-			case WHOLE:
-				return FetaFont.WHOLENOTEHEAD;
-			case HALF:
-				return FetaFont.HALFNOTEHEAD;
-			case QUARTER:
-			case EIGHTH:
-			case SIXTEENTH:
-			case THIRTYSECOND:
-				return FetaFont.QUARTERNOTEHEAD;
-			default:
-				throw new IllegalStateException("Unknown duration: " + duration.getType());
-		}
-	}
-	
 	private void drawNoteHead(ScoreCanvas canvas, int startX, int startY, int scaleNumber) {
 		if(duration.getType() == DurationType.WHOLE) {
 			startX -= 5;
 		}
-		canvas.drawText(getNoteHead(), startX, startY - (scaleNumber * 8) - 71);
+		canvas.drawText(FetaFont.getNoteHead(duration), startX, startY - (scaleNumber * 8) - 71);
 	}
 		
 	private void drawDots(ScoreCanvas canvas, int startX, int startY, int scaleNumber) {

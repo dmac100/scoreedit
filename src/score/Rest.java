@@ -16,9 +16,9 @@ public class Rest implements CanvasItem {
 	@Override
 	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		if(duration.getType() == DurationType.WHOLE) {
-			canvas.drawText(getRest(), startX, startY - 134);
+			canvas.drawText(FetaFont.getRest(duration), startX, startY - 134);
 		} else {
-			canvas.drawText(getRest(), startX, startY - 119);
+			canvas.drawText(FetaFont.getRest(duration), startX, startY - 119);
 		}
 		
 		drawDots(canvas, startX, startY);
@@ -30,19 +30,6 @@ public class Rest implements CanvasItem {
 		}
 	}
 	
-	private String getRest() {
-		switch(duration.getType()) {
-			case WHOLE: return FetaFont.WHOLEREST;
-			case HALF: return FetaFont.HALFREST;
-			case QUARTER: return FetaFont.QUARTERREST;
-			case EIGHTH: return FetaFont.EIGHTHREST;
-			case SIXTEENTH: return FetaFont.SIXTEENTHREST;
-			case THIRTYSECOND: return FetaFont.THIRTYSECONDREST;
-			default:
-				throw new IllegalStateException("Unknown duration: " + duration.getType());
-		}
-	}
-
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
 		return new AlignmentBox(25 + duration.getDots() * 10, 50, 0, 7);

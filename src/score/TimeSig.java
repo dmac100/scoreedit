@@ -41,8 +41,8 @@ public class TimeSig {
 				} else if(isCutCommonTime()) {
 					canvas.drawText(FetaFont.CUTCOMMON, startX, startY - 122 + clef.getOffset());
 				} else {
-					canvas.drawText(getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset());
-					canvas.drawText(getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset());
+					canvas.drawText(FetaFont.getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset());
+					canvas.drawText(FetaFont.getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset());
 				}
 			}
 		}
@@ -53,22 +53,6 @@ public class TimeSig {
 			return 40;
 		} else {
 			return 0;
-		}
-	}
-	
-	private static String getTimeSigText(int count) {
-		switch(count) {
-			case 0: return FetaFont.TIME0;
-			case 1: return FetaFont.TIME1;
-			case 2: return FetaFont.TIME2;
-			case 3: return FetaFont.TIME3;
-			case 4: return FetaFont.TIME4;
-			case 5: return FetaFont.TIME5;
-			case 6: return FetaFont.TIME6;
-			case 7: return FetaFont.TIME7;
-			case 8: return FetaFont.TIME8;
-			case 9: return FetaFont.TIME9;
-			default: throw new IllegalArgumentException("Unknown count: " + count);
 		}
 	}
 }
