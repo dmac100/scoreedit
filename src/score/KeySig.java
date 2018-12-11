@@ -39,7 +39,11 @@ public class KeySig {
 	
 	public int getWidth(Measure previousMeasureOnLine, Measure previousMeasure) {
 		if(previousMeasureOnLine == null || !previousMeasureOnLine.getKeySig().equals(this)) {
-			return Math.abs(fifths) * 20 + 30;
+			if(fifths > 0) {
+				return Math.abs(fifths) * 20 + 30;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
