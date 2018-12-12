@@ -94,6 +94,11 @@ public class NoteEntryTool implements Tool {
 
 	private void drawNote(GC gc, int startX, int startY, int scaleNumber, Duration duration) {
 		drawNoteHead(gc, startX, startY, scaleNumber, duration);
+		
+		int ledgersBelow = -(scaleNumber - 2) / 2;
+		int ledgersAbove = (scaleNumber - 10) / 2;
+		
+		drawLedgers(gc, startX, startY, ledgersBelow, ledgersAbove);
 	}
 	
 	private void drawNoteHead(GC gc, int startX, int startY, int scaleNumber, Duration duration) {
@@ -103,6 +108,30 @@ public class NoteEntryTool implements Tool {
 			startX -= 5;
 		}
 		gc.drawText(FetaFont.getNoteHead(duration), startX, startY - (scaleNumber * 8) - 71, true);
+	}
+	
+	private void drawLedgers(GC gc, int startX, int startY, int ledgersBelow, int ledgersAbove) {
+		gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
+		gc.setLineWidth(3);
+		gc.setLineCap(SWT.CAP_SQUARE);
+		
+		for(int i = 0; i < ledgersAbove; i++) {
+			gc.drawLine(
+				startX - 7,
+				startY - ((i + 1) * 16),
+				startX + 27,
+				startY - ((i + 1) * 16)
+			);
+		}
+		
+		for(int i = 0; i < ledgersBelow; i++) {
+			gc.drawLine(
+				startX - 7,
+				startY + ((5 + i) * 16),
+				startX + 27,
+				startY + ((5 + i) * 16)
+			);
+		}
 	}
 
 	private static <K, V> Map<K, V> filterKeys(Map<K, V> map, Set<K> keys) {
