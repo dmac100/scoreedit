@@ -1,11 +1,6 @@
 package score;
 
-import static score.Duration.DurationType.EIGHTH;
-import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
-import static score.Duration.DurationType.SIXTEENTH;
-import static score.Duration.DurationType.THIRTYSECOND;
-import static score.Duration.DurationType.WHOLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,68 +13,19 @@ class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	
 	public Model() {
-		for(int x = 0; x < 10; x++) {
-			measures.add(measure(timeSig(3, 4), keySig(3),
+		for(int x = 0; x < 32; x++) {
+			measures.add(measure(timeSig(4, 4), keySig(0),
 				treble(
-					rest(WHOLE),
-					rest(HALF),
 					rest(QUARTER),
-					rest(EIGHTH),
-					rest(SIXTEENTH),
-					rest(THIRTYSECOND)
+					rest(QUARTER),
+					rest(QUARTER),
+					rest(QUARTER)
 				),
 				bass(
-					beam(
-						chord(QUARTER, note("C3", 1, QUARTER)),
-						chord(QUARTER, note("D3", 1, QUARTER)),
-						chord(QUARTER, note("E3", 1, QUARTER)),
-						chord(QUARTER, note("F3", 1, QUARTER)),
-						chord(QUARTER, note("C3", 1, QUARTER)),
-						chord(QUARTER, note("D3", 1, QUARTER)),
-						chord(QUARTER, note("E3", 1, QUARTER)),
-						chord(QUARTER, note("F3", 1, QUARTER))
-					)
-				)
-			));
-			measures.add(measure(timeSig(3, 4), keySig(3),
-				treble(
-					chord(
-						QUARTER,
-						note("F4", 0, QUARTER),
-						note("E4", 0, QUARTER),
-						note("B4", 0, QUARTER)
-					),
-					chord(
-						QUARTER,
-						note("D5", 0, QUARTER),
-						note("E5", 0, QUARTER),
-						note("A5", 0, QUARTER)
-					)
-				),
-				bass(
-					beam(
-						chord(EIGHTH, note("F3", 0, EIGHTH)),
-						chord(EIGHTH, note("G3", 0, EIGHTH))
-					),
-					chord(QUARTER, note("A3", 0, QUARTER))
-				)
-			));
-			measures.add(measure(timeSig(3, 4), keySig(3),
-				treble(
-					beam(
-						chord(EIGHTH, note("C4", 0, EIGHTH)),
-						chord(SIXTEENTH, note("C4", 0, SIXTEENTH)),
-						chord(SIXTEENTH, note("C4", 1, SIXTEENTH)),
-						chord(THIRTYSECOND, note("C4", 1, THIRTYSECOND))
-					)
-				),
-				bass(
-					beam(
-						chord(EIGHTH, note("C3", 0, EIGHTH)),
-						chord(EIGHTH, note("D3", 0, EIGHTH)),
-						chord(EIGHTH, note("E3", 0, EIGHTH)),
-						chord(EIGHTH, note("F3", 0, EIGHTH))
-					)
+					rest(QUARTER),
+					rest(QUARTER),
+					rest(QUARTER),
+					rest(QUARTER)
 				)
 			));
 		}

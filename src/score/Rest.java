@@ -9,7 +9,6 @@ public class Rest implements CanvasItem {
 		this.duration = duration;
 	}
 
-	@Override
 	public void setClef(Clef clef) {
 	}
 
@@ -47,5 +46,9 @@ public class Rest implements CanvasItem {
 	@Override
 	public Beam getBeam() {
 		return null;
+	}
+	
+	public String toString() {
+		return "[REST-" + duration + "]";
 	}
 }

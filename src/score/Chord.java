@@ -28,6 +28,12 @@ public class Chord implements CanvasItem {
 		this.duration = duration;
 	}
 	
+	public Chord(Clef clef, List<Note> notes, Duration duration) {
+		this.clef = clef;
+		this.notes = notes;
+		this.duration = duration;
+	}
+
 	public void setClef(Clef clef) {
 		this.clef = clef;
 	}

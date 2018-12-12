@@ -1,5 +1,6 @@
 package score;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,11 @@ public class NoteEntryTool implements Tool {
 	
 	private int mx;
 	private int my;
+	
+	private Measure measure = null;
+	private Pitch pitch = null;
+	private CanvasItem item = null;
+	private Clef clef = null;
 
 	public NoteEntryTool(Composite composite, Model model, ScoreCanvas scoreCanvas) {
 		this.composite = composite;
@@ -27,6 +33,20 @@ public class NoteEntryTool implements Tool {
 	}
 
 	public void mouseUp(int button, float x, float y) {
+		if(button != 1) {
+			return;
+		}
+		
+		if(measure != null && pitch != null && item != null && clef != null) {
+			Voice voice = measure.getVoices(clef).get(0);
+			int startTime = voice.getStartTime(item);
+			Duration duration = new Duration(DurationType.QUARTER);
+			
+			Chord item = new Chord(clef, Arrays.asList(new Note(pitch, duration)), duration);
+			voice.insertItem(item, startTime);
+			
+			composite.redraw();
+		}
 	}
 	
 	public void mouseDown(int button, float x, float y) {
@@ -42,6 +62,10 @@ public class NoteEntryTool implements Tool {
 		Map<Measure, Rectangle> measureBounds = scoreCanvas.getMeasureBounds();
 		Map<CanvasItem, Rectangle> itemBounds = scoreCanvas.getItemBounds();
 		
+		this.measure = null;
+		this.pitch = null;
+		this.item = null;
+		
 		Measure measure = getClosestKey(measureBounds, mx, my);
 		if(measure != null) {
 			Rectangle measureRectangle = measureBounds.get(measure);
@@ -56,6 +80,11 @@ public class NoteEntryTool implements Tool {
 				
 				if(mx >= itemRectangle.x && mx <= itemRectangle.x + itemRectangle.width) {
 					Pitch pitch = new Pitch(clef.getLowScaleNumber() + ((measureRectangle.y + clef.getOffset() + 80) - my) / 8);
+					
+					this.measure = measure;
+					this.pitch = pitch;
+					this.item = item;
+					this.clef = clef;
 					
 					drawNote(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(DurationType.QUARTER));
 				}

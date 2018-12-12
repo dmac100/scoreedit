@@ -3,6 +3,7 @@ package score;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.eclipse.swt.graphics.GC;
@@ -101,5 +102,26 @@ public class Measure {
 	
 	public KeySig getKeySig() {
 		return keySig;
+	}
+	
+	public Voice getVoice(CanvasItem item) {
+		for(Voice voice:voices) {
+			for(CanvasItem voiceItem:voice.getItems()) {
+				if(voiceItem == item) {
+					return voice;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public List<Voice> getVoices(Clef clef) {
+		List<Voice> voices = new ArrayList<>();
+		for(Voice voice:this.voices) {
+			if(voice.getClef() == clef) {
+				voices.add(voice);
+			}
+		}
+		return voices;
 	}
 }

@@ -7,7 +7,6 @@ public class Spacer implements CanvasItem {
 		this.spacing = spacing;
 	}
 	
-	@Override
 	public void setClef(Clef clef) {
 	}
 
