@@ -9,6 +9,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 public class ScoreCanvas {
+	public static final int PAGE_WIDTH = 1950;
+	public static final int SYSTEM_SPACING = 350;
+	public static final int MEASURE_SPACING = 25;
+	public static final int STAFF_SPACING = 80;
+	public static final int ACCIDENTAL_SPACING = 25;
+	
 	private GC gc;
 	
 	private final Map<Measure, Rectangle> measureBounds = new HashMap<>();

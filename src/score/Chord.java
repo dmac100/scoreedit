@@ -1,5 +1,7 @@
 package score;
 
+import static score.ScoreCanvas.ACCIDENTAL_SPACING;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 import score.Duration.DurationType;
@@ -16,8 +17,6 @@ import score.MeasureAccidentals.Accidental;
 import score.Stem.StemDirection;
 
 public class Chord implements CanvasItem {
-	private final int ACCIDENTALSPACING = 25;
-	
 	private List<Note> notes;
 	private Duration duration;
 	private Clef clef = Clef.TREBLE;
@@ -54,7 +53,7 @@ public class Chord implements CanvasItem {
 	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		List<List<Note>> accidentalLayout = getAccidentalLayout(measureAccidentals);
 		
-		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTALSPACING, startY);
+		Stem stem = getStem(startX + accidentalLayout.size() * ACCIDENTAL_SPACING, startY);
 		
 		stem.setDuration(duration);
 		
@@ -64,7 +63,7 @@ public class Chord implements CanvasItem {
 		
 		drawAccidentals(canvas, accidentalLayout, startX, startY);
 		
-		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTALSPACING + (shiftStemRight ? 19 : 0), startY);
+		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTAL_SPACING + (shiftStemRight ? 19 : 0), startY);
 		
 		if(shiftStemRight) {
 			stem.setStartX(stem.getStartX() + 19);
@@ -78,13 +77,13 @@ public class Chord implements CanvasItem {
 	}
 	
 	private void drawAccidentals(ScoreCanvas layout, List<List<Note>> accidentalLayout, int startX, int startY) {
-		int x = startX + accidentalLayout.size() * ACCIDENTALSPACING;
+		int x = startX + accidentalLayout.size() * ACCIDENTAL_SPACING;
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
 				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
-				layout.drawText(FetaFont.getAccidental(note.getSharps()), x - ACCIDENTALSPACING, startY - (scaleNumber * 8) - 71);
+				layout.drawText(FetaFont.getAccidental(note.getSharps()), x - ACCIDENTAL_SPACING, startY - (scaleNumber * 8) - 71);
 			}
-			x -= ACCIDENTALSPACING;
+			x -= ACCIDENTAL_SPACING;
 		}
 	}
 	
@@ -150,13 +149,13 @@ public class Chord implements CanvasItem {
 		Rectangle box = notes.get(0).getBoundingBox(clef, startX, startY);
 		for(Note note:notes) {
 			if(flippedNotes.contains(note)) {
-				box.add(note.getBoundingBox(clef, startX + 19 + accidentalLayout.size() * ACCIDENTALSPACING, startY));
+				box.add(note.getBoundingBox(clef, startX + 19 + accidentalLayout.size() * ACCIDENTAL_SPACING, startY));
 			} else {
-				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTALSPACING, startY));
+				box.add(note.getBoundingBox(clef, startX + accidentalLayout.size() * ACCIDENTAL_SPACING, startY));
 			}
 		}
 		
-		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTALSPACING, box.y);
+		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTAL_SPACING, box.y);
 	}
 	
 	private Stem getStem(int startX, int startY) {

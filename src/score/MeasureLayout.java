@@ -1,5 +1,7 @@
 package score;
 
+import static score.ScoreCanvas.MEASURE_SPACING;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +23,6 @@ public class MeasureLayout {
 	private final List<Row> rows = new ArrayList<>();
 	
 	public MeasureLayout(int pageWidth, List<Measure> measures) {
-		int measureSpacing = 30;
-		
 		Row row = new Row();
 		rows.add(row);
 		int width = 0;
@@ -34,7 +34,7 @@ public class MeasureLayout {
 		for(Measure measure:measures) {
 			int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
-			if(width + measureWidth + measureSpacing > pageWidth) {
+			if(width + measureWidth + MEASURE_SPACING > pageWidth) {
 				if(!row.getMeasures().isEmpty()) {
 					row = new Row();
 					rows.add(row);
@@ -45,7 +45,7 @@ public class MeasureLayout {
 			
 			measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
-			width += measureWidth + measureSpacing;
+			width += measureWidth + MEASURE_SPACING;
 			row.measures.add(measure);
 			row.width = width;
 			row.extraWidth = pageWidth - row.width;

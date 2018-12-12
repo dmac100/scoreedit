@@ -1,5 +1,10 @@
 package score;
 
+import static score.ScoreCanvas.MEASURE_SPACING;
+import static score.ScoreCanvas.PAGE_WIDTH;
+import static score.ScoreCanvas.STAFF_SPACING;
+import static score.ScoreCanvas.SYSTEM_SPACING;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,10 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 import score.MeasureLayout.Row;
 
 public class Main {
-	private static final int pageWidth = 1950;
-	private static final int systemSpacing = 350;
-	private static final int measureSpacing = 30;
-	
 	private final Shell shell;
 	private final Composite composite;
 	
@@ -124,11 +125,11 @@ public class Main {
 	}
 	
 	private void drawScore(ScoreCanvas canvas) {
-		List<Row> rows = new MeasureLayout(pageWidth - 100, model.getMeasures()).getRows();
+		List<Row> rows = new MeasureLayout(PAGE_WIDTH - 100, model.getMeasures()).getRows();
 		
-		int pageHeight = Math.max(3000, systemSpacing * rows.size() + 100);
+		int pageHeight = Math.max(3000, SYSTEM_SPACING * rows.size() + 100);
 		
-		drawPage(canvas, 0, 0, pageWidth + 50, pageHeight);
+		drawPage(canvas, 0, 0, PAGE_WIDTH + 50, pageHeight);
 		
 		int startY = 150;
 		
@@ -137,7 +138,7 @@ public class Main {
 		for(Row row:rows) {
 			Measure previousMeasureOnLine = null;
 			
-			drawSystem(canvas, 50, pageWidth, startY);
+			drawSystem(canvas, 50, PAGE_WIDTH, startY);
 			
 			Divider measureSpacingDividor = new Divider(row.getExtraWidth(), row.getMeasures().size());
 			
@@ -145,10 +146,10 @@ public class Main {
 			for(Measure measure:row.getMeasures()) {
 				int extraMeasureWidth = measureSpacingDividor.next();
 				
-				x += measureSpacing;
+				x += MEASURE_SPACING;
 				measure.drawMeasure(canvas, x, startY, extraMeasureWidth, previousMeasureOnLine, previousMeasure);
 				int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure) + extraMeasureWidth;
-				canvas.setMeasureBounds(measure, x - measureSpacing, startY, measureWidth + measureSpacing, 8*8 + Clef.BASS.getOffset());
+				canvas.setMeasureBounds(measure, x - MEASURE_SPACING, startY, measureWidth + MEASURE_SPACING, 8*8 + Clef.BASS.getOffset());
 				x += measureWidth;
 				drawBarLine(canvas, x, startY);
 				
@@ -156,7 +157,7 @@ public class Main {
 				previousMeasureOnLine = measure;
 			}
 			
-			startY += systemSpacing;
+			startY += SYSTEM_SPACING;
 		}
 	}
 
@@ -165,15 +166,13 @@ public class Main {
 	}
 
 	private void drawBarLine(ScoreCanvas canvas, int startX, int startY) {
-		int staffSpacing = 80;
-		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + 8*8 + 8*8 + staffSpacing);
+		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + 8*8 + 8*8 + STAFF_SPACING);
 	}
 	
 	private void drawSystem(ScoreCanvas canvas, int startX, int endX, int startY) {
-		int staffSpacing = 80;
-		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + staffSpacing + 8*8 + 8*8);
+		canvas.drawLine(2, SWT.CAP_SQUARE, startX, startY, startX, startY + STAFF_SPACING + 8*8 + 8*8);
 		drawStaff(canvas, Clef.TREBLE, startX, endX, startY);
-		drawStaff(canvas, Clef.BASS, startX, endX, startY + staffSpacing + 8*8);
+		drawStaff(canvas, Clef.BASS, startX, endX, startY + STAFF_SPACING + 8*8);
 	}
 
 	private void drawStaff(ScoreCanvas canvas, Clef clef, int startX, int endX, int startY) {

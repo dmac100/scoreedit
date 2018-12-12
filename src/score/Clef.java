@@ -1,7 +1,9 @@
 package score;
 
+import static score.ScoreCanvas.STAFF_SPACING;
+
 public enum Clef {
-	BASS("E2", 80 + 8*8), TREBLE("C4", 0);
+	BASS("E2", STAFF_SPACING + 8*8), TREBLE("C4", 0);
 	
 	private int lowScaleNumber;
 	private int offset;
