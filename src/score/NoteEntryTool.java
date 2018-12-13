@@ -1,9 +1,11 @@
 package score;
 
+import static util.CollectionUtil.flatMap;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -69,14 +71,13 @@ public class NoteEntryTool implements Tool {
 		Measure measure = getClosestKey(measureBounds, mx, my);
 		if(measure != null) {
 			Rectangle measureRectangle = measureBounds.get(measure);
-			Map<CanvasItem, Rectangle> measureItems = filterKeys(itemBounds, measure.getCanvasItems());
+			Clef clef = (my < measureRectangle.y + 8*8 + ScoreCanvas.STAFF_SPACING / 2) ? Clef.TREBLE : Clef.BASS;
+			Map<CanvasItem, Rectangle> measureItems = filterKeys(itemBounds, flatMap(measure.getVoices(clef), Voice::getItems));
 			
 			CanvasItem item = getClosestKey(measureItems, mx, my);
 			
 			if(item != null) {
 				Rectangle itemRectangle = itemBounds.get(item);
-				
-				Clef clef = (my < measureRectangle.y + 8*8 + ScoreCanvas.STAFF_SPACING / 2) ? Clef.TREBLE : Clef.BASS;
 				
 				if(mx >= itemRectangle.x && mx <= itemRectangle.x + itemRectangle.width) {
 					int scaleNumber = clef.getLowScaleNumber() + ((measureRectangle.y + clef.getOffset() + 80) - my) / 8;
@@ -138,7 +139,7 @@ public class NoteEntryTool implements Tool {
 		}
 	}
 
-	private static <K, V> Map<K, V> filterKeys(Map<K, V> map, Set<K> keys) {
+	private static <K, V> Map<K, V> filterKeys(Map<K, V> map, Collection<K> keys) {
 		Map<K, V> filteredMap = new HashMap<>();
 		keys.forEach(key -> filteredMap.put(key, map.get(key)));
 		return filteredMap;

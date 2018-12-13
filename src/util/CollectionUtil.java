@@ -20,6 +20,10 @@ public class CollectionUtil {
 		return collection.stream().map(f).collect(Collectors.toList());
 	}
 	
+	public static <A, B> Collection<B> flatMap(List<A> collection, Function<A, Collection<B>> f) {
+		return collection.stream().flatMap(a -> f.apply(a).stream()).collect(Collectors.toList());
+	}
+	
 	public static <A extends Comparable<? super A>> A max(Collection<A> collection) {
 		return collection.stream().max(Comparator.naturalOrder()).get();
 	}
