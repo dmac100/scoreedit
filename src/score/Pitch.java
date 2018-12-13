@@ -23,6 +23,9 @@ public class Pitch {
 	}
 	
 	public Pitch(char name, int octave, int sharps) {
+		if(octave < 0 || octave > 10) throw new IllegalArgumentException("Invalid octave: " + octave);
+		if(name < 'A' || name > 'G') throw new IllegalArgumentException("Invalid name: " + name);
+		
 		this.name = name;
 		this.octave = octave;
 		this.sharps = sharps;
