@@ -1,6 +1,7 @@
 package score;
 
 import static score.ScoreCanvas.ACCIDENTAL_SPACING;
+import static util.XmlUtil.addElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jdom2.Element;
 
 import score.Duration.DurationType;
 import score.MeasureAccidentals.Accidental;
@@ -31,6 +33,24 @@ public class Chord implements CanvasItem {
 		this.clef = clef;
 		this.notes = notes;
 		this.duration = duration;
+	}
+
+	public Chord(Element parent, List<Beam> beams) {
+		duration = new Duration(parent.getChild("duration"));
+		notes = new ArrayList<>();
+		for(Element noteElement:parent.getChildren("note")) {
+			notes.add(new Note(noteElement));
+		}
+
+		String beam = parent.getChildText("beam");
+		
+		if(beam != null) {
+			int index = Integer.parseInt(beam);
+			while(beams.size() <= index) {
+				beams.add(new Beam());
+			}
+			this.beam = beams.get(index);
+		}
 	}
 
 	public void setClef(Clef clef) {
@@ -283,6 +303,22 @@ public class Chord implements CanvasItem {
 	public void setAccidentals(MeasureAccidentals measureAccidentals) {
 		for(Note note:notes) {
 			measureAccidentals.setAccidental(note.getPitch());
+		}
+	}
+
+	@Override
+	public void save(Element parent, List<Beam> beams) {
+		Element chordElement = addElement(parent, "chord");
+		duration.save(addElement(chordElement, "duration"));
+		for(Note note:notes) {
+			note.save(addElement(chordElement, "note"));
+		}
+		
+		if(beam != null) {
+			if(!beams.contains(beam)) {
+				beams.add(beam);
+			}
+			addElement(chordElement, "beam", beams.indexOf(beam));
 		}
 	}
 }

@@ -8,7 +8,7 @@ import org.eclipse.swt.SWT;
 import score.Duration.DurationType;
 import score.Stem.StemDirection;
 
-public class Beam  {
+public class Beam {
 	private List<Stem> stems = new ArrayList<>();
 	
 	public void clearStems() {

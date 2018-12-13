@@ -1,5 +1,11 @@
 package score;
 
+import static util.XmlUtil.addElement;
+
+import java.util.List;
+
+import org.jdom2.Element;
+
 import score.Duration.DurationType;
 
 public class Rest implements CanvasItem {
@@ -7,6 +13,10 @@ public class Rest implements CanvasItem {
 
 	public Rest(Duration duration) {
 		this.duration = duration;
+	}
+
+	public Rest(Element parent) {
+		duration = new Duration(parent.getChild("duration"));
 	}
 
 	public void setClef(Clef clef) {
@@ -50,5 +60,11 @@ public class Rest implements CanvasItem {
 	
 	public String toString() {
 		return "[REST-" + duration + "]";
+	}
+
+	@Override
+	public void save(Element parent, List<Beam> beams) {
+		Element restElement = addElement(parent, "rest");
+		duration.save(addElement(restElement, "duration"));
 	}
 }

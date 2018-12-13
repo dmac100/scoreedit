@@ -1,5 +1,9 @@
 package score;
 
+import java.util.List;
+
+import org.jdom2.Element;
+
 public class Spacer implements CanvasItem {
 	private final int spacing;
 	
@@ -31,5 +35,9 @@ public class Spacer implements CanvasItem {
 	@Override
 	public Beam getBeam() {
 		return null;
+	}
+
+	@Override
+	public void save(Element parent, List<Beam> beams) {
 	}
 }

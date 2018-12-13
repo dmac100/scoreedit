@@ -1,7 +1,13 @@
 package score;
 
+import static util.XmlUtil.addElement;
+
 import java.util.Arrays;
 import java.util.List;
+
+import org.jdom2.Element;
+
+import util.XmlUtil;
 
 public class KeySig {
 	private final List<Pitch> sharps = Arrays.asList(new Pitch("F5"), new Pitch("C5"), new Pitch("G5"), new Pitch("D5"), new Pitch("A4"), new Pitch("E5"), new Pitch("B4"));
@@ -17,6 +23,10 @@ public class KeySig {
 		this.fifths = fifths;
 	}
 	
+	public KeySig(Element parent) {
+		fifths = Integer.parseInt(parent.getChildText("fifths"));
+	}
+
 	public int getFifths() {
 		return fifths;
 	}
@@ -62,5 +72,9 @@ public class KeySig {
 				}
 			}
 		}
+	}
+
+	public void save(Element parent) {
+		addElement(parent, "fifths", String.valueOf(fifths));
 	}
 }

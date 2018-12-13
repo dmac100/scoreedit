@@ -1,5 +1,9 @@
 package score;
 
+import static util.XmlUtil.addElement;
+
+import org.jdom2.Element;
+
 public class TimeSig {
 	private final int upperCount;
 	private final int lowerCount;
@@ -9,6 +13,11 @@ public class TimeSig {
 		this.lowerCount = lowerCount;
 	}
 	
+	public TimeSig(Element parent) {
+		upperCount = Integer.parseInt(parent.getChildText("upperCount"));
+		lowerCount = Integer.parseInt(parent.getChildText("lowerCount"));
+	}
+
 	public int getUpperCount() {
 		return upperCount;
 	}
@@ -54,5 +63,10 @@ public class TimeSig {
 		} else {
 			return 0;
 		}
+	}
+
+	public void save(Element parent) {
+		addElement(parent, "upperCount", upperCount);
+		addElement(parent, "lowerCount", lowerCount);
 	}
 }

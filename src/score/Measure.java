@@ -1,5 +1,7 @@
 package score;
 
+import static util.XmlUtil.addElement;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,16 +10,32 @@ import java.util.Set;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jdom2.Element;
+
+import util.XmlUtil;
 
 public class Measure {
 	private List<Voice> voices;
 	private TimeSig timeSig;
 	private KeySig keySig;
 
+	public Measure() {
+		this(new ArrayList<>(), new TimeSig(4, 4), new KeySig(0));
+	}
+	
 	public Measure(List<Voice> voices, TimeSig timeSig, KeySig keySig) {
 		this.voices = voices;
 		this.timeSig = timeSig;
 		this.keySig = keySig;
+	}
+	
+	public Measure(Element parent) {
+		voices = new ArrayList<>();
+		keySig = new KeySig(parent.getChild("keySig"));
+		timeSig = new TimeSig(parent.getChild("timeSig"));
+		for(Element voiceElement:parent.getChildren("voice")) {
+			voices.add(new Voice(voiceElement));
+		}
 	}
 	
 	public void drawMeasure(ScoreCanvas canvas, int startX, int startY, int extraWidth, Measure previousMeasureOnLine, Measure previousMeasure) {
@@ -124,8 +142,16 @@ public class Measure {
 		}
 		return voices;
 	}
-
+	
 	public int getStartTime(CanvasItem item) {
 		return getVoice(item).getStartTime(item);
+	}
+
+	public void save(Element parent) {
+		keySig.save(addElement(parent, "keySig"));
+		timeSig.save(addElement(parent, "timeSig"));
+		for(Voice voice:voices) {
+			voice.save(addElement(parent, "voice"));
+		}
 	}
 }

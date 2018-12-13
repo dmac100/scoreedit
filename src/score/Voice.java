@@ -6,13 +6,17 @@ import static score.Duration.DurationType.QUARTER;
 import static score.Duration.DurationType.SIXTEENTH;
 import static score.Duration.DurationType.THIRTYSECOND;
 import static score.Duration.DurationType.WHOLE;
+import static util.XmlUtil.addElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.jdom2.Element;
+
 import score.Duration.DurationType;
+import util.XmlUtil;
 
 public class Voice {
 	private Clef clef;
@@ -21,6 +25,20 @@ public class Voice {
 	public Voice(Clef clef, List<CanvasItem> items) {
 		this.clef = clef;
 		this.items = new ArrayList<>(items);
+	}
+
+	public Voice(Element parent) {
+		List<Beam> beams = new ArrayList<>();
+		
+		clef = Clef.valueOf(parent.getChildText("clef"));
+		items = new ArrayList<>();
+		for(Element child:parent.getChildren()) {
+			if(child.getName().equals("rest")) {
+				items.add(new Rest(child));
+			} else if(child.getName().equals("chord")) {
+				items.add(new Chord(child, beams));
+			}
+		}
 	}
 
 	public Clef getClef() {
@@ -122,5 +140,13 @@ public class Voice {
 	
 	public String toString() {
 		return items.toString();
+	}
+
+	public void save(Element parent) {
+		List<Beam> beams = new ArrayList<>();
+		clef.save(addElement(parent, "clef"));
+		for(CanvasItem canvasItem:items) {
+			canvasItem.save(parent, beams);
+		}
 	}
 }

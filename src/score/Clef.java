@@ -2,6 +2,8 @@ package score;
 
 import static score.ScoreCanvas.STAFF_SPACING;
 
+import org.jdom2.Element;
+
 public enum Clef {
 	BASS("E2", STAFF_SPACING + 8*8), TREBLE("C4", 0);
 	
@@ -19,5 +21,9 @@ public enum Clef {
 
 	public int getOffset() {
 		return offset;
+	}
+
+	public void save(Element parent) {
+		parent.setText(this.name());
 	}
 }

@@ -1,6 +1,9 @@
 package score;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
+import static util.XmlUtil.addElement;
+
+import org.jdom2.Element;
 
 public class Duration {
 	public enum DurationType {
@@ -22,7 +25,7 @@ public class Duration {
 		}
 	}
 	
-	private final DurationType type;;
+	private final DurationType type;
 	private final int dots;
 
 	public Duration(DurationType type) {
@@ -34,6 +37,11 @@ public class Duration {
 		this.dots = dots;
 	}
 	
+	public Duration(Element parent) {
+		type = DurationType.valueOf(parent.getChildText("type"));
+		dots = Integer.parseInt(parent.getChildText("dots"));
+	}
+
 	public int getDurationCount() {
 		int count = 32 / type.getDenominator();
 		int dotValue = count;
@@ -54,5 +62,10 @@ public class Duration {
 	
 	public String toString() {
 		return type.toString() + repeat(".", dots);
+	}
+
+	public void save(Element parent) {
+		addElement(parent, "type", type.name());
+		addElement(parent, "dots", dots);
 	}
 }

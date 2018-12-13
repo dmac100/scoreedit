@@ -1,8 +1,13 @@
 package score;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
+import static util.XmlUtil.addElement;
 
 import java.util.Objects;
+
+import org.jdom2.Element;
+
+import util.XmlUtil;
 
 public class Pitch {
 	private final char name;
@@ -31,6 +36,12 @@ public class Pitch {
 		this.name = (char) ('A' + (pitch % 7));
 		this.octave = (pitch + 5) / 7;
 		this.sharps = sharps;
+	}
+
+	public Pitch(Element parent) {
+		name = parent.getChildText("name").charAt(0);
+		octave = Integer.parseInt(parent.getChildText("octave"));
+		sharps = Integer.parseInt(parent.getChildText("sharps"));
 	}
 
 	public char getName() {
@@ -63,5 +74,11 @@ public class Pitch {
 	
 	public int hashCode() {
 		return Objects.hash(name, octave, sharps);
+	}
+
+	public void save(Element parent) {
+		addElement(parent, "name", name);
+		addElement(parent, "octave", octave);
+		addElement(parent, "sharps", sharps);
 	}
 }

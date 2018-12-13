@@ -1,6 +1,11 @@
 package score;
 
+import static util.XmlUtil.addElement;
+
+import java.util.Set;
+
 import org.eclipse.swt.graphics.Rectangle;
+import org.jdom2.Element;
 
 import score.Duration.DurationType;
 
@@ -13,6 +18,11 @@ public class Note {
 		this.duration = duration;
 	}
 	
+	public Note(Element parent) {
+		pitch = new Pitch(parent.getChild("pitch"));
+		duration = new Duration(parent.getChild("duration"));
+	}
+
 	public void draw(ScoreCanvas layout, Clef clef, int startX, int startY) {
 		int scaleNumber = pitch.getScaleNumber() - clef.getLowScaleNumber();
 		
@@ -67,5 +77,10 @@ public class Note {
 	
 	public String toString() {
 		return pitch.toString() + "-" + duration.toString();
+	}
+
+	public void save(Element parent) {
+		pitch.save(addElement(parent, "pitch"));
+		duration.save(addElement(parent, "duration"));
 	}
 }
