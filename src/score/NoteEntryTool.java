@@ -39,7 +39,7 @@ public class NoteEntryTool implements Tool {
 		
 		if(measure != null && pitch != null && item != null && clef != null) {
 			Voice voice = measure.getVoices(clef).get(0);
-			int startTime = voice.getStartTime(item);
+			int startTime = measure.getStartTime(item);
 			Duration duration = new Duration(DurationType.QUARTER);
 			
 			Chord item = new Chord(clef, Arrays.asList(new Note(pitch, duration)), duration);

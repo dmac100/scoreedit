@@ -124,4 +124,8 @@ public class Measure {
 		}
 		return voices;
 	}
+
+	public int getStartTime(CanvasItem item) {
+		return getVoice(item).getStartTime(item);
+	}
 }
