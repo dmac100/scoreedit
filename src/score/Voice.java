@@ -10,13 +10,14 @@ import static util.XmlUtil.addElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.jdom2.Element;
 
 import score.Duration.DurationType;
-import util.XmlUtil;
 
 public class Voice {
 	private Clef clef;
@@ -61,6 +62,8 @@ public class Voice {
 	}
 	
 	public void insertItem(CanvasItem newItem, int startTime) {
+		Set<Beam> removedBeams = new HashSet<>();
+		
 		int i = 0;
 		
 		int time = 0;
@@ -73,10 +76,12 @@ public class Voice {
 				
 				int removedTime = item.getDuration();
 				time -= items.get(i).getDuration();
+				removedBeams.add(items.get(i).getBeam());
 				items.remove(i);
 				
 				while(removedTime < newItem.getDuration() && i < items.size()) {
 					removedTime += items.get(i).getDuration();
+					removedBeams.add(items.get(i).getBeam());
 					items.remove(i);
 				}
 				
@@ -99,6 +104,7 @@ public class Voice {
 				if(removedTime < newItem.getDuration()) {
 					while(i < items.size() && items.get(i) instanceof Rest && removedTime < newItem.getDuration()) {
 						removedTime += items.get(i).getDuration();
+						removedBeams.add(items.get(i).getBeam());
 						items.remove(i);
 					}
 					
@@ -108,6 +114,8 @@ public class Voice {
 						i += rests.size();
 					}
 				}
+				
+				removeBeams(removedBeams);
 				
 				return;
 			}
@@ -120,8 +128,20 @@ public class Voice {
 		}
 		
 		items.add(i++, newItem);
+		
+		removeBeams(removedBeams);
 	}
 	
+	private void removeBeams(Set<Beam> beams) {
+		for(CanvasItem item:items) {
+			if(item instanceof Chord && item.getBeam() != null) {
+				if(beams.contains(item.getBeam())) {
+					((Chord) item).setBeam(null);
+				}
+			}
+		}
+	}
+
 	private static List<Rest> createRests(int duration) {
 		int remaining = duration;
 		List<Rest> rests = new ArrayList<>();
