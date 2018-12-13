@@ -1,9 +1,11 @@
-package score;
+package score.layout;
 
-import static score.ScoreCanvas.MEASURE_SPACING;
+import static view.ScoreCanvas.MEASURE_SPACING;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import score.Measure;
 
 public class MeasureLayout {
 	public static class Row {

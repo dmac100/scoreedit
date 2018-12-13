@@ -1,9 +1,16 @@
-package score;
+package score.layout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Element;
+
+import score.Beam;
+import score.CanvasItem;
+import score.Clef;
+import score.MeasureAccidentals;
+import score.Note;
+import view.ScoreCanvas;
 
 public class Spacer implements CanvasItem {
 	private final int spacing;

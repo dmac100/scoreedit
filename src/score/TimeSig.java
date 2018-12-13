@@ -4,6 +4,9 @@ import static util.XmlUtil.addElement;
 
 import org.jdom2.Element;
 
+import view.FetaFont;
+import view.ScoreCanvas;
+
 public class TimeSig {
 	private final int upperCount;
 	private final int lowerCount;

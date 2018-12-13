@@ -1,9 +1,11 @@
-package score;
+package view.tool;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+
+import score.Model;
 
 public class SelectionTool implements Tool {
 	private boolean mouseDown = false;

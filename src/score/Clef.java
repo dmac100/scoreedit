@@ -1,6 +1,6 @@
 package score;
 
-import static score.ScoreCanvas.STAFF_SPACING;
+import static view.ScoreCanvas.STAFF_SPACING;
 
 import org.jdom2.Element;
 

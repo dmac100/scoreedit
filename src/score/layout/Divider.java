@@ -1,6 +1,6 @@
-package score;
+package score.layout;
 
-class Divider {
+public class Divider {
 	private final int quotient;
 	private final int remainder;
 	private final int divisor;

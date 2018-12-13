@@ -1,4 +1,4 @@
-package score;
+package score.layout;
 
 import static util.CollectionUtil.map;
 import static util.CollectionUtil.max;
@@ -8,6 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import score.CanvasItem;
+import score.KeySig;
+import score.MeasureAccidentals;
+import score.Voice;
 
 public class NoteLayout {
 	private static class VoiceAndItem {

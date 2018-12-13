@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MeasureAccidentals {
-	enum Accidental {
+	public enum Accidental {
 		NONE, NATURAL, SHARP, FLAT, DOUBLESHARP, DOUBLEFLAT
 	}
 	

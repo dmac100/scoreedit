@@ -8,6 +8,8 @@ import java.util.List;
 import org.jdom2.Element;
 
 import util.XmlUtil;
+import view.FetaFont;
+import view.ScoreCanvas;
 
 public class KeySig {
 	private final List<Pitch> sharps = Arrays.asList(new Pitch("F5"), new Pitch("C5"), new Pitch("G5"), new Pitch("D5"), new Pitch("A4"), new Pitch("E5"), new Pitch("B4"));

@@ -12,7 +12,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.jdom2.Element;
 
+import score.layout.AlignmentBox;
+import score.layout.NoteLayout;
 import util.XmlUtil;
+import view.ScoreCanvas;
 
 public class Measure {
 	private List<Voice> voices;

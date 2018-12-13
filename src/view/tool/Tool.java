@@ -1,8 +1,8 @@
-package score;
+package view.tool;
 
 import org.eclipse.swt.graphics.GC;
 
-interface Tool {
+public interface Tool {
 	public default void paint(GC gc) {}
 	public default void mouseUp(int button, float x, float y) {}
 	public default void mouseDown(int button, float x, float y) {}

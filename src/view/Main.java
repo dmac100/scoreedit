@@ -1,9 +1,9 @@
-package score;
+package view;
 
-import static score.ScoreCanvas.MEASURE_SPACING;
-import static score.ScoreCanvas.PAGE_WIDTH;
-import static score.ScoreCanvas.STAFF_SPACING;
-import static score.ScoreCanvas.SYSTEM_SPACING;
+import static view.ScoreCanvas.MEASURE_SPACING;
+import static view.ScoreCanvas.PAGE_WIDTH;
+import static view.ScoreCanvas.STAFF_SPACING;
+import static view.ScoreCanvas.SYSTEM_SPACING;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,10 +31,18 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import score.MeasureLayout.Row;
-import score.common.CommandList;
-import score.common.MenuBuilder;
-import score.common.RunCommand;
+import score.Clef;
+import score.Measure;
+import score.Model;
+import score.layout.Divider;
+import score.layout.MeasureLayout;
+import score.layout.MeasureLayout.Row;
+import view.common.CommandList;
+import view.common.MenuBuilder;
+import view.common.RunCommand;
+import view.tool.NoteEntryTool;
+import view.tool.SelectionTool;
+import view.tool.Tool;
 
 public class Main {
 	private final Shell shell;

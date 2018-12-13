@@ -18,7 +18,7 @@ import org.jdom2.output.XMLOutputter;
 import score.Duration.DurationType;
 import util.CollectionUtil;
 
-class Model {
+public class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	
 	public Model() {

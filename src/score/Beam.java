@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 
 import score.Duration.DurationType;
 import score.Stem.StemDirection;
+import view.ScoreCanvas;
 
 public class Beam {
 	private List<Stem> stems = new ArrayList<>();

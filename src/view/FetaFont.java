@@ -1,5 +1,6 @@
-package score;
+package view;
 
+import score.Duration;
 import score.Stem.StemDirection;
 
 public class FetaFont {

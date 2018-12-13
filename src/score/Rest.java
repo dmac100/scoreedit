@@ -8,6 +8,9 @@ import java.util.List;
 import org.jdom2.Element;
 
 import score.Duration.DurationType;
+import score.layout.AlignmentBox;
+import view.FetaFont;
+import view.ScoreCanvas;
 
 public class Rest implements CanvasItem {
 	private final Duration duration;

@@ -8,6 +8,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.jdom2.Element;
 
 import score.Duration.DurationType;
+import view.FetaFont;
+import view.ScoreCanvas;
 
 public class Note {
 	private Pitch pitch;

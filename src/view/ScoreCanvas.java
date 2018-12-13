@@ -1,4 +1,4 @@
-package score;
+package view;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+
+import score.CanvasItem;
+import score.Measure;
+import score.layout.Spacer;
 
 public class ScoreCanvas {
 	public static final int PAGE_WIDTH = 1950;

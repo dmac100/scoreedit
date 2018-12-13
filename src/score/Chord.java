@@ -1,7 +1,7 @@
 package score;
 
-import static score.ScoreCanvas.ACCIDENTAL_SPACING;
 import static util.XmlUtil.addElement;
+import static view.ScoreCanvas.ACCIDENTAL_SPACING;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +17,9 @@ import org.jdom2.Element;
 import score.Duration.DurationType;
 import score.MeasureAccidentals.Accidental;
 import score.Stem.StemDirection;
+import score.layout.AlignmentBox;
+import view.FetaFont;
+import view.ScoreCanvas;
 
 public class Chord implements CanvasItem {
 	private List<Note> notes;

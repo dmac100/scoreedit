@@ -1,4 +1,4 @@
-package score;
+package view.tool;
 
 import static util.CollectionUtil.flatMap;
 
@@ -13,7 +13,19 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+import score.CanvasItem;
+import score.Chord;
+import score.Clef;
+import score.Duration;
+import score.KeySig;
+import score.Measure;
+import score.Model;
+import score.Note;
+import score.Pitch;
+import score.Voice;
 import score.Duration.DurationType;
+import view.FetaFont;
+import view.ScoreCanvas;
 
 public class NoteEntryTool implements Tool {
 	private final Composite composite;

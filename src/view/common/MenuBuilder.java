@@ -1,4 +1,4 @@
-package score.common;
+package view.common;
 
 import java.util.function.Consumer;
 
