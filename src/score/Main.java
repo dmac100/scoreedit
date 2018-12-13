@@ -27,13 +27,20 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import score.MeasureLayout.Row;
+import score.common.CommandList;
+import score.common.MenuBuilder;
+import score.common.RunCommand;
 
 public class Main {
 	private final Shell shell;
 	private final Composite composite;
+	
+	private final CommandList commandList = new CommandList();
 	
 	private final PanAndZoomHandler panAndZoomHandler;
 	private final SelectionTool selectionTool;
@@ -122,8 +129,102 @@ public class Main {
 		});
 		
 		composite.setFocus();
+		
+		createMenu();
 	}
 	
+	private void createMenu() {
+		MenuBuilder menuBuilder = new MenuBuilder(shell, commandList);
+		
+		menuBuilder.addMenu("File")
+			.addItem("&New\tCtrl+N").addSelectionListener(() -> newFile())
+			.setAccelerator(SWT.CONTROL |  'n')
+			.addItem("&Open\tCtrl+O").addSelectionListener(() -> {
+				String selected = selectOpenLocationWithDialog("*.pgn", "*.*");
+				if(selected != null) {
+					try {
+						open(selected);
+					} catch(Exception e) {
+						displayException(e);
+					}
+				}
+			})
+			.setAccelerator(SWT.CONTROL | 'o')
+			.addSeparator()
+			.addItem("&Save\tCtrl+S").addSelectionListener(() -> {
+				try {
+					save();
+				} catch(Exception e) {
+					displayException(e);
+				}
+			})
+			.addItem("Save &As...\tShift+Ctrl+S").addSelectionListener(() -> {
+				String selected = selectOpenLocationWithDialog("*.pgn", "*.*");
+				if(selected != null) {
+					try {
+						saveAs(selected);
+					} catch(Exception e) {
+						displayException(e);
+					}
+				}
+			})
+			.setAccelerator(SWT.CONTROL | SWT.SHIFT | 's')
+			.addSeparator()
+			.addItem("Run Command...\tCtrl+3").addSelectionListener(() -> runCommand()).setAccelerator(SWT.CONTROL | '3')
+			.addSeparator()
+			.addItem("E&xit\tCtrl+Q").addSelectionListener(() -> shell.dispose())
+			.setAccelerator(SWT.CONTROL |  'q');
+		
+		menuBuilder.build();
+	}
+	
+	private void runCommand() {
+		RunCommand runCommand = new RunCommand(shell);
+		runCommand.setSearchFunction(findText -> commandList.findCommands(findText));
+		String result = runCommand.open();
+		if(result != null) {
+			commandList.runCommand(result);
+		}
+	}
+
+	private void newFile() {
+	}
+	
+	private void open(String path) {
+	}
+	
+	private void save() {
+	}
+	
+	private void saveAs(String path) {
+	}
+	
+	private String selectOpenLocationWithDialog(String... extensions) {
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		dialog.setText("Open");
+		dialog.setFilterExtensions(extensions);
+		
+		return dialog.open();
+	}
+	
+	private String selectSaveLocationWithDialog(String defaultName, String... extensions) {
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		dialog.setText("Save");
+		dialog.setFilterExtensions(extensions);
+		dialog.setFileName(defaultName);
+		
+		return dialog.open();
+	}
+	
+	private void displayException(Exception e) {
+		MessageBox messageBox = new MessageBox(shell);
+		messageBox.setText("Error");
+		messageBox.setMessage(e.getMessage() == null ? e.toString() : e.getMessage());
+		e.printStackTrace();
+		
+		messageBox.open();
+	}
+
 	private void drawScore(ScoreCanvas canvas) {
 		List<Row> rows = new MeasureLayout(PAGE_WIDTH - 100, model.getMeasures()).getRows();
 		
@@ -220,7 +321,7 @@ public class Main {
 		
 		shell.setVisible(true);
 		shell.setSize(1100, 800);
-		shell.setText("Main");
+		shell.setText("ScoreEdit");
 		
 		while(!shell.isDisposed()) {
 			while(!display.readAndDispatch()) {
