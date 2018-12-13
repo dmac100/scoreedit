@@ -57,7 +57,7 @@ public class Voice {
 				items.remove(i);
 				time -= item.getDuration();
 				
-				while(removedTime < newItem.getDuration()) {
+				while(removedTime < newItem.getDuration() && i < items.size()) {
 					items.remove(i);
 					removedTime += item.getDuration();
 				}
