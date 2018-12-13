@@ -54,12 +54,12 @@ public class Voice {
 				i--;
 				
 				int removedTime = item.getDuration();
+				time -= items.get(i).getDuration();
 				items.remove(i);
-				time -= item.getDuration();
 				
 				while(removedTime < newItem.getDuration() && i < items.size()) {
+					removedTime += items.get(i).getDuration();
 					items.remove(i);
-					removedTime += item.getDuration();
 				}
 				
 				if(startTime > time) {
@@ -76,6 +76,19 @@ public class Voice {
 					List<Rest> rests = createRests(removedTime - newItem.getDuration());
 					items.addAll(i, rests);
 					i += rests.size();
+				}
+				
+				if(removedTime < newItem.getDuration()) {
+					while(i < items.size() && items.get(i) instanceof Rest && removedTime < newItem.getDuration()) {
+						removedTime += items.get(i).getDuration();
+						items.remove(i);
+					}
+					
+					if(removedTime > newItem.getDuration()) {
+						List<Rest> rests = createRests(removedTime - newItem.getDuration());
+						items.addAll(i, rests);
+						i += rests.size();
+					}
 				}
 				
 				return;
