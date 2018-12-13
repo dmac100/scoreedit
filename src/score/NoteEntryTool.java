@@ -76,7 +76,7 @@ public class NoteEntryTool implements Tool {
 			if(item != null) {
 				Rectangle itemRectangle = itemBounds.get(item);
 				
-				Clef clef = (my < measureRectangle.y + 8*8 + 40) ? Clef.TREBLE : Clef.BASS;
+				Clef clef = (my < measureRectangle.y + 8*8 + ScoreCanvas.STAFF_SPACING / 2) ? Clef.TREBLE : Clef.BASS;
 				
 				if(mx >= itemRectangle.x && mx <= itemRectangle.x + itemRectangle.width) {
 					Pitch pitch = new Pitch(clef.getLowScaleNumber() + ((measureRectangle.y + clef.getOffset() + 80) - my) / 8);
