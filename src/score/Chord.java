@@ -321,4 +321,9 @@ public class Chord implements CanvasItem {
 			addElement(chordElement, "beam", beams.indexOf(beam));
 		}
 	}
+
+	@Override
+	public List<Note> getNotes() {
+		return notes;
+	}
 }

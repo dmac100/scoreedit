@@ -2,6 +2,7 @@ package score;
 
 import static util.XmlUtil.addElement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -66,5 +67,10 @@ public class Rest implements CanvasItem {
 	public void save(Element parent, List<Beam> beams) {
 		Element restElement = addElement(parent, "rest");
 		duration.save(addElement(restElement, "duration"));
+	}
+
+	@Override
+	public List<Note> getNotes() {
+		return new ArrayList<>();
 	}
 }

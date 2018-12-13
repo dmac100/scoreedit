@@ -1,5 +1,6 @@
 package score;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -39,5 +40,10 @@ public class Spacer implements CanvasItem {
 
 	@Override
 	public void save(Element parent, List<Beam> beams) {
+	}
+
+	@Override
+	public List<Note> getNotes() {
+		return new ArrayList<>();
 	}
 }

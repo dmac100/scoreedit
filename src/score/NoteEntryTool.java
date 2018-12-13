@@ -44,13 +44,45 @@ public class NoteEntryTool implements Tool {
 			int startTime = measure.getStartTime(item);
 			Duration duration = new Duration(DurationType.QUARTER);
 			
-			Chord item = new Chord(clef, Arrays.asList(new Note(pitch, duration)), duration);
+			Pitch pitchWithAccidentals = getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), voice, startTime);
+			
+			Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
 			voice.insertItem(item, startTime);
 			
 			composite.redraw();
 		}
 	}
 	
+	private Pitch getPitchWithSharpsOrFlats(Pitch pitch, KeySig keySig, Voice voice, int startTime) {
+		Pitch pitchWithSharpsOrFlats = null;
+		
+		int time = 0;
+		for(CanvasItem item:voice.getItems()) {
+			for(Note note:item.getNotes()) {
+				if(new Pitch(note.getPitch().getScaleNumber()).equals(new Pitch(pitch.getScaleNumber()))) {
+					pitchWithSharpsOrFlats = note.getPitch();
+				}
+			}
+			
+			time += item.getDuration();
+			if(time > startTime) {
+				break;
+			}
+		}
+		
+		if(pitchWithSharpsOrFlats != null) {
+			return pitchWithSharpsOrFlats;
+		}
+		
+		for(Pitch keySigPitch:keySig.getPitches()) {
+			if(pitch.getName() == keySigPitch.getName()) {
+				return new Pitch(pitch.getName(), pitch.getOctave(), (keySig.getFifths() > 1) ? 1 : -1);
+			}
+		}
+		
+		return pitch;
+	}
+
 	public void mouseDown(int button, float x, float y) {
 	}
 	

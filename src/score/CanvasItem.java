@@ -13,4 +13,5 @@ public interface CanvasItem {
 	public void setAccidentals(MeasureAccidentals measureAccidentals);
 	public Beam getBeam();
 	public void save(Element parent, List<Beam> beams);
+	public List<Note> getNotes();
 }
