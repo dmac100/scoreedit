@@ -17,13 +17,13 @@ import score.CanvasItem;
 import score.Chord;
 import score.Clef;
 import score.Duration;
+import score.Duration.DurationType;
 import score.KeySig;
 import score.Measure;
 import score.Model;
 import score.Note;
 import score.Pitch;
 import score.Voice;
-import score.Duration.DurationType;
 import view.FetaFont;
 import view.ScoreCanvas;
 
@@ -54,7 +54,7 @@ public class NoteEntryTool implements Tool {
 		if(measure != null && pitch != null && item != null && clef != null) {
 			Voice voice = measure.getVoices(clef).get(0);
 			int startTime = measure.getStartTime(item);
-			Duration duration = new Duration(DurationType.QUARTER);
+			Duration duration = new Duration(model.getDurationType());
 			
 			Pitch pitchWithAccidentals = getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), voice, startTime);
 			
@@ -135,7 +135,7 @@ public class NoteEntryTool implements Tool {
 					this.item = item;
 					this.clef = clef;
 					
-					drawNote(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(DurationType.QUARTER));
+					drawNote(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(model.getDurationType()));
 				}
 			}
 		}

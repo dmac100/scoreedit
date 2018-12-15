@@ -21,23 +21,30 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Transform;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import score.Clef;
+import score.Duration.DurationType;
 import score.Measure;
 import score.Model;
 import score.layout.Divider;
 import score.layout.MeasureLayout;
 import score.layout.MeasureLayout.Row;
 import view.common.CommandList;
+import view.common.GridDataBuilder;
+import view.common.GridLayoutBuilder;
 import view.common.MenuBuilder;
 import view.common.RunCommand;
 import view.tool.NoteEntryTool;
@@ -62,16 +69,22 @@ public class Main {
 	
 	public Main(Shell shell) {
 		this.shell = shell;
-		composite = new Composite(shell, SWT.DOUBLE_BUFFERED);
 		
-		shell.setLayout(new FillLayout());
+		Display.getCurrent().loadFont(createFont().getAbsolutePath());
+		
+		shell.setLayout(new GridLayoutBuilder().numColumns(1).verticalSpacing(1).marginHeight(0).build());
+		
+		ToolBar toolbar = new ToolBar(shell, SWT.FLAT | SWT.BORDER);
+		toolbar.setLayoutData(new GridDataBuilder().fillHorizontal().build());
+		addToolbarItems(toolbar);
+		
+		composite = new Composite(shell, SWT.DOUBLE_BUFFERED | SWT.BORDER);
+		composite.setLayoutData(new GridDataBuilder().fillHorizontal().fillVertical().build());
 		
 		panAndZoomHandler = new PanAndZoomHandler(composite);
 		
 		selectionTool = new SelectionTool(composite, model);
 		noteEntryTool = new NoteEntryTool(composite, model, canvas);
-		
-		Display.getCurrent().loadFont(createFont().getAbsolutePath());
 		
 		Tool currentTool = noteEntryTool;
 		
@@ -124,6 +137,8 @@ public class Main {
 				currentTool.paint(gc);
 				
 				transform.dispose();
+				
+				mscore.dispose();
 			}
 		});
 		
@@ -141,6 +156,42 @@ public class Main {
 		createMenu();
 	}
 	
+	private void addToolbarItems(ToolBar toolbar) {
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.WHOLE), () -> {
+			model.setDurationType(DurationType.WHOLE);
+		});
+		
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.HALF), () -> {
+			model.setDurationType(DurationType.HALF);
+		});
+		
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.QUARTER), () -> {
+			model.setDurationType(DurationType.QUARTER);
+		});
+		
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.EIGHTH), () -> {
+			model.setDurationType(DurationType.EIGHTH);
+		});
+		
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.SIXTEENTH), () -> {
+			model.setDurationType(DurationType.SIXTEENTH);
+		});
+		
+		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.THIRTYSECOND), () -> {
+			model.setDurationType(DurationType.THIRTYSECOND);
+		});
+	}
+	
+	private void addToolbarRadioItem(ToolBar toolbar, Image image, Runnable runnable) {
+		ToolItem item = new ToolItem(toolbar, SWT.RADIO);
+		item.setImage(image);
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				runnable.run();
+			}
+		});
+	}
+
 	private void createMenu() {
 		MenuBuilder menuBuilder = new MenuBuilder(shell, commandList);
 		
