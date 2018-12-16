@@ -1,11 +1,16 @@
 package view.tool;
 
+import java.util.List;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import score.Model;
+import score.Selectable;
+import view.ScoreCanvas;
 
 public class SelectionTool implements Tool {
 	private boolean mouseDown = false;
@@ -16,12 +21,14 @@ public class SelectionTool implements Tool {
 	private float x;
 	private float y;
 	
-	private Composite composite;
-	private Model model;
+	private final Composite composite;
+	private final Model model;
+	private final ScoreCanvas scoreCanvas;
 
-	public SelectionTool(Composite composite, Model model) {
+	public SelectionTool(Composite composite, Model model, ScoreCanvas scoreCanvas) {
 		this.composite = composite;
 		this.model = model;
+		this.scoreCanvas = scoreCanvas;
 	}
 
 	public void mouseUp(int button, float x, float y) {
@@ -32,7 +39,8 @@ public class SelectionTool implements Tool {
 				float x2 = Math.max(mouseDownX, x);
 				float y2 = Math.max(mouseDownY, y);
 				
-				model.selectBox(x1, y1, x2 - x1, y2 - y1);
+				List<Selectable> items = scoreCanvas.getItemsInRectangle(new Rectangle((int) x1, (int) y1, (int) (x2 - x1), (int) (y2 - y1)));
+				model.selectItems(items);
 				
 				mouseDown = false;
 				composite.redraw();

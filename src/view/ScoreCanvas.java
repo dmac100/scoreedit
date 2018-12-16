@@ -1,6 +1,8 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -10,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
 
 import score.CanvasItem;
 import score.Measure;
+import score.Selectable;
 import score.layout.Spacer;
 
 public class ScoreCanvas {
@@ -23,15 +26,21 @@ public class ScoreCanvas {
 	
 	private final Map<Measure, Rectangle> measureBounds = new HashMap<>();
 	private final Map<CanvasItem, Rectangle> itemBounds = new HashMap<>();
+	private final Map<Selectable, Rectangle> selectableBounds = new HashMap<>();
 
 	public void reset(GC gc) {
 		this.gc = gc;
 		itemBounds.clear();
 		measureBounds.clear();
+		selectableBounds.clear();
 	}
 
-	public void drawText(String text, int x, int y) {
+	public void drawText(String text, int x, int y, boolean selected) {
+		if(selected) {
+			gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
+		}
 		gc.drawText(text, x, y, true);
+		gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 	}
 
 	public void drawLine(int lineWidth, int capStyle, int x1, int y1, int x2, int y2) {
@@ -56,6 +65,10 @@ public class ScoreCanvas {
 		
 		itemBounds.put(item, new Rectangle(x, y, width, height));
 	}
+	
+	public void setSelectableBounds(Selectable selectable, int x, int y, int width, int height) {
+		selectableBounds.put(selectable, new Rectangle(x, y, width, height));
+	}
 
 	public Map<Measure, Rectangle> getMeasureBounds() {
 		return measureBounds;
@@ -63,5 +76,15 @@ public class ScoreCanvas {
 	
 	public Map<CanvasItem, Rectangle> getItemBounds() {
 		return itemBounds;
+	}
+
+	public List<Selectable> getItemsInRectangle(Rectangle rectangle) {
+		List<Selectable> items = new ArrayList<>();
+		selectableBounds.forEach((item, rect) -> {
+			if(rectangle.contains(rect.x, rect.y) && rectangle.contains(rect.x + rect.width, rect.y + rect.height)) {
+				items.add(item);
+			}
+		});
+		return items;
 	}
 }

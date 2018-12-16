@@ -1,7 +1,6 @@
 package score;
 
 import java.util.List;
-import java.util.Set;
 
 import org.jdom2.Element;
 

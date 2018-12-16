@@ -64,9 +64,6 @@ public class Main {
 	private final ScoreCanvas canvas = new ScoreCanvas();
 	private final Model model = new Model();
 	
-	private int mouseX = 0;
-	private int mouseY = 0;
-	
 	public Main(Shell shell) {
 		this.shell = shell;
 		
@@ -83,10 +80,10 @@ public class Main {
 		
 		panAndZoomHandler = new PanAndZoomHandler(composite);
 		
-		selectionTool = new SelectionTool(composite, model);
+		selectionTool = new SelectionTool(composite, model, canvas);
 		noteEntryTool = new NoteEntryTool(composite, model, canvas);
 		
-		Tool currentTool = noteEntryTool;
+		Tool currentTool = selectionTool;
 		
 		composite.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
@@ -139,15 +136,6 @@ public class Main {
 				transform.dispose();
 				
 				mscore.dispose();
-			}
-		});
-		
-		composite.addMouseMoveListener(new MouseMoveListener() {
-			public void mouseMove(MouseEvent event) {
-				float[] m = transform(event.x, event.y);
-				mouseX = (int) m[0];
-				mouseY = (int) m[1];
-				composite.redraw();
 			}
 		});
 		
@@ -341,9 +329,9 @@ public class Main {
 		}
 		
 		if(clef == Clef.TREBLE) {
-			canvas.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102);
+			canvas.drawText(FetaFont.TREBLECLEF, startX + 20, startY - 102, false);
 		} else if(clef == Clef.BASS) {
-			canvas.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135);
+			canvas.drawText(FetaFont.BASSCLEF, startX + 20, startY - 135, false);
 		}
 	}
 	

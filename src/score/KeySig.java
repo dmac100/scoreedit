@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.jdom2.Element;
 
-import util.XmlUtil;
 import view.FetaFont;
 import view.ScoreCanvas;
 
@@ -69,7 +68,7 @@ public class KeySig {
 			if(previousMeasureOnLine == null || !previousMeasureOnLine.getKeySig().equals(this)) {
 				String text = (fifths > 0) ? FetaFont.SHARP : FetaFont.FLAT;
 				for(Pitch pitch:this.getPitches()) {
-					canvas.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset);
+					canvas.drawText(text, x, startY - (pitch.getScaleNumber() * 8) + 113 + clef.getOffset() + extraClefOffset, false);
 					x += 20;
 				}
 			}

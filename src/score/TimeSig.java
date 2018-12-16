@@ -49,12 +49,12 @@ public class TimeSig {
 		for(Clef clef:Clef.values()) {
 			if(previousMeasure == null || !previousMeasure.getTimeSig().equals(this)) {
 				if(isCommonTime()) {
-					canvas.drawText(FetaFont.COMMON, startX, startY - 122 + clef.getOffset());
+					canvas.drawText(FetaFont.COMMON, startX, startY - 122 + clef.getOffset(), false);
 				} else if(isCutCommonTime()) {
-					canvas.drawText(FetaFont.CUTCOMMON, startX, startY - 122 + clef.getOffset());
+					canvas.drawText(FetaFont.CUTCOMMON, startX, startY - 122 + clef.getOffset(), false);
 				} else {
-					canvas.drawText(FetaFont.getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset());
-					canvas.drawText(FetaFont.getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset());
+					canvas.drawText(FetaFont.getTimeSigText(upperCount), startX, startY - 135 + clef.getOffset(), false);
+					canvas.drawText(FetaFont.getTimeSigText(lowerCount), startX, startY - 102 + clef.getOffset(), false);
 				}
 			}
 		}

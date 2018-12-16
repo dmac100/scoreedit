@@ -12,8 +12,10 @@ import score.layout.AlignmentBox;
 import view.FetaFont;
 import view.ScoreCanvas;
 
-public class Rest implements CanvasItem {
+public class Rest implements CanvasItem, Selectable {
 	private final Duration duration;
+	
+	private boolean selected;
 
 	public Rest(Duration duration) {
 		this.duration = duration;
@@ -29,17 +31,19 @@ public class Rest implements CanvasItem {
 	@Override
 	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		if(duration.getType() == DurationType.WHOLE) {
-			canvas.drawText(FetaFont.getRest(duration), startX, startY - 134);
+			canvas.drawText(FetaFont.getRest(duration), startX, startY - 134, selected);
 		} else {
-			canvas.drawText(FetaFont.getRest(duration), startX, startY - 119);
+			canvas.drawText(FetaFont.getRest(duration), startX, startY - 119, selected);
 		}
+		
+		canvas.setSelectableBounds(this, startX, startY, 20, 8*8);
 		
 		drawDots(canvas, startX, startY);
 	}
 	
 	private void drawDots(ScoreCanvas canvas, int startX, int startY) {
 		for(int x = 0; x < duration.getDots(); x++) {
-			canvas.drawText(FetaFont.DOT, startX + 30 + (x * 10), startY - 119);
+			canvas.drawText(FetaFont.DOT, startX + 30 + (x * 10), startY - 119, selected);
 		}
 	}
 	
@@ -75,5 +79,10 @@ public class Rest implements CanvasItem {
 	@Override
 	public List<Note> getNotes() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }

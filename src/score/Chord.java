@@ -99,12 +99,12 @@ public class Chord implements CanvasItem {
 		}
 	}
 	
-	private void drawAccidentals(ScoreCanvas layout, List<List<Note>> accidentalLayout, int startX, int startY) {
+	private void drawAccidentals(ScoreCanvas canvas, List<List<Note>> accidentalLayout, int startX, int startY) {
 		int x = startX + accidentalLayout.size() * ACCIDENTAL_SPACING;
 		for(List<Note> notes:accidentalLayout) {
 			for(Note note:notes) {
 				int scaleNumber = note.getScaleNumber() - clef.getLowScaleNumber();
-				layout.drawText(FetaFont.getAccidental(note.getSharps()), x - ACCIDENTAL_SPACING, startY - (scaleNumber * 8) - 71);
+				canvas.drawText(FetaFont.getAccidental(note.getSharps()), x - ACCIDENTAL_SPACING, startY - (scaleNumber * 8) - 71, false);
 			}
 			x -= ACCIDENTAL_SPACING;
 		}
@@ -221,7 +221,7 @@ public class Chord implements CanvasItem {
 		}
 		
 		canvas.drawLine(3, SWT.CAP_ROUND, stem.getStartX(), stem.getStartY(), stem.getStartX(), stem.getEndY());
-		canvas.drawText(FetaFont.getFlags(duration, stem.getDirection()), stem.getStartX(), stem.getEndY() - 150);
+		canvas.drawText(FetaFont.getFlags(duration, stem.getDirection()), stem.getStartX(), stem.getEndY() - 150, false);
 	}
 
 	private void drawNotes(ScoreCanvas canvas, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
