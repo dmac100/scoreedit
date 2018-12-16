@@ -78,6 +78,7 @@ public class Model {
 	private final Set<Selectable> selectedItems = new HashSet<>();
 	
 	private DurationType selectedDurationType = QUARTER;
+	private int dots = 0;
 	
 	public Model() {
 		for(int x = 0; x < 32; x++) {
@@ -107,6 +108,14 @@ public class Model {
 	
 	public void setDurationType(DurationType durationType) {
 		this.selectedDurationType = durationType;
+	}
+	
+	public int getDots() {
+		return dots;
+	}
+	
+	public void setDots(int dots) {
+		this.dots = dots;
 	}
 	
 	public DurationType getDurationType() {

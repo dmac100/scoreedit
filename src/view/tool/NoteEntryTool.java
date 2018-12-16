@@ -55,7 +55,7 @@ public class NoteEntryTool implements Tool {
 		if(measure != null && pitch != null && item != null && clef != null) {
 			Voice voice = measure.getVoices(clef).get(0);
 			int startTime = measure.getStartTime(item);
-			Duration duration = new Duration(model.getDurationType());
+			Duration duration = new Duration(model.getDurationType(), model.getDots());
 			
 			Pitch pitchWithAccidentals = getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), voice, startTime);
 			

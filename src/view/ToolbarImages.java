@@ -34,6 +34,12 @@ public class ToolbarImages {
 			});			
 		});
 	}
+
+	public static Image getDotImage() {
+		return createImage(gc -> {
+			gc.drawText(FetaFont.DOT, 5, -45, true);	
+		});
+	}
 	
 	public static Image getInsertImage() {
 		return createImage(gc -> {

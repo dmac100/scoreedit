@@ -164,6 +164,8 @@ public class Main {
 						model.setDurationType(DurationType.SIXTEENTH);
 					} else if(event.keyCode == '6') {
 						model.setDurationType(DurationType.THIRTYSECOND);
+					} else if(event.keyCode == '.') {
+						model.setDots((model.getDots() == 1) ? 0 : 1);
 					}
 					
 					composite.redraw();
@@ -214,12 +216,24 @@ public class Main {
 			model.setDurationType(DurationType.THIRTYSECOND);
 		});
 		
+		new ToolBar(toolbar, SWT.SEPARATOR);
+		
+		ToolItem dotItem = new ToolItem(toolbar, SWT.CHECK);
+		dotItem.setImage(ToolbarImages.getDotImage());
+		dotItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				model.setDots(dotItem.getSelection() ? 1 : 0);
+			}
+		});
+		
 		wholeItem.setSelection(model.getDurationType() == DurationType.WHOLE);
 		halfItem.setSelection(model.getDurationType() == DurationType.HALF);
 		quarterItem.setSelection(model.getDurationType() == DurationType.QUARTER);
 		eighthItem.setSelection(model.getDurationType() == DurationType.EIGHTH);
 		sixteenthItem.setSelection(model.getDurationType() == DurationType.SIXTEENTH);
 		thirtySecondItem.setSelection(model.getDurationType() == DurationType.THIRTYSECOND);
+		
+		dotItem.setSelection(model.getDots() == 1);
 	}
 	
 	private ToolItem addToolbarRadioItem(ToolBar toolbar, Image image, Runnable runnable) {
