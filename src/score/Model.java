@@ -129,7 +129,7 @@ public class Model {
 		}
 	}
 
-	public void selectItems(List<Selectable> items, boolean shift, boolean control) {
+	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
 		
 		if(!control && !shift) {

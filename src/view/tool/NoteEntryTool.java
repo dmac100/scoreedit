@@ -62,6 +62,8 @@ public class NoteEntryTool implements Tool {
 			Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
 			voice.insertItem(item, startTime);
 			
+			model.selectItems(item.getNotes(), false, false);
+			
 			composite.redraw();
 		}
 	}
