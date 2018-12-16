@@ -89,13 +89,13 @@ public class Main {
 			public void mouseDown(MouseEvent event) {
 				float[] position = transform(event.x, event.y);
 				
-				currentTool.mouseDown(event.button, position[0], position[1]);
+				currentTool.mouseDown(event.button, event.stateMask, position[0], position[1]);
 			}
 
 			public void mouseUp(MouseEvent event) {
 				float[] position = transform(event.x, event.y);
 				
-				currentTool.mouseUp(event.button, position[0], position[1]);
+				currentTool.mouseUp(event.button, event.stateMask, position[0], position[1]);
 			}
 		});
 		

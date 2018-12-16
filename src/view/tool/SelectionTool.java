@@ -1,7 +1,9 @@
 package view.tool;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -31,24 +33,38 @@ public class SelectionTool implements Tool {
 		this.scoreCanvas = scoreCanvas;
 	}
 
-	public void mouseUp(int button, float x, float y) {
+	@Override
+	public void mouseUp(int button, int stateMask, float x, float y) {
+		boolean shift = (stateMask & SWT.SHIFT) > 0;
+		boolean control = (stateMask & SWT.CTRL) > 0;
+		
 		if(button == 1) {
 			if(mouseDown) {
-				float x1 = Math.min(mouseDownX, x);
-				float y1 = Math.min(mouseDownY, y);
-				float x2 = Math.max(mouseDownX, x);
-				float y2 = Math.max(mouseDownY, y);
-				
-				List<Selectable> items = scoreCanvas.getItemsInRectangle(new Rectangle((int) x1, (int) y1, (int) (x2 - x1), (int) (y2 - y1)));
-				model.selectItems(items);
-				
+				if(x == mouseDownX && y == mouseDownY) {
+					Selectable item = scoreCanvas.getItemAt((int) mouseDownX, (int) mouseDownY);
+					if(item != null) {
+						model.selectItems(Arrays.asList(item), shift, control);
+					} else {
+						model.selectItems(Arrays.asList(), shift, control);
+					}
+				} else {
+					float x1 = Math.min(mouseDownX, x);
+					float y1 = Math.min(mouseDownY, y);
+					float x2 = Math.max(mouseDownX, x);
+					float y2 = Math.max(mouseDownY, y);
+					
+					List<Selectable> items = scoreCanvas.getItemsInRectangle(new Rectangle((int) x1, (int) y1, (int) (x2 - x1), (int) (y2 - y1)));
+					model.deselectAll();
+					model.selectItems(items, shift, control);
+				}
 				mouseDown = false;
 				composite.redraw();
 			}
 		}
 	}
 	
-	public void mouseDown(int button, float x, float y) {
+	@Override
+	public void mouseDown(int button, int stateMask, float x, float y) {
 		if(button == 1) {
 			mouseDown = true;
 			prevX = x;
@@ -58,6 +74,7 @@ public class SelectionTool implements Tool {
 		}
 	}
 	
+	@Override
 	public void mouseMove(float x, float y) {
 		if(mouseDown) {
 			prevX = x;
@@ -70,6 +87,7 @@ public class SelectionTool implements Tool {
 		}
 	}
 	
+	@Override
 	public void paint(GC gc) {
 		Color selectionColor = new Color(Display.getDefault(), 35, 100, 240);
 		

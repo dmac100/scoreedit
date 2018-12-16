@@ -136,6 +136,10 @@ public class Measure {
 		return null;
 	}
 	
+	public List<Voice> getVoices() {
+		return voices;
+	}
+	
 	public List<Voice> getVoices(Clef clef) {
 		List<Voice> voices = new ArrayList<>();
 		for(Voice voice:this.voices) {

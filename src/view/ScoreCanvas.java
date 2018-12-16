@@ -87,4 +87,14 @@ public class ScoreCanvas {
 		});
 		return items;
 	}
+
+	public Selectable getItemAt(int x, int y) {
+		for(Selectable item:selectableBounds.keySet()) {
+			Rectangle rect = selectableBounds.get(item);
+			if(rect.contains((int) x, (int) y)) {
+				return item;
+			}
+		}
+		return null;
+	}
 }

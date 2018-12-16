@@ -84,10 +84,6 @@ public class Chord implements CanvasItem {
 		
 		boolean shiftStemRight = (!flippedNotes.isEmpty() && stem.getDirection() == StemDirection.DOWN);
 		
-		drawAccidentals(canvas, accidentalLayout, startX, startY);
-		
-		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTAL_SPACING + (shiftStemRight ? 19 : 0), startY);
-		
 		if(shiftStemRight) {
 			stem.setStartX(stem.getStartX() + 19);
 		}
@@ -97,6 +93,10 @@ public class Chord implements CanvasItem {
 		} else {
 			drawStem(canvas, stem);
 		}
+
+		drawAccidentals(canvas, accidentalLayout, startX, startY);
+		
+		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTAL_SPACING + (shiftStemRight ? 19 : 0), startY);
 	}
 	
 	private void drawAccidentals(ScoreCanvas canvas, List<List<Note>> accidentalLayout, int startX, int startY) {

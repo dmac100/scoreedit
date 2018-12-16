@@ -46,7 +46,8 @@ public class NoteEntryTool implements Tool {
 		this.scoreCanvas = scoreCanvas;
 	}
 
-	public void mouseUp(int button, float x, float y) {
+	@Override
+	public void mouseUp(int button, int stateMask, float x, float y) {
 		if(button != 1) {
 			return;
 		}
@@ -95,15 +96,18 @@ public class NoteEntryTool implements Tool {
 		return pitch;
 	}
 
-	public void mouseDown(int button, float x, float y) {
+	@Override
+	public void mouseDown(int button, int stateMask, float x, float y) {
 	}
 	
+	@Override
 	public void mouseMove(float x, float y) {
 		this.mx = (int) x;
 		this.my = (int) y;
 		composite.redraw();
 	}
 	
+	@Override
 	public void paint(GC gc) {
 		Map<Measure, Rectangle> measureBounds = scoreCanvas.getMeasureBounds();
 		Map<CanvasItem, Rectangle> itemBounds = scoreCanvas.getItemBounds();

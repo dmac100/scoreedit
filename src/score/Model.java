@@ -11,8 +11,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jdom2.Element;
@@ -22,9 +24,57 @@ import org.jdom2.output.XMLOutputter;
 
 import score.Duration.DurationType;
 
+class MeasureDataCache {
+	private final Map<Object, Measure> itemMeasures = new HashMap<>();
+	private final Map<Object, Voice> itemVoices = new HashMap<>();
+	private final Map<Object, Integer> itemStartTimes = new HashMap<>();
+	
+	public MeasureDataCache(List<Measure> measures) {
+		int measureTime = 0;
+		
+		for(Measure measure:measures) {
+			int maxVoiceTime = 0;
+			
+			for(Voice voice:measure.getVoices()) {
+				int voiceTime = 0;
+				
+				for(CanvasItem item:voice.getItems()) {
+					itemMeasures.put(item, measure);
+					itemVoices.put(item, voice);
+					itemStartTimes.put(item, measureTime + voiceTime);
+					if(item instanceof Chord) {
+						for(Note note:((Chord) item).getNotes()) {
+							itemMeasures.put(note, measure);
+							itemVoices.put(note, voice);
+							itemStartTimes.put(note, measureTime + voiceTime);
+						}
+					}
+					
+					voiceTime += item.getDuration();
+				}
+				
+				maxVoiceTime = Math.max(maxVoiceTime, voiceTime);
+			}
+			
+			measureTime += maxVoiceTime;
+		}
+	}
+	
+	public int getStartTime(Object item) {
+		return itemStartTimes.get(item);
+	}
+	
+	public Measure getMeasure(Object item) {
+		return itemMeasures.get(item);
+	}
+
+	public Voice getVoice(Object item) {
+		return itemVoices.get(item);
+	}
+}
+
 public class Model {
 	private final List<Measure> measures = new ArrayList<>();
-	
 	private final Set<Selectable> selectedItems = new HashSet<>();
 	
 	private DurationType selectedDurationType = QUARTER;
@@ -79,10 +129,78 @@ public class Model {
 		}
 	}
 
-	public void selectItems(List<Selectable> items) {
-		selectedItems.forEach(item -> item.setSelected(false));
-		items.forEach(item -> item.setSelected(true));
-		selectedItems.clear();
-		selectedItems.addAll(items);
+	public void selectItems(List<Selectable> items, boolean shift, boolean control) {
+		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
+		
+		if(!control && !shift) {
+			deselectAll();
+		}
+
+		if(control) {
+			items.forEach(item -> {
+				if(selectedItems.contains(item)) {
+					deselectItem(item);
+				} else {
+					selectItem(item);
+				}
+			});
+			
+			return;
+		}
+		
+		items.forEach(item -> selectItem(item));
+		
+		if(shift) {
+			if(!selectedItems.isEmpty()) {
+				int minTime = Integer.MAX_VALUE;
+				int maxTime = Integer.MIN_VALUE;
+				Set<Clef> clefs = new HashSet<>();
+				for(Selectable item:selectedItems) {
+					clefs.add(measureDataCache.getVoice(item).getClef());
+					int startTime = measureDataCache.getStartTime(item);
+					minTime = Math.min(minTime, startTime);
+					maxTime = Math.max(maxTime, startTime);
+				}
+				
+				for(Selectable item:getAllSelectableItems()) {
+					int startTime = measureDataCache.getStartTime(item);
+					Clef clef = measureDataCache.getVoice(item).getClef();
+					if(clefs.contains(clef) && startTime >= minTime && startTime <= maxTime) {
+						selectItem(item);
+					}
+				}
+			}
+		}
+	}
+
+	public void deselectAll() {
+		new HashSet<>(selectedItems).forEach(item -> deselectItem(item));
+	}
+	
+	private void selectItem(Selectable item) {
+		selectedItems.add(item);
+		item.setSelected(true);
+	}
+	
+	private void deselectItem(Selectable item) {
+		selectedItems.remove(item);
+		item.setSelected(false);
+	}
+	
+	private Set<Selectable> getAllSelectableItems() {
+		Set<Selectable> items = new HashSet<>();
+		for(Measure measure:measures) {
+			for(CanvasItem item:measure.getCanvasItems()) {
+				if(item instanceof Selectable) {
+					items.add((Selectable) item);
+				}
+				if(item instanceof Chord) {
+					for(Note note:((Chord) item).getNotes()) {
+						items.add(note);
+					}
+				}
+			}
+		}
+		return items;
 	}
 }
