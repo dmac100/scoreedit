@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -56,13 +59,15 @@ public class Main {
 	private final Composite composite;
 	
 	private final CommandList commandList = new CommandList();
-	
+
 	private final PanAndZoomHandler panAndZoomHandler;
 	private final SelectionTool selectionTool;
 	private final NoteEntryTool noteEntryTool;
 	
 	private final ScoreCanvas canvas = new ScoreCanvas();
 	private final Model model = new Model();
+	
+	private Tool currentTool;
 	
 	public Main(Shell shell) {
 		this.shell = shell;
@@ -73,7 +78,6 @@ public class Main {
 		
 		ToolBar toolbar = new ToolBar(shell, SWT.FLAT | SWT.BORDER);
 		toolbar.setLayoutData(new GridDataBuilder().fillHorizontal().build());
-		addToolbarItems(toolbar);
 		
 		composite = new Composite(shell, SWT.DOUBLE_BUFFERED | SWT.BORDER);
 		composite.setLayoutData(new GridDataBuilder().fillHorizontal().fillVertical().build());
@@ -83,7 +87,9 @@ public class Main {
 		selectionTool = new SelectionTool(composite, model, canvas);
 		noteEntryTool = new NoteEntryTool(composite, model, canvas);
 		
-		Tool currentTool = selectionTool;
+		currentTool = selectionTool;
+		
+		refreshToolbarItems(toolbar);
 		
 		composite.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
@@ -139,38 +145,84 @@ public class Main {
 			}
 		});
 		
-		composite.setFocus();
+		composite.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent event) {
+				if(event.stateMask == 0) {
+					if(event.keyCode == 'n') {
+						currentTool = noteEntryTool;
+					} else if(event.keyCode == SWT.ESC) {
+						currentTool = selectionTool;
+					} else if(event.keyCode == '1') {
+						model.setDurationType(DurationType.WHOLE);
+					} else if(event.keyCode == '2') {
+						model.setDurationType(DurationType.HALF);
+					} else if(event.keyCode == '3') {
+						model.setDurationType(DurationType.QUARTER);
+					} else if(event.keyCode == '4') {
+						model.setDurationType(DurationType.EIGHTH);
+					} else if(event.keyCode == '5') {
+						model.setDurationType(DurationType.SIXTEENTH);
+					} else if(event.keyCode == '6') {
+						model.setDurationType(DurationType.THIRTYSECOND);
+					}
+					
+					composite.redraw();
+					refreshToolbarItems(toolbar);
+				}
+			}
+		});
 		
 		createMenu();
 	}
 	
-	private void addToolbarItems(ToolBar toolbar) {
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.WHOLE), () -> {
+	private void refreshToolbarItems(ToolBar toolbar) {
+		Arrays.stream(toolbar.getItems()).forEach(ToolItem::dispose);
+		
+		ToolItem insertItem = new ToolItem(toolbar, SWT.CHECK);
+		insertItem.setImage(ToolbarImages.getInsertImage());
+		insertItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				currentTool = (insertItem.getSelection() ? noteEntryTool : selectionTool);
+			}
+		});
+		
+		insertItem.setSelection(currentTool == noteEntryTool);
+		
+		new ToolBar(toolbar, SWT.SEPARATOR);
+		
+		ToolItem wholeItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.WHOLE), () -> {
 			model.setDurationType(DurationType.WHOLE);
 		});
 		
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.HALF), () -> {
+		ToolItem halfItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.HALF), () -> {
 			model.setDurationType(DurationType.HALF);
 		});
 		
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.QUARTER), () -> {
+		ToolItem quarterItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.QUARTER), () -> {
 			model.setDurationType(DurationType.QUARTER);
 		});
 		
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.EIGHTH), () -> {
+		ToolItem eighthItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.EIGHTH), () -> {
 			model.setDurationType(DurationType.EIGHTH);
 		});
 		
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.SIXTEENTH), () -> {
+		ToolItem sixteenthItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.SIXTEENTH), () -> {
 			model.setDurationType(DurationType.SIXTEENTH);
 		});
 		
-		addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.THIRTYSECOND), () -> {
+		ToolItem thirtySecondItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.THIRTYSECOND), () -> {
 			model.setDurationType(DurationType.THIRTYSECOND);
 		});
+		
+		wholeItem.setSelection(model.getDurationType() == DurationType.WHOLE);
+		halfItem.setSelection(model.getDurationType() == DurationType.HALF);
+		quarterItem.setSelection(model.getDurationType() == DurationType.QUARTER);
+		eighthItem.setSelection(model.getDurationType() == DurationType.EIGHTH);
+		sixteenthItem.setSelection(model.getDurationType() == DurationType.SIXTEENTH);
+		thirtySecondItem.setSelection(model.getDurationType() == DurationType.THIRTYSECOND);
 	}
 	
-	private void addToolbarRadioItem(ToolBar toolbar, Image image, Runnable runnable) {
+	private ToolItem addToolbarRadioItem(ToolBar toolbar, Image image, Runnable runnable) {
 		ToolItem item = new ToolItem(toolbar, SWT.RADIO);
 		item.setImage(image);
 		item.addSelectionListener(new SelectionAdapter() {
@@ -178,6 +230,7 @@ public class Main {
 				runnable.run();
 			}
 		});
+		return item;
 	}
 
 	private void createMenu() {
@@ -364,11 +417,13 @@ public class Main {
 		
 		Shell shell = new Shell(display, SWT.SHELL_TRIM);
 		
-		new Main(shell);
+		Main main = new Main(shell);
 		
 		shell.setVisible(true);
 		shell.setSize(1100, 800);
 		shell.setText("ScoreEdit");
+		
+		main.composite.setFocus();
 		
 		while(!shell.isDisposed()) {
 			while(!display.readAndDispatch()) {
