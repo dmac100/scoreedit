@@ -73,6 +73,14 @@ class MeasureDataCache {
 	}
 }
 
+interface ItemVisitor {
+	public default void visitMeasure(Measure measure) {}
+	public default void visitVoice(Voice voice) {}
+	public default void visitChord(Chord chord) {}
+	public default void visitNote(Note note) {}
+	public default void visitRest(Rest item) {}
+}
+
 public class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	private final Set<Selectable> selectedItems = new HashSet<>();
@@ -139,21 +147,45 @@ public class Model {
 	}
 	
 	public void deleteSelection() {
+		visitItems(new ItemVisitor() {
+			private Voice voice;
+			private Chord chord;
+
+			public void visitVoice(Voice voice) {
+				this.voice = voice;
+			}
+
+			public void visitChord(Chord chord) {
+				this.chord = chord;
+			}
+
+			public void visitNote(Note note) {
+				if(selectedItems.contains(note)) {
+					chord.removeNote(note);
+					if(chord.getNotes().isEmpty()) {
+						Rest rest = new Rest(new Duration(chord.getDuration()));
+						voice.replaceItem(chord, rest);
+						selectItem(rest);
+					}
+				}
+			}
+		});
+	}
+	
+	public void visitItems(ItemVisitor itemVisitor) {
 		for(Measure measure:measures) {
+			itemVisitor.visitMeasure(measure);
 			for(Voice voice:measure.getVoices()) {
+				itemVisitor.visitVoice(voice);
 				for(CanvasItem item:voice.getItems()) {
 					if(item instanceof Chord) {
 						Chord chord = (Chord) item;
+						itemVisitor.visitChord(chord);
 						for(Note note:chord.getNotes()) {
-							if(selectedItems.contains(note)) {
-								chord.removeNote(note);
-								if(chord.getNotes().isEmpty()) {
-									Rest rest = new Rest(new Duration(chord.getDuration()));
-									voice.replaceItem(chord, rest);
-									selectItem(rest);
-								}
-							}
+							itemVisitor.visitNote((Note) note);
 						}
+					} else if(item instanceof Rest) {
+						itemVisitor.visitRest((Rest) item);
 					}
 				}
 			}
@@ -220,18 +252,15 @@ public class Model {
 	
 	private Set<Selectable> getAllSelectableItems() {
 		Set<Selectable> items = new HashSet<>();
-		for(Measure measure:measures) {
-			for(CanvasItem item:measure.getCanvasItems()) {
-				if(item instanceof Selectable) {
-					items.add((Selectable) item);
-				}
-				if(item instanceof Chord) {
-					for(Note note:((Chord) item).getNotes()) {
-						items.add(note);
-					}
-				}
+		visitItems(new ItemVisitor() {
+			public void visitRest(Rest rest) {
+				items.add(rest);
 			}
-		}
+			
+			public void visitNote(Note note) {
+				items.add(note);
+			}
+		});
 		return items;
 	}
 }
