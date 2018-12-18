@@ -28,13 +28,13 @@ public class Chord implements CanvasItem {
 	private Beam beam;
 
 	public Chord(List<Note> notes, Duration duration) {
-		this.notes = notes;
+		this.notes = new ArrayList<>(notes);
 		this.duration = duration;
 	}
 	
 	public Chord(Clef clef, List<Note> notes, Duration duration) {
 		this.clef = clef;
-		this.notes = notes;
+		this.notes = new ArrayList<>(notes);
 		this.duration = duration;
 	}
 
@@ -66,6 +66,10 @@ public class Chord implements CanvasItem {
 	
 	public void setBeam(Beam beam) {
 		this.beam = beam;
+	}
+	
+	public void removeNote(Note note) {
+		notes.remove(note);
 	}
 	
 	@Override
@@ -327,6 +331,6 @@ public class Chord implements CanvasItem {
 
 	@Override
 	public List<Note> getNotes() {
-		return notes;
+		return new ArrayList<>(notes);
 	}
 }

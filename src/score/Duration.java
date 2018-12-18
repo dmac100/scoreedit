@@ -41,6 +41,21 @@ public class Duration {
 		type = DurationType.valueOf(parent.getChildText("type"));
 		dots = Integer.parseInt(parent.getChildText("dots"));
 	}
+	
+	public Duration(int durationCount) {
+		for(DurationType durationType:DurationType.values()) {
+			for(int dots = 0; dots < 3; dots++) {
+				Duration duration = new Duration(durationType, dots);
+				if(durationCount == duration.getDurationCount()) {
+					this.type = durationType;
+					this.dots = dots;
+					return;
+				}
+			}
+		}
+		
+		throw new IllegalArgumentException("Unknown duration: " + durationCount);
+	}
 
 	public int getDurationCount() {
 		int count = 32 / type.getDenominator();

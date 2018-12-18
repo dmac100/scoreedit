@@ -152,6 +152,8 @@ public class Main {
 						currentTool = noteEntryTool;
 					} else if(event.keyCode == SWT.ESC) {
 						currentTool = selectionTool;
+					} else if(event.keyCode == SWT.DEL) {
+						model.deleteSelection();
 					} else if(event.keyCode == '1') {
 						model.setDurationType(DurationType.WHOLE);
 					} else if(event.keyCode == '2') {

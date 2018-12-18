@@ -137,6 +137,28 @@ public class Model {
 			measures.add(new Measure(measureElement));
 		}
 	}
+	
+	public void deleteSelection() {
+		for(Measure measure:measures) {
+			for(Voice voice:measure.getVoices()) {
+				for(CanvasItem item:voice.getItems()) {
+					if(item instanceof Chord) {
+						Chord chord = (Chord) item;
+						for(Note note:chord.getNotes()) {
+							if(selectedItems.contains(note)) {
+								chord.removeNote(note);
+								if(chord.getNotes().isEmpty()) {
+									Rest rest = new Rest(new Duration(chord.getDuration()));
+									voice.replaceItem(chord, rest);
+									selectItem(rest);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);

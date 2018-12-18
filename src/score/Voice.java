@@ -47,7 +47,7 @@ public class Voice {
 	}
 	
 	public List<CanvasItem> getItems() {
-		return items;
+		return new ArrayList<>(items);
 	}
 	
 	public int getStartTime(CanvasItem item) {
@@ -59,6 +59,18 @@ public class Voice {
 			time += voiceItem.getDuration();
 		}
 		throw new NoSuchElementException("Item not found: " + item);
+	}
+
+	public void removeItem(CanvasItem item) {
+		items.remove(item);
+	}
+	
+	public void replaceItem(CanvasItem oldItem, CanvasItem newItem) {
+		int index = items.indexOf(oldItem);
+		if(index >= 0) {
+			items.remove(index);
+			items.add(index, newItem);
+		}
 	}
 	
 	public void insertItem(CanvasItem newItem, int startTime) {
