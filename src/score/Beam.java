@@ -27,8 +27,12 @@ public class Beam {
 		
 		for(Stem stem:stems) {
 			upDirections += (stem.getDirection() == StemDirection.UP) ? 1 : -1;
+			
 			topY = Math.min(topY, stem.getEndY());
 			bottomY = Math.max(bottomY, stem.getEndY());
+			
+			topY = Math.min(topY, stem.getStartY() - 30);
+			bottomY = Math.max(bottomY, stem.getStartY() + 30);
 		}
 		
 		StemDirection direction = (upDirections > 0) ? StemDirection.UP : StemDirection.DOWN;
