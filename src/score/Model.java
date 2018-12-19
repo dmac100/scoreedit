@@ -108,6 +108,8 @@ public class Model {
 				new KeySig(0)
 			));
 		}
+		
+		measures.forEach(measure -> measure.autoBeam());
 	}
 	
 	public List<Measure> getMeasures() {
@@ -170,6 +172,8 @@ public class Model {
 				}
 			}
 		});
+		
+		measures.forEach(measure -> measure.autoBeam());
 	}
 	
 	public void visitItems(ItemVisitor itemVisitor) {
@@ -198,7 +202,8 @@ public class Model {
 		if(!control && !shift) {
 			deselectAll();
 		}
-
+		
+		
 		if(control) {
 			items.forEach(item -> {
 				if(selectedItems.contains(item)) {

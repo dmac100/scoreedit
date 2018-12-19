@@ -5,7 +5,6 @@ import static util.XmlUtil.addElement;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.eclipse.swt.graphics.GC;
@@ -14,7 +13,6 @@ import org.jdom2.Element;
 
 import score.layout.AlignmentBox;
 import score.layout.NoteLayout;
-import util.XmlUtil;
 import view.ScoreCanvas;
 
 public class Measure {
@@ -123,6 +121,12 @@ public class Measure {
 	
 	public KeySig getKeySig() {
 		return keySig;
+	}
+	
+	public void autoBeam() {
+		for(Voice voice:voices) {
+			voice.autoBeam(32 / timeSig.getLowerCount());
+		}
 	}
 	
 	public Voice getVoice(CanvasItem item) {

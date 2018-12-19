@@ -41,7 +41,7 @@ public class Voice {
 			}
 		}
 	}
-
+	
 	public Clef getClef() {
 		return clef;
 	}
@@ -151,6 +151,46 @@ public class Voice {
 					((Chord) item).setBeam(null);
 				}
 			}
+		}
+	}
+	
+	public void autoBeam(int beamDuration) {
+		List<Chord> beamedChords = new ArrayList<>();
+		
+		int time = 0;
+		
+		for(CanvasItem item:getItems()) {
+			if(item instanceof Chord) {
+				Chord chord = (Chord) item;
+				
+				chord.setBeam(null);
+				
+				if(item.getDuration() < 8) {
+					beamedChords.add(chord);
+					
+					if(time / beamDuration != (time + item.getDuration()) / beamDuration) {
+						addBeam(beamedChords);
+						beamedChords.clear();
+					}
+					
+					time += item.getDuration();
+				} else {
+					addBeam(beamedChords);
+					beamedChords.clear();	
+				}
+			} else {
+				addBeam(beamedChords);
+				beamedChords.clear();
+			}
+		}
+			
+		addBeam(beamedChords);
+	}
+	
+	private static void addBeam(List<Chord> beamedChords) {
+		if(beamedChords.size() > 1) {
+			Beam beam = new Beam();
+			beamedChords.forEach(c -> c.setBeam(beam));
 		}
 	}
 
