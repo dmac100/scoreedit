@@ -148,7 +148,7 @@ public class Model {
 		}
 	}
 	
-	public void deleteSelection() {
+	public void deleteSelection(boolean replaceWithRests) {
 		visitItems(new ItemVisitor() {
 			private Voice voice;
 			private Chord chord;
@@ -160,15 +160,28 @@ public class Model {
 			public void visitChord(Chord chord) {
 				this.chord = chord;
 			}
+			
+			public void visitRest(Rest rest) {
+				if(selectedItems.contains(rest)) {
+					if(!replaceWithRests) {
+						voice.removeItem(rest);
+					}
+					deselectItem(rest);
+				}
+			}
 
 			public void visitNote(Note note) {
 				if(selectedItems.contains(note)) {
 					chord.removeNote(note);
 					if(chord.getNotes().isEmpty()) {
-						Rest rest = new Rest(new Duration(chord.getDuration()));
-						voice.replaceItem(chord, rest);
-						selectItem(rest);
+						if(replaceWithRests) {
+							Rest rest = new Rest(new Duration(chord.getDuration()));
+							voice.replaceItem(chord, rest);
+						} else {
+							voice.removeItem(chord);
+						}
 					}
+					deselectItem(note);
 				}
 			}
 		});
@@ -202,7 +215,6 @@ public class Model {
 		if(!control && !shift) {
 			deselectAll();
 		}
-		
 		
 		if(control) {
 			items.forEach(item -> {

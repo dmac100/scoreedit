@@ -49,7 +49,7 @@ public class ModelTest {
 		notes.addAll(((Chord) voice.getItems().get(2)).getNotes());
 		
 		model.selectItems(notes, false, false);
-		model.deleteSelection();
+		model.deleteSelection(true);
 		
 		// [####|....|....|####]
 		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();

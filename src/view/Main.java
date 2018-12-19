@@ -153,7 +153,7 @@ public class Main {
 					} else if(event.keyCode == SWT.ESC) {
 						currentTool = selectionTool;
 					} else if(event.keyCode == SWT.DEL) {
-						model.deleteSelection();
+						model.deleteSelection(true);
 					} else if(event.keyCode == '1') {
 						model.setDurationType(DurationType.WHOLE);
 					} else if(event.keyCode == '2') {
@@ -169,10 +169,14 @@ public class Main {
 					} else if(event.keyCode == '.') {
 						model.setDots((model.getDots() == 1) ? 0 : 1);
 					}
-					
-					composite.redraw();
-					refreshToolbarItems(toolbar);
+				} else if(event.stateMask == (SWT.CONTROL)) {
+					if(event.keyCode == SWT.DEL) {
+						model.deleteSelection(false);
+					}
 				}
+				
+				composite.redraw();
+				refreshToolbarItems(toolbar);
 			}
 		});
 		
