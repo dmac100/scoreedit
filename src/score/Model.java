@@ -149,6 +149,8 @@ public class Model {
 	}
 	
 	public void deleteSelection(boolean replaceWithRests) {
+		Set<Rest> collapsableRests = new HashSet<>();
+		
 		visitItems(new ItemVisitor() {
 			private Voice voice;
 			private Chord chord;
@@ -163,7 +165,9 @@ public class Model {
 			
 			public void visitRest(Rest rest) {
 				if(selectedItems.contains(rest)) {
-					if(!replaceWithRests) {
+					if(replaceWithRests) {
+						collapsableRests.add(rest);
+					} else {
 						voice.removeItem(rest);
 					}
 					deselectItem(rest);
@@ -177,6 +181,7 @@ public class Model {
 						if(replaceWithRests) {
 							Rest rest = new Rest(new Duration(chord.getDuration()));
 							voice.replaceItem(chord, rest);
+							collapsableRests.add(rest);
 						} else {
 							voice.removeItem(chord);
 						}
@@ -185,6 +190,12 @@ public class Model {
 				}
 			}
 		});
+		
+		for(Measure measure:measures) {
+			for(Voice voice:measure.getVoices()) {
+				voice.collapseRests(collapsableRests);
+			}
+		}
 		
 		measures.forEach(measure -> measure.autoBeam());
 	}

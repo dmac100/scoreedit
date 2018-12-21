@@ -2,6 +2,7 @@ package score;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
 
 import java.io.ByteArrayInputStream;
@@ -53,7 +54,7 @@ public class ModelTest {
 		
 		// [####|....|....|####]
 		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();
-		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(QUARTER), Rest(QUARTER), Item(QUARTER)), items);
+		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(HALF), Item(QUARTER)), items);
 	}
 	
 	private static Chord Item(DurationType durationType) {

@@ -34,4 +34,12 @@ public class CollectionUtil {
 		list.addAll(list2);
 		return list;
 	}
+
+	public static int sum(List<Integer> list) {
+		int sum = 0;
+		for(Integer item:list) {
+			sum += item;
+		}
+		return sum;
+	}
 }

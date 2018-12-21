@@ -6,6 +6,8 @@ import static score.Duration.DurationType.QUARTER;
 import static score.Duration.DurationType.SIXTEENTH;
 import static score.Duration.DurationType.THIRTYSECOND;
 import static score.Duration.DurationType.WHOLE;
+import static util.CollectionUtil.map;
+import static util.CollectionUtil.sum;
 import static util.XmlUtil.addElement;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.jdom2.Element;
 
@@ -208,6 +212,55 @@ public class Voice {
 			}
 		}
 		return rests;
+	}
+	
+	/**
+	 * Collapse consecutive rests in this voice that are in the given set with rests of an equal duration.
+	 */
+	public void collapseRests(Set<Rest> rests) {
+		replaceSpans(items, item -> rests.contains(item), replacementList -> {
+			int totalDuration = sum(map(replacementList, item -> item.getDuration()));
+			return createRests(totalDuration);
+		});
+	}
+	
+	/**
+	 * Replaces spans of elements in list matching predicate with the replacement function.
+	 */
+	private static <T> void replaceSpans(List<T> list, Predicate<T> predicate, Function<List<T>, List<? extends T>> replacementFunction) {
+		int startIndex = -1;
+		for(int i = 0; i < list.size(); i++) {
+			if(predicate.test(list.get(i))) {
+				if(startIndex == -1) {
+					startIndex = i;
+				}
+			} else {
+				if(startIndex != -1) {
+					int endIndex = i;
+					
+					List<T> subList = list.subList(startIndex, endIndex);
+					List<? extends T> replacementList = replacementFunction.apply(subList);
+					
+					i -= subList.size();
+					subList.clear();
+					
+					i += replacementList.size();
+					subList.addAll(replacementList);
+					
+					startIndex = -1;
+				}
+			}
+		}
+		
+		if(startIndex != -1) {
+			List<T> subList = list.subList(startIndex, list.size());
+			List<? extends T> replacementList = replacementFunction.apply(subList);
+			
+			subList.clear();
+			subList.addAll(replacementList);
+			
+			startIndex = -1;
+		}
 	}
 	
 	public String toString() {
