@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
+import static util.CollectionUtil.filter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import score.Duration.DurationType;
-import util.CollectionUtil;
 
 public class ModelTest {
 	private Model model = new Model();
@@ -69,34 +69,30 @@ public class ModelTest {
 		model.deleteSelection(true);
 		
 		// [####|....|....|####]
-		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();
+		List<CanvasItem> items = getFirstMeasureItems();
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(HALF), Item(QUARTER)), items);
 	}
 	
 	@Test
 	public void insertNote() {
-		Voice voice = model.getMeasures().get(0).getVoices().get(0);
-		
 		model.insertNote('C');
 		
-		List<CanvasItem> items = voice.getItems();
+		List<CanvasItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
-		assertEquals(new Pitch('C', 4, 0), ((Chord) voice.getItems().get(0)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
 	}
 	
 	@Test
 	public void insertNoteWithKeySig() {
-		Voice voice = model.getMeasures().get(0).getVoices().get(0);
-
 		model.getMeasures().get(0).setKeySig(new KeySig(3));
 		
 		model.insertNote('C');
 		
-		List<CanvasItem> items = voice.getItems();
+		List<CanvasItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
-		assertEquals(new Pitch('C', 4, 1), ((Chord) voice.getItems().get(0)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('C', 4, 1), ((Chord) items.get(0)).getNotes().get(0).getPitch());
 	}
 	
 	@Test
@@ -107,12 +103,12 @@ public class ModelTest {
 		model.insertNote('D');
 		model.insertNote('E');
 		
-		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();
+		List<CanvasItem> items = getFirstMeasureItems();
 
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Item(QUARTER), Item(QUARTER), Rest(QUARTER)), items);
-		assertEquals(new Pitch('C', 4, 0), ((Chord) voice.getItems().get(0)).getNotes().get(0).getPitch());
-		assertEquals(new Pitch('D', 4, 0), ((Chord) voice.getItems().get(1)).getNotes().get(0).getPitch());
-		assertEquals(new Pitch('E', 4, 0), ((Chord) voice.getItems().get(2)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('D', 4, 0), ((Chord) items.get(1)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('E', 4, 0), ((Chord) items.get(2)).getNotes().get(0).getPitch());
 	}
 	
 	@Test
@@ -123,10 +119,32 @@ public class ModelTest {
 		
 		model.insertNote('C');
 		
-		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();
+		List<CanvasItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Rest(QUARTER), Rest(QUARTER), Item(QUARTER), Rest(QUARTER)), items);
-		assertEquals(new Pitch('C', 4, 0), ((Chord) voice.getItems().get(2)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(2)).getNotes().get(0).getPitch());
+	}
+	
+	@Test
+	public void insertNoteBeforeNote() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		model.insertNote('C');
+		model.insertNote('D');
+		
+		model.selectItems(Arrays.asList((Note) voice.getItems().get(0).getNotes().get(0)), false, false);
+		
+		model.insertNote('E');
+		
+		List<CanvasItem> items = getFirstMeasureItems();
+		
+		assertItemsEquals(Arrays.asList(Item(QUARTER), Item(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
+		assertEquals(new Pitch('E', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
+		assertEquals(new Pitch('D', 4, 0), ((Chord) items.get(1)).getNotes().get(0).getPitch());
+	}
+	
+	public List<CanvasItem> getFirstMeasureItems() {
+		return filter(model.getMeasures().get(0).getVoices().get(0).getItems(), item -> !(item instanceof Cursor));
 	}
 	
 	private static Chord Item(DurationType durationType) {
@@ -146,8 +164,6 @@ public class ModelTest {
 	}
 
 	private static void assertItemsEquals(List<CanvasItem> expected, List<CanvasItem> actual) {
-		actual = CollectionUtil.filter(actual, item -> !(item instanceof Cursor));
-		
 		if(expected.size() != actual.size()) {
 			fail("Expected size: " + expected.size() + ", actual size: " + actual.size());
 		}

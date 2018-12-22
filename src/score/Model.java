@@ -155,8 +155,10 @@ public class Model {
 		Note note = new Note(pitch, getDuration());
 		Chord chord = new Chord(voice.getClef(), Arrays.asList(note), getDuration());
 		
+		
 		voice.insertItem(chord, startTime);
 		voice.removeItem(cursor);
+		
 		voice.insertItem(cursor, startTime + chord.getDuration());
 	}
 

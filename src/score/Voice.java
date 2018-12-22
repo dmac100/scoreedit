@@ -127,6 +127,11 @@ public class Voice {
 			if(time > startTime) {
 				i--;
 				
+				if(newItem.getDuration() == 0) {
+					items.add(i, newItem);
+					return;
+				}
+				
 				int removedTime = item.getDuration();
 				time -= items.get(i).getDuration();
 				removedBeams.add(items.get(i).getBeam());
