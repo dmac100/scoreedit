@@ -115,6 +115,10 @@ public class Model {
 	public List<Measure> getMeasures() {
 		return measures;
 	}
+
+	public DurationType getDurationType() {
+		return selectedDurationType;
+	}
 	
 	public void setDurationType(DurationType durationType) {
 		this.selectedDurationType = durationType;
@@ -128,8 +132,45 @@ public class Model {
 		this.dots = dots;
 	}
 	
-	public DurationType getDurationType() {
-		return selectedDurationType;
+	public Duration getDuration() {
+		return new Duration(getDurationType(), getDots());
+	}
+	
+	public void insertNote(char name) {
+		Cursor cursor = findCursor();
+		
+		if(cursor == null) {
+			Measure measure = getMeasures().get(0);
+			Voice voice = measure.getVoices().get(0);
+		
+			cursor = new Cursor(measure, voice);
+			voice.insertItem(cursor, 0);
+		}
+		
+		Voice voice = cursor.getVoice();
+		
+		int startTime = voice.getStartTime(cursor);
+		
+		Pitch pitch = voice.getPitchWithSharpsOrFlats(cursor.getNewPitch(name), cursor.getMeasure().getKeySig(), startTime);
+		Note note = new Note(pitch, getDuration());
+		Chord chord = new Chord(voice.getClef(), Arrays.asList(note), getDuration());
+		
+		voice.insertItem(chord, startTime);
+		voice.removeItem(cursor);
+		voice.insertItem(cursor, startTime + chord.getDuration());
+	}
+
+	private Cursor findCursor() {
+		for(Measure measure:getMeasures()) {
+			for(Voice voice:measure.getVoices()) {
+				for(CanvasItem item:voice.getItems()) {
+					if(item instanceof Cursor) {
+						return (Cursor) item;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public void save(OutputStream outputStream) throws IOException {

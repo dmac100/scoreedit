@@ -119,8 +119,16 @@ public class Measure {
 		return timeSig;
 	}
 	
+	public void setTimeSig(TimeSig timeSig) {
+		this.timeSig = timeSig;
+	}
+	
 	public KeySig getKeySig() {
 		return keySig;
+	}
+	
+	public void setKeySig(KeySig keySig) {
+		this.keySig = keySig;
 	}
 	
 	public void autoBeam() {

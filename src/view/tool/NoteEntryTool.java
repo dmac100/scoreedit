@@ -55,9 +55,9 @@ public class NoteEntryTool implements Tool {
 		if(measure != null && pitch != null && item != null && clef != null) {
 			Voice voice = measure.getVoices(clef).get(0);
 			int startTime = measure.getStartTime(item);
-			Duration duration = new Duration(model.getDurationType(), model.getDots());
+			Duration duration = model.getDuration();
 			
-			Pitch pitchWithAccidentals = getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), voice, startTime);
+			Pitch pitchWithAccidentals = voice.getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), startTime);
 			
 			Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
 			voice.insertItem(item, startTime);
@@ -70,36 +70,6 @@ public class NoteEntryTool implements Tool {
 		}
 	}
 	
-	private Pitch getPitchWithSharpsOrFlats(Pitch pitch, KeySig keySig, Voice voice, int startTime) {
-		Pitch pitchWithSharpsOrFlats = null;
-		
-		int time = 0;
-		for(CanvasItem item:voice.getItems()) {
-			for(Note note:item.getNotes()) {
-				if(new Pitch(note.getPitch().getScaleNumber()).equals(new Pitch(pitch.getScaleNumber()))) {
-					pitchWithSharpsOrFlats = note.getPitch();
-				}
-			}
-			
-			time += item.getDuration();
-			if(time > startTime) {
-				break;
-			}
-		}
-		
-		if(pitchWithSharpsOrFlats != null) {
-			return pitchWithSharpsOrFlats;
-		}
-		
-		for(Pitch keySigPitch:keySig.getPitches()) {
-			if(pitch.getName() == keySigPitch.getName()) {
-				return new Pitch(pitch.getName(), pitch.getOctave(), (keySig.getFifths() > 1) ? 1 : -1);
-			}
-		}
-		
-		return pitch;
-	}
-
 	@Override
 	public void mouseDown(int button, int stateMask, float x, float y) {
 	}

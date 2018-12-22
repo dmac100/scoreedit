@@ -168,6 +168,8 @@ public class Main {
 						model.setDurationType(DurationType.THIRTYSECOND);
 					} else if(event.keyCode == '.') {
 						model.setDots((model.getDots() == 1) ? 0 : 1);
+					} else if(event.keyCode >= 'a' && event.keyCode <= 'g') {
+						model.insertNote(Character.toUpperCase((char) event.keyCode));
 					}
 				} else if(event.stateMask == (SWT.CONTROL)) {
 					if(event.keyCode == SWT.DEL) {

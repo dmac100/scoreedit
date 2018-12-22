@@ -54,6 +54,36 @@ public class Voice {
 		return new ArrayList<>(items);
 	}
 	
+	public Pitch getPitchWithSharpsOrFlats(Pitch pitch, KeySig keySig, int startTime) {
+		Pitch pitchWithSharpsOrFlats = null;
+		
+		int time = 0;
+		for(CanvasItem item:items) {
+			for(Note note:item.getNotes()) {
+				if(new Pitch(note.getPitch().getScaleNumber()).equals(new Pitch(pitch.getScaleNumber()))) {
+					pitchWithSharpsOrFlats = note.getPitch();
+				}
+			}
+			
+			time += item.getDuration();
+			if(time > startTime) {
+				break;
+			}
+		}
+		
+		if(pitchWithSharpsOrFlats != null) {
+			return pitchWithSharpsOrFlats;
+		}
+		
+		for(Pitch keySigPitch:keySig.getPitches()) {
+			if(pitch.getName() == keySigPitch.getName()) {
+				return new Pitch(pitch.getName(), pitch.getOctave(), (keySig.getFifths() > 1) ? 1 : -1);
+			}
+		}
+		
+		return pitch;
+	}
+	
 	public int getStartTime(CanvasItem item) {
 		int time = 0;
 		for(CanvasItem voiceItem:items) {
@@ -73,6 +103,13 @@ public class Voice {
 		int index = items.indexOf(oldItem);
 		if(index >= 0) {
 			items.remove(index);
+			items.add(index, newItem);
+		}
+	}
+	
+	public void insertItemBefore(CanvasItem oldItem, CanvasItem newItem) {
+		int index = items.indexOf(oldItem);
+		if(index >= 0) {
 			items.add(index, newItem);
 		}
 	}

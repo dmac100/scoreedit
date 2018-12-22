@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CollectionUtil {
@@ -14,6 +15,10 @@ public class CollectionUtil {
 	
 	public static <T> T getLast(List<T> list) {
 		return list.get(list.size() - 1);
+	}
+	
+	public static <A> List<A> filter(Collection<A> collection, Predicate<A> f) {
+		return collection.stream().filter(f).collect(Collectors.toList());
 	}
 	
 	public static <A, B> List<B> map(Collection<A> collection, Function<A, B> f) {
