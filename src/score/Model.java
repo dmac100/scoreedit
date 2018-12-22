@@ -277,6 +277,8 @@ public class Model {
 				}
 			});
 			
+			onSelectionChanged();
+			
 			return;
 		}
 		
@@ -303,6 +305,56 @@ public class Model {
 				}
 			}
 		}
+		
+		onSelectionChanged();
+	}
+
+	private void onSelectionChanged() {
+		visitItems(new ItemVisitor() {
+			private Cursor cursor = findCursor();
+			
+			private Measure measure;
+			private Voice voice;
+			private Chord chord;
+			
+			private boolean done = false;
+			
+			public void visitMeasure(Measure measure) {
+				this.measure = measure;
+			}
+			
+			public void visitVoice(Voice voice) {
+				this.voice = voice;
+			}
+			
+			public void visitRest(Rest rest) {
+				if(selectedItems.contains(rest)) {
+					visitItem(rest);
+				}
+			}
+			
+			public void visitChord(Chord chord) {
+				this.chord = chord;
+			}
+			
+			public void visitNote(Note note) {
+				if(selectedItems.contains(note)) {
+					visitItem(chord);
+				}
+			}
+			
+			private void visitItem(CanvasItem item) {
+				if(!done) {
+					if(cursor != null) {
+						cursor.getVoice().removeItem(cursor);
+					}
+				
+					cursor = new Cursor(measure, voice);
+					voice.insertItemBefore(item, cursor);
+					done = true;
+				}
+			}
+		});
 	}
 
 	public void deselectAll() {

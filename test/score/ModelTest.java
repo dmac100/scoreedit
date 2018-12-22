@@ -115,6 +115,20 @@ public class ModelTest {
 		assertEquals(new Pitch('E', 4, 0), ((Chord) voice.getItems().get(2)).getNotes().get(0).getPitch());
 	}
 	
+	@Test
+	public void insertNoteAfterSelection() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		model.selectItems(Arrays.asList((Rest) voice.getItems().get(2)), false, false);
+		
+		model.insertNote('C');
+		
+		List<CanvasItem> items = model.getMeasures().get(0).getVoices().get(0).getItems();
+		
+		assertItemsEquals(Arrays.asList(Rest(QUARTER), Rest(QUARTER), Item(QUARTER), Rest(QUARTER)), items);
+		assertEquals(new Pitch('C', 4, 0), ((Chord) voice.getItems().get(2)).getNotes().get(0).getPitch());
+	}
+	
 	private static Chord Item(DurationType durationType) {
 		return Item(durationType, 0);
 	}
