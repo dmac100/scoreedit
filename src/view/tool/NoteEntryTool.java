@@ -173,15 +173,17 @@ public class NoteEntryTool implements Tool {
 		for(T key:bounds.keySet()) {
 			Rectangle rectangle = bounds.get(key);
 			
-			int distance = (rectangle.contains(x, y)) ? 0 : Integer.MAX_VALUE;
-			
-			if(x >= rectangle.x && x <= rectangle.x + rectangle.width) {
-				distance = Math.min(distance, Math.min(Math.abs(rectangle.y - y), Math.abs(rectangle.y + rectangle.height - y)));
-			}
-			
-			if(distance < closestDistance) {
-				closestDistance = distance;
-				closestKey = key;
+			if(rectangle != null) {
+				int distance = (rectangle.contains(x, y)) ? 0 : Integer.MAX_VALUE;
+				
+				if(x >= rectangle.x && x <= rectangle.x + rectangle.width) {
+					distance = Math.min(distance, Math.min(Math.abs(rectangle.y - y), Math.abs(rectangle.y + rectangle.height - y)));
+				}
+				
+				if(distance < closestDistance) {
+					closestDistance = distance;
+					closestKey = key;
+				}
 			}
 		}
 		return closestKey;
