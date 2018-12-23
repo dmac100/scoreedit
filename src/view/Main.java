@@ -185,6 +185,12 @@ public class Main {
 					}
 				}
 				
+				if(event.keyCode == SWT.ARROW_LEFT) {
+					model.selectPrev((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
+				} else if(event.keyCode == SWT.ARROW_RIGHT) {
+					model.selectNext((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
+				}
+				
 				composite.redraw();
 				refreshToolbarItems(toolbar);
 			}

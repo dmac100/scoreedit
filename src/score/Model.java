@@ -4,6 +4,7 @@ import static score.Duration.DurationType.EIGHTH;
 import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
 import static score.Duration.DurationType.WHOLE;
+import static util.CollectionUtil.maxBy;
 import static util.XmlUtil.addElement;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ class MeasureDataCache {
 	private final Map<Object, Measure> itemMeasures = new HashMap<>();
 	private final Map<Object, Voice> itemVoices = new HashMap<>();
 	private final Map<Object, Integer> itemStartTimes = new HashMap<>();
+	private final Map<Note, Chord> noteChords = new HashMap<>();
 	
 	public MeasureDataCache(List<Measure> measures) {
 		int measureTime = 0;
@@ -43,10 +45,12 @@ class MeasureDataCache {
 					itemVoices.put(item, voice);
 					itemStartTimes.put(item, measureTime + voiceTime);
 					if(item instanceof Chord) {
-						for(Note note:((Chord) item).getNotes()) {
+						Chord chord = ((Chord) item);
+						for(Note note:chord.getNotes()) {
 							itemMeasures.put(note, measure);
 							itemVoices.put(note, voice);
 							itemStartTimes.put(note, measureTime + voiceTime);
+							noteChords.put(note, chord);
 						}
 					}
 					
@@ -70,6 +74,10 @@ class MeasureDataCache {
 
 	public Voice getVoice(Object item) {
 		return itemVoices.get(item);
+	}
+
+	public Chord getChord(Note note) {
+		return noteChords.get(note);
 	}
 }
 
@@ -416,5 +424,63 @@ public class Model {
 			}
 		});
 		return items;
+	}
+
+	public void selectPrev(boolean shift, boolean control) {
+		selectPrevNext(-1, shift, control);
+	}
+	
+	public void selectNext(boolean shift, boolean control) {
+		selectPrevNext(1, shift, control);
+	}
+	
+	private void selectPrevNext(int d, boolean shift, boolean control) {
+		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
+		
+		CanvasItem selectedItem = null;
+		
+		Selectable startSelectable = maxBy(selectedItems, item -> measureDataCache.getStartTime(item) * d);
+		
+		if(startSelectable instanceof Note) {
+			selectedItem = measureDataCache.getChord((Note) startSelectable);
+		} else if(startSelectable instanceof Rest) {
+			selectedItem = (Rest) startSelectable;
+		}
+		
+		if(selectedItem != null) {
+			Measure measure = measureDataCache.getMeasure(selectedItem);
+			Voice voice = measureDataCache.getVoice(selectedItem);
+			
+			int measureIndex = measures.indexOf(measure);
+			int voiceIndex = measure.getVoices().indexOf(voice);
+			int itemIndex = voice.getItems().indexOf(selectedItem);
+			
+			while(measureIndex >= 0 && measureIndex < measures.size()) {
+				List<CanvasItem> items = voice.getItems();
+				
+				while(itemIndex + d >= 0 && itemIndex + d < items.size()) {
+					itemIndex += d;
+					if(items.get(itemIndex) instanceof Chord) {
+						selectItems(((Chord) items.get(itemIndex)).getNotes(), shift, control);
+						return;
+					} else if(items.get(itemIndex) instanceof Rest) {
+						selectItems(Arrays.asList((Rest) items.get(itemIndex)), shift, control);
+						return;
+					}
+				}
+				
+				measureIndex += d;
+				
+				if(measureIndex >= 0 && measureIndex < measures.size()) {
+					measure = measures.get(measureIndex);
+					voice = measure.getVoices().get(voiceIndex);
+					itemIndex = (d < 0) ? voice.getItems().size() : -1;
+				}
+			}
+		}
+	}
+	
+	public Set<Selectable> getSelectedItems() {
+		return new HashSet<>(selectedItems);
 	}
 }

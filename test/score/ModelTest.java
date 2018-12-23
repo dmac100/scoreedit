@@ -1,6 +1,7 @@
 package score;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
@@ -185,6 +186,25 @@ public class ModelTest {
 		
 		model.shiftSelectionOctave(-2);
 		assertEquals(new Pitch('D', 3, 0), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+	}
+	
+	@Test
+	public void selectPrevNext() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		model.insertNote('C');
+		model.selectItems(Arrays.asList((Note) voice.getItems().get(0).getNotes().get(0)), false, false);
+		
+		for(int x = 0; x < 100; x++) {
+			model.selectNext(false, false);
+		}
+		
+		assertTrue(new ArrayList<>(model.getSelectedItems()).get(0) instanceof Rest);
+		
+		for(int x = 0; x < 100; x++) {
+			model.selectPrev(false, false);
+		}
+		
+		assertTrue(new ArrayList<>(model.getSelectedItems()).get(0) instanceof Note);
 	}
 	
 	public List<CanvasItem> getFirstMeasureItems() {

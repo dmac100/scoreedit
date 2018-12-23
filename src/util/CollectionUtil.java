@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import score.Selectable;
 
 public class CollectionUtil {
 	public static <T> T getFirst(List<T> list) {
@@ -46,5 +49,13 @@ public class CollectionUtil {
 			sum += item;
 		}
 		return sum;
+	}
+
+	public static <A, B extends Comparable<B>> A minBy(Collection<A> collection, Function<A, B> f) {
+		return collection.stream().min(Comparator.comparing(f)).orElse(null);
+	}
+	
+	public static <A, B extends Comparable<B>> A maxBy(Collection<A> collection, Function<A, B> f) {
+		return collection.stream().max(Comparator.comparing(f)).orElse(null);
 	}
 }
