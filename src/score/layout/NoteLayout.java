@@ -38,11 +38,13 @@ public class NoteLayout {
 			int count = 0;
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			for(CanvasItem item:voice.getItems()) {
-				itemsAtCount.computeIfAbsent(count, c -> new ArrayList<>());
-				AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
-				item.setAccidentals(measureAccidentals);
-				itemsAtCount.get(count).add(new VoiceAndItem(voice, item, alignmentBox));
-				count += item.getDuration();
+				if(item.includeInLayout()) {
+					itemsAtCount.computeIfAbsent(count, c -> new ArrayList<>());
+					AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
+					item.setAccidentals(measureAccidentals);
+					itemsAtCount.get(count).add(new VoiceAndItem(voice, item, alignmentBox));
+					count += item.getDuration();
+				}
 			}
 		}
 		

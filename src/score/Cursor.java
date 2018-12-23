@@ -42,4 +42,9 @@ public class Cursor implements CanvasItem {
 	public String toString() {
 		return "[CURSOR]";
 	}
+	
+	@Override
+	public boolean includeInLayout() {
+		return false;
+	}
 }

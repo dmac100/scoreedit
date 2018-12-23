@@ -32,4 +32,8 @@ public interface CanvasItem {
 	public default List<Note> getNotes() {
 		return new ArrayList<>();
 	}
+
+	public default boolean includeInLayout() {
+		return true;
+	}
 }
