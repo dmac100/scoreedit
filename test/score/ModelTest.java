@@ -143,6 +143,50 @@ public class ModelTest {
 		assertEquals(new Pitch('D', 4, 0), ((Chord) items.get(1)).getNotes().get(0).getPitch());
 	}
 	
+	@Test
+	public void shiftSelectedPitchUp() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		model.insertNote('C');
+		model.selectItems(Arrays.asList((Note) voice.getItems().get(0).getNotes().get(0)), false, false);
+		
+		model.shiftSelectionPitch(1);
+		assertEquals(new Pitch('C', 4, 1), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+		
+		model.shiftSelectionPitch(1);
+		assertEquals(new Pitch('D', 4, 0), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+	}
+	
+	@Test
+	public void shiftSelectedPitchDown() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		model.insertNote('D');
+		
+		model.selectItems(Arrays.asList((Note) voice.getItems().get(0).getNotes().get(0)), false, false);
+		
+		model.shiftSelectionPitch(-1);
+		assertEquals(new Pitch('D', 4, -1), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+		
+		model.shiftSelectionPitch(-1);
+		assertEquals(new Pitch('C', 4, 0), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+	}
+	
+	@Test
+	public void shiftSelectedOctave() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		model.insertNote('D');
+		
+		model.selectItems(Arrays.asList((Note) voice.getItems().get(0).getNotes().get(0)), false, false);
+		
+		model.shiftSelectionOctave(1);
+		assertEquals(new Pitch('D', 5, 0), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+		
+		model.shiftSelectionOctave(-2);
+		assertEquals(new Pitch('D', 3, 0), ((Chord) getFirstMeasureItems().get(0)).getNotes().get(0).getPitch());
+	}
+	
 	public List<CanvasItem> getFirstMeasureItems() {
 		return filter(model.getMeasures().get(0).getVoices().get(0).getItems(), item -> !(item instanceof Cursor));
 	}

@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import org.jdom2.Element;
 
-import util.XmlUtil;
-
 public class Pitch {
 	private final char name;
 	private final int octave;
@@ -45,6 +43,42 @@ public class Pitch {
 		name = parent.getChildText("name").charAt(0);
 		octave = Integer.parseInt(parent.getChildText("octave"));
 		sharps = Integer.parseInt(parent.getChildText("sharps"));
+	}
+	
+	public Pitch nextSemitone() {
+		if(sharps < 0) {
+			return new Pitch(name, octave, sharps + 1);
+		} else if(sharps == 0) {
+			if(name == 'B' || name == 'E') {
+				return new Pitch(nextName(name), octave + ((name == 'B') ? 1 : 0), sharps);
+			} else {
+				return new Pitch(name, octave, sharps + 1);
+			}
+		} else {
+			return new Pitch(nextName(name), octave, sharps - 1);
+		}
+	}
+	
+	public Pitch prevSemitone() {
+		if(sharps > 0) {
+			return new Pitch(name, octave, sharps - 1);
+		} else if(sharps == 0) {
+			if(name == 'C' || name == 'F') {
+				return new Pitch(prevName(name), octave - ((name == 'C') ? 1 : 0), sharps);
+			} else {
+				return new Pitch(name, octave, sharps - 1);
+			}
+		} else {
+			return new Pitch(prevName(name), octave, sharps + 1);
+		}
+	}
+
+	private char nextName(char name) {
+		return (name < 'G') ? (char) (name + 1) : 'A';
+	}
+	
+	private char prevName(char name) {
+		return (name > 'A') ? (char) (name - 1) : 'G';
 	}
 
 	public char getName() {

@@ -262,6 +262,35 @@ public class Model {
 			}
 		}
 	}
+	
+	public void shiftSelectionPitch(int shiftCount) {
+		visitItems(new ItemVisitor() {
+			public void visitNote(Note note) {
+				if(selectedItems.contains(note)) {
+					if(shiftCount > 0) {
+						for(int x = 0; x < shiftCount; x++) {
+							note.setPitch(note.getPitch().nextSemitone());
+						}
+					} else {
+						for(int x = 0; x < -shiftCount; x++) {
+							note.setPitch(note.getPitch().prevSemitone());
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	public void shiftSelectionOctave(int shiftCount) {
+		visitItems(new ItemVisitor() {
+			public void visitNote(Note note) {
+				if(selectedItems.contains(note)) {
+					Pitch pitch = note.getPitch();
+					note.setPitch(new Pitch(pitch.getName(), pitch.getOctave() + shiftCount, pitch.getSharps()));
+				}
+			}
+		});
+	}
 
 	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);

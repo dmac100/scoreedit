@@ -73,6 +73,10 @@ public class Note implements Selectable {
 		return pitch;
 	}
 	
+	public void setPitch(Pitch pitch) {
+		this.pitch = pitch;
+	}
+	
 	public int getScaleNumber() {
 		return pitch.getScaleNumber();
 	}

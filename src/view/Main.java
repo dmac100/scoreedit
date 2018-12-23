@@ -170,10 +170,18 @@ public class Main {
 						model.setDots((model.getDots() == 1) ? 0 : 1);
 					} else if(event.keyCode >= 'a' && event.keyCode <= 'g') {
 						model.insertNote(Character.toUpperCase((char) event.keyCode));
+					} else if(event.keyCode == SWT.ARROW_UP) {
+						model.shiftSelectionPitch(1);
+					} else if(event.keyCode == SWT.ARROW_DOWN) {
+						model.shiftSelectionPitch(-1);
 					}
 				} else if(event.stateMask == (SWT.CONTROL)) {
 					if(event.keyCode == SWT.DEL) {
 						model.deleteSelection(false);
+					} else if(event.keyCode == SWT.ARROW_UP) {
+						model.shiftSelectionOctave(1);
+					} else if(event.keyCode == SWT.ARROW_DOWN) {
+						model.shiftSelectionOctave(-1);
 					}
 				}
 				
