@@ -289,6 +289,8 @@ public class Model {
 				}
 			}
 		});
+		
+		onSelectionChanged();
 	}
 	
 	public void shiftSelectionOctave(int shiftCount) {
@@ -300,6 +302,8 @@ public class Model {
 				}
 			}
 		});
+		
+		onSelectionChanged();
 	}
 
 	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
