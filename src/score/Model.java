@@ -25,76 +25,13 @@ import org.jdom2.output.XMLOutputter;
 
 import score.Duration.DurationType;
 
-class MeasureDataCache {
-	private final Map<Object, Measure> itemMeasures = new HashMap<>();
-	private final Map<Object, Voice> itemVoices = new HashMap<>();
-	private final Map<Object, Integer> itemStartTimes = new HashMap<>();
-	private final Map<Note, Chord> noteChords = new HashMap<>();
-	
-	public MeasureDataCache(List<Measure> measures) {
-		int measureTime = 0;
-		
-		for(Measure measure:measures) {
-			int maxVoiceTime = 0;
-			
-			for(Voice voice:measure.getVoices()) {
-				int voiceTime = 0;
-				
-				for(CanvasItem item:voice.getItems()) {
-					itemMeasures.put(item, measure);
-					itemVoices.put(item, voice);
-					itemStartTimes.put(item, measureTime + voiceTime);
-					if(item instanceof Chord) {
-						Chord chord = ((Chord) item);
-						for(Note note:chord.getNotes()) {
-							itemMeasures.put(note, measure);
-							itemVoices.put(note, voice);
-							itemStartTimes.put(note, measureTime + voiceTime);
-							noteChords.put(note, chord);
-						}
-					}
-					
-					voiceTime += item.getDuration();
-				}
-				
-				maxVoiceTime = Math.max(maxVoiceTime, voiceTime);
-			}
-			
-			measureTime += maxVoiceTime;
-		}
-	}
-	
-	public int getStartTime(Object item) {
-		return itemStartTimes.get(item);
-	}
-	
-	public Measure getMeasure(Object item) {
-		return itemMeasures.get(item);
-	}
-
-	public Voice getVoice(Object item) {
-		return itemVoices.get(item);
-	}
-
-	public Chord getChord(Note note) {
-		return noteChords.get(note);
-	}
-}
-
-interface ItemVisitor {
-	public default void visitMeasure(Measure measure) {}
-	public default void visitVoice(Voice voice) {}
-	public default void visitChord(Chord chord) {}
-	public default void visitNote(Note note) {}
-	public default void visitRest(Rest item) {}
-}
-
 public class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	private final Set<Selectable> selectedItems = new HashSet<>();
 	
 	private final List<Runnable> selectionChangedHandlers = new ArrayList<>();
 	
+	private Pitch lastPitch = new Pitch("C4");
 	private DurationType selectedDurationType = QUARTER;
 	private int dots = 0;
 	
@@ -121,7 +58,11 @@ public class Model {
 		
 		measures.forEach(measure -> measure.autoBeam());
 		
-		addSelectionChangedHandler(this::updateCursorToSelection);
+		addSelectionChangedHandler(this::updateLastPitchFromSelection);
+	}
+	
+	public Pitch getLastPitch() {
+		return lastPitch;
 	}
 	
 	public List<Measure> getMeasures() {
@@ -148,22 +89,35 @@ public class Model {
 		return new Duration(getDurationType(), getDots());
 	}
 	
-	public void insertNote(char name) {
-		Cursor cursor = findCursor();
+	private void updateLastPitchFromSelection() {
+		Set<Selectable> selectedItems = getSelectedItems();
+		MeasureDataCache measureDataCache = new MeasureDataCache(getMeasures());
 		
-		if(cursor == null) {
-			Measure measure = getMeasures().get(0);
-			Voice voice = measure.getVoices().get(0);
+		Map<Integer, Note> notes = new HashMap<>();
 		
-			cursor = new Cursor(measure, voice);
-			voice.insertItem(cursor, 0);
+		visitItems(new ItemVisitor() {
+			public void visitNote(Note note) {
+				if(selectedItems.contains(note)) {
+					int startTime = measureDataCache.getStartTime(note);
+					notes.put(startTime, note);
+				}
+			}
+		});
+		
+		if(notes.size() == 1) {
+			Note note = notes.values().iterator().next();
+			lastPitch = note.getPitch();
 		}
+	}
+	
+	public void insertNote(char name) {
+		Cursor cursor = findOrCreateCursor();
 		
 		Voice voice = cursor.getVoice();
 		
 		int startTime = voice.getStartTime(cursor);
 		
-		Pitch pitch = voice.getPitchWithSharpsOrFlats(cursor.getNewPitch(name), cursor.getMeasure().getKeySig(), startTime);
+		Pitch pitch = voice.getPitchWithSharpsOrFlats(getNewPitch(name), cursor.getMeasure().getKeySig(), startTime);
 		Note note = new Note(pitch, getDuration());
 		Chord chord = new Chord(voice.getClef(), Arrays.asList(note), getDuration());
 		
@@ -174,8 +128,37 @@ public class Model {
 		
 		deselectAll();
 		chord.getNotes().forEach(this::selectItem);
+		
+		fireSelectionChangedHandlers();
+	}
+	
+	private Pitch getNewPitch(char name) {
+		Pitch newPitch = new Pitch(name, lastPitch.getOctave(), 0);
+		for(int d = -1; d <= 1; d++) {
+			int scaleNumber = new Pitch(name, lastPitch.getOctave() + d, 0).getScaleNumber();
+			if(Math.abs(scaleNumber - lastPitch.getScaleNumber()) < Math.abs(newPitch.getScaleNumber() - lastPitch.getScaleNumber())) {
+				newPitch = new Pitch(scaleNumber);
+			}
+		}
+		return newPitch;
 	}
 
+	private Cursor findOrCreateCursor() {
+		Cursor cursor = findCursor();
+		
+		if(cursor != null) {
+			return cursor;
+		}
+		
+		Measure measure = getMeasures().get(0);
+		Voice voice = measure.getVoices().get(0);
+	
+		cursor = new Cursor(measure, voice);
+		voice.insertItem(cursor, 0);
+		
+		return cursor;
+	}
+	
 	private Cursor findCursor() {
 		for(Measure measure:getMeasures()) {
 			for(Voice voice:measure.getVoices()) {
@@ -335,6 +318,7 @@ public class Model {
 			});
 			
 			fireSelectionChangedHandlers();
+			updateCursorToSelection();
 			
 			return;
 		}
@@ -364,6 +348,7 @@ public class Model {
 		}
 		
 		fireSelectionChangedHandlers();
+		updateCursorToSelection();
 	}
 
 	private void updateCursorToSelection() {
