@@ -93,6 +93,8 @@ public class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	private final Set<Selectable> selectedItems = new HashSet<>();
 	
+	private final List<Runnable> selectionChangedHandlers = new ArrayList<>();
+	
 	private DurationType selectedDurationType = QUARTER;
 	private int dots = 0;
 	
@@ -118,6 +120,8 @@ public class Model {
 		}
 		
 		measures.forEach(measure -> measure.autoBeam());
+		
+		addSelectionChangedHandler(this::updateCursorToSelection);
 	}
 	
 	public List<Measure> getMeasures() {
@@ -273,6 +277,14 @@ public class Model {
 		}
 	}
 	
+	public void addSelectionChangedHandler(Runnable handler) {
+		selectionChangedHandlers.add(handler);
+	}
+	
+	private void fireSelectionChangedHandlers() {
+		selectionChangedHandlers.forEach(Runnable::run);
+	}
+	
 	public void shiftSelectionPitch(int shiftCount) {
 		visitItems(new ItemVisitor() {
 			public void visitNote(Note note) {
@@ -290,7 +302,7 @@ public class Model {
 			}
 		});
 		
-		onSelectionChanged();
+		fireSelectionChangedHandlers();
 	}
 	
 	public void shiftSelectionOctave(int shiftCount) {
@@ -303,7 +315,7 @@ public class Model {
 			}
 		});
 		
-		onSelectionChanged();
+		fireSelectionChangedHandlers();
 	}
 
 	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
@@ -322,7 +334,7 @@ public class Model {
 				}
 			});
 			
-			onSelectionChanged();
+			fireSelectionChangedHandlers();
 			
 			return;
 		}
@@ -351,10 +363,10 @@ public class Model {
 			}
 		}
 		
-		onSelectionChanged();
+		fireSelectionChangedHandlers();
 	}
 
-	private void onSelectionChanged() {
+	private void updateCursorToSelection() {
 		visitItems(new ItemVisitor() {
 			private Cursor cursor = findCursor();
 			
