@@ -23,7 +23,7 @@ public class Note implements Selectable {
 		pitch = new Pitch(parent.getChild("pitch"));
 		duration = new Duration(parent.getChild("duration"));
 	}
-
+	
 	public void draw(ScoreCanvas canvas, Clef clef, int startX, int startY) {
 		int scaleNumber = pitch.getScaleNumber() - clef.getLowScaleNumber();
 		
@@ -75,6 +75,14 @@ public class Note implements Selectable {
 	
 	public void setPitch(Pitch pitch) {
 		this.pitch = pitch;
+	}
+	
+	public Duration getDuration() {
+		return duration;
+	}
+	
+	public void setDuration(Duration duration) {
+		this.duration = duration;
 	}
 	
 	public int getScaleNumber() {

@@ -45,6 +45,18 @@ public class Pitch {
 		sharps = Integer.parseInt(parent.getChildText("sharps"));
 	}
 	
+	public int getMidiNumber() {
+		int midiNumber = (name < 'C') ? (name - 'A') + 5 : (name - 'C');
+		midiNumber *= 2;
+		if(name >= 'F' || name < 'C') {
+			midiNumber -= 1;
+		}
+		midiNumber += octave * 12;
+		midiNumber += sharps;
+		midiNumber += 12;
+		return midiNumber;
+	}
+	
 	public Pitch nextSemitone() {
 		if(sharps < 0) {
 			return new Pitch(name, octave, sharps + 1);

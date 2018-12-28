@@ -90,23 +90,30 @@ public class Model {
 	}
 	
 	private void updateLastPitchFromSelection() {
+		getCurrentSelectedNotes().forEach(note -> {
+			lastPitch = note.getPitch();
+		});
+	}
+	
+	public List<Note> getCurrentSelectedNotes() {
 		Set<Selectable> selectedItems = getSelectedItems();
 		MeasureDataCache measureDataCache = new MeasureDataCache(getMeasures());
 		
-		Map<Integer, Note> notes = new HashMap<>();
+		Map<Integer, List<Note>> notes = new HashMap<>();
 		
 		visitItems(new ItemVisitor() {
 			public void visitNote(Note note) {
 				if(selectedItems.contains(note)) {
 					int startTime = measureDataCache.getStartTime(note);
-					notes.put(startTime, note);
+					notes.computeIfAbsent(startTime, ArrayList::new).add(note);
 				}
 			}
 		});
 		
 		if(notes.size() == 1) {
-			Note note = notes.values().iterator().next();
-			lastPitch = note.getPitch();
+			return notes.values().iterator().next();
+		} else {
+			return new ArrayList<>();
 		}
 	}
 	

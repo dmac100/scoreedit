@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import playback.Synth;
 import score.Clef;
 import score.Duration.DurationType;
 import score.Measure;
@@ -66,6 +67,7 @@ public class Main {
 	
 	private final ScoreCanvas canvas = new ScoreCanvas();
 	private final Model model = new Model();
+	private final Synth synth = new Synth();
 	
 	private Tool currentTool;
 	
@@ -90,6 +92,10 @@ public class Main {
 		currentTool = selectionTool;
 		
 		refreshToolbarItems(toolbar);
+		
+		model.addSelectionChangedHandler(() -> {
+			model.getCurrentSelectedNotes().forEach(note -> synth.play(note));
+		});
 		
 		composite.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {

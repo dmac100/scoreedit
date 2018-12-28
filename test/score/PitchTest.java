@@ -71,4 +71,24 @@ public class PitchTest {
 			pitch = pitch.prevSemitone();
 		}
 	}
+	
+	@Test
+	public void getMidiNumber() {
+		assertEquals(21, new Pitch("A0").getMidiNumber());
+		assertEquals(23, new Pitch("B0").getMidiNumber());
+		assertEquals(24, new Pitch("C1").getMidiNumber());
+		assertEquals(26, new Pitch("D1").getMidiNumber());
+		assertEquals(28, new Pitch("E1").getMidiNumber());
+		assertEquals(29, new Pitch("F1").getMidiNumber());
+		assertEquals(31, new Pitch("G1").getMidiNumber());
+		assertEquals(33, new Pitch("A1").getMidiNumber());
+		assertEquals(35, new Pitch("B1").getMidiNumber());
+		assertEquals(36, new Pitch("C2").getMidiNumber());
+		assertEquals(38, new Pitch("D2").getMidiNumber());
+		
+		assertEquals(60, new Pitch("C4").getMidiNumber());
+		assertEquals(69, new Pitch("A4").getMidiNumber());
+		assertEquals(70, new Pitch("A4", 1).getMidiNumber());
+		assertEquals(59, new Pitch("C4", -1).getMidiNumber());
+	}
 }
