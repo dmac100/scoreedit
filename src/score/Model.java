@@ -4,6 +4,7 @@ import static score.Duration.DurationType.EIGHTH;
 import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
 import static score.Duration.DurationType.WHOLE;
+import static util.CollectionUtil.any;
 import static util.CollectionUtil.maxBy;
 import static util.XmlUtil.addElement;
 
@@ -59,6 +60,7 @@ public class Model {
 		measures.forEach(measure -> measure.autoBeam());
 		
 		addSelectionChangedHandler(this::updateLastPitchFromSelection);
+		addSelectionChangedHandler(this::updateDurationFromSelection);
 	}
 	
 	public Pitch getLastPitch() {
@@ -75,6 +77,7 @@ public class Model {
 	
 	public void setDurationType(DurationType durationType) {
 		this.selectedDurationType = durationType;
+		updateSelectedItemsDuration();
 	}
 	
 	public int getDots() {
@@ -83,10 +86,42 @@ public class Model {
 	
 	public void setDots(int dots) {
 		this.dots = dots;
+		updateSelectedItemsDuration();
 	}
 	
+	private void updateSelectedItemsDuration() {
+		Set<Selectable> selectedItems = getSelectedItems();
+		
+		Duration duration = getDuration();
+		
+		visitItems(new ItemVisitor() {
+			public void visitChord(Chord chord) {
+				if(any(chord.getNotes(), selectedItems::contains)) {
+					chord.setDuration(duration);
+					for(Note note:chord.getNotes()) {
+						note.setDuration(duration);
+					}
+				}
+			}
+			
+			public void visitRest(Rest rest) {
+				if(selectedItems.contains(rest)) {
+					rest.setDuration(getDuration());
+				}
+			}
+		});
+	}
+
 	public Duration getDuration() {
 		return new Duration(getDurationType(), getDots());
+	}
+	
+	private void updateDurationFromSelection() {
+		getCurrentSelectedNotes().forEach(note -> {
+			Duration duration = note.getDuration();
+			selectedDurationType = duration.getType();
+			dots = duration.getDots();
+		});
 	}
 	
 	private void updateLastPitchFromSelection() {

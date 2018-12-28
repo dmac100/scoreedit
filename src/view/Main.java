@@ -92,6 +92,7 @@ public class Main {
 		currentTool = selectionTool;
 		
 		refreshToolbarItems(toolbar);
+		model.addSelectionChangedHandler(() -> refreshToolbarItems(toolbar));
 		
 		model.addSelectionChangedHandler(() -> {
 			model.getCurrentSelectedNotes().forEach(note -> synth.play(note));
@@ -222,26 +223,32 @@ public class Main {
 		
 		ToolItem wholeItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.WHOLE), () -> {
 			model.setDurationType(DurationType.WHOLE);
+			composite.redraw();
 		});
 		
 		ToolItem halfItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.HALF), () -> {
 			model.setDurationType(DurationType.HALF);
+			composite.redraw();
 		});
 		
 		ToolItem quarterItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.QUARTER), () -> {
 			model.setDurationType(DurationType.QUARTER);
+			composite.redraw();
 		});
 		
 		ToolItem eighthItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.EIGHTH), () -> {
 			model.setDurationType(DurationType.EIGHTH);
+			composite.redraw();
 		});
 		
 		ToolItem sixteenthItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.SIXTEENTH), () -> {
 			model.setDurationType(DurationType.SIXTEENTH);
+			composite.redraw();
 		});
 		
 		ToolItem thirtySecondItem = addToolbarRadioItem(toolbar, ToolbarImages.createImage(DurationType.THIRTYSECOND), () -> {
 			model.setDurationType(DurationType.THIRTYSECOND);
+			composite.redraw();
 		});
 		
 		new ToolBar(toolbar, SWT.SEPARATOR);
@@ -251,6 +258,7 @@ public class Main {
 		dotItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				model.setDots(dotItem.getSelection() ? 1 : 0);
+				composite.redraw();
 			}
 		});
 		

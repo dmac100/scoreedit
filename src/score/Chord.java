@@ -76,6 +76,10 @@ public class Chord implements CanvasItem {
 	public int getDuration() {
 		return duration.getDurationCount();
 	}
+	
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
 
 	public void draw(ScoreCanvas canvas, int startX, int startY, MeasureAccidentals measureAccidentals) {
 		List<List<Note>> accidentalLayout = getAccidentalLayout(measureAccidentals);

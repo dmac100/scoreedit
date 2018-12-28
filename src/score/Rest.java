@@ -13,7 +13,7 @@ import view.FetaFont;
 import view.ScoreCanvas;
 
 public class Rest implements CanvasItem, Selectable {
-	private final Duration duration;
+	private Duration duration;
 	
 	private boolean selected;
 
@@ -55,6 +55,10 @@ public class Rest implements CanvasItem, Selectable {
 	@Override
 	public int getDuration() {
 		return duration.getDurationCount();
+	}
+	
+	public void setDuration(Duration duration) {
+		this.duration = duration;
 	}
 
 	@Override

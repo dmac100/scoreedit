@@ -58,4 +58,8 @@ public class CollectionUtil {
 	public static <A, B extends Comparable<B>> A maxBy(Collection<A> collection, Function<A, B> f) {
 		return collection.stream().max(Comparator.comparing(f)).orElse(null);
 	}
+	
+	public static <A> boolean any(Collection<A> collection, Predicate<A> f) {
+		return collection.stream().anyMatch(f);
+	}
 }
