@@ -10,8 +10,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -161,7 +163,7 @@ public class Model {
 		voice.insertItem(chord, startTime);
 		voice.removeItem(cursor);
 		
-		voice.insertItem(cursor, startTime + chord.getDuration());
+		voice.insertItem(cursor, startTime + chord.getDurationCount());
 		
 		deselectAll();
 		chord.getNotes().forEach(this::selectItem);
@@ -169,6 +171,37 @@ public class Model {
 		fireSelectionChangedHandlers();
 	}
 	
+	public void addNoteToSelectChords(char name) {
+		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
+		
+		for(Chord chord:getSelectedChords()) {
+			Voice voice = measureDataCache.getVoice(chord);
+			Measure measure = measureDataCache.getMeasure(chord);
+			int startTime = measureDataCache.getStartTime(chord) - measureDataCache.getMeasureStartTime(measure);
+			
+			Pitch pitch = voice.getPitchWithSharpsOrFlats(getNewPitch(name), measure.getKeySig(), startTime);
+			Note note = new Note(pitch, chord.getDuration());
+			chord.addNote(note);
+			
+			selectItem(note);
+		}
+		
+		fireSelectionChangedHandlers();
+	}
+	
+	private Collection<Chord> getSelectedChords() {
+		Set<Selectable> selectedItems = getSelectedItems();
+		Set<Chord> selectedChords = new LinkedHashSet<>();
+		visitItems(new ItemVisitor() {
+			public void visitChord(Chord chord) {
+				if(any(chord.getNotes(), selectedItems::contains)) {
+					selectedChords.add(chord);
+				}
+			}
+		});
+		return selectedChords;
+	}
+
 	private Pitch getNewPitch(char name) {
 		Pitch newPitch = new Pitch(name, lastPitch.getOctave(), 0);
 		for(int d = -1; d <= 1; d++) {
@@ -256,7 +289,7 @@ public class Model {
 					chord.removeNote(note);
 					if(chord.getNotes().isEmpty()) {
 						if(replaceWithRests) {
-							Rest rest = new Rest(new Duration(chord.getDuration()));
+							Rest rest = new Rest(new Duration(chord.getDurationCount()));
 							voice.replaceItem(chord, rest);
 							collapsableRests.add(rest);
 						} else {

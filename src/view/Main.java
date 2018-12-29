@@ -182,13 +182,17 @@ public class Main {
 					} else if(event.keyCode == SWT.ARROW_DOWN) {
 						model.shiftSelectionPitch(-1);
 					}
-				} else if(event.stateMask == (SWT.CONTROL)) {
+				} else if(event.stateMask == SWT.CONTROL) {
 					if(event.keyCode == SWT.DEL) {
 						model.deleteSelection(false);
 					} else if(event.keyCode == SWT.ARROW_UP) {
 						model.shiftSelectionOctave(1);
 					} else if(event.keyCode == SWT.ARROW_DOWN) {
 						model.shiftSelectionOctave(-1);
+					}
+				} else if(event.stateMask == SWT.SHIFT) {
+					if(event.keyCode >= 'a' && event.keyCode <= 'g') {
+						model.addNoteToSelectChords(Character.toUpperCase((char) event.keyCode));
 					}
 				}
 				

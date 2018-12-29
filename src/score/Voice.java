@@ -65,7 +65,7 @@ public class Voice {
 				}
 			}
 			
-			time += item.getDuration();
+			time += item.getDurationCount();
 			if(time > startTime) {
 				break;
 			}
@@ -90,7 +90,7 @@ public class Voice {
 			if(voiceItem == item) {
 				return time;
 			}
-			time += voiceItem.getDuration();
+			time += voiceItem.getDurationCount();
 		}
 		throw new NoSuchElementException("Item not found: " + item);
 	}
@@ -104,7 +104,7 @@ public class Voice {
 			if(time > startTime) {
 				return null;
 			}
-			time += item.getDuration();
+			time += item.getDurationCount();
 		}
 		return null;
 	}
@@ -136,23 +136,23 @@ public class Voice {
 		int time = 0;
 		while(i < items.size()) {
 			CanvasItem item = items.get(i++);
-			time += item.getDuration();
+			time += item.getDurationCount();
 			
 			if(time > startTime) {
 				i--;
 				
-				if(newItem.getDuration() == 0) {
+				if(newItem.getDurationCount() == 0) {
 					items.add(i, newItem);
 					return;
 				}
 				
-				int removedTime = item.getDuration();
-				time -= items.get(i).getDuration();
+				int removedTime = item.getDurationCount();
+				time -= items.get(i).getDurationCount();
 				removedBeams.add(items.get(i).getBeam());
 				items.remove(i);
 				
-				while(removedTime < newItem.getDuration() && i < items.size()) {
-					removedTime += items.get(i).getDuration();
+				while(removedTime < newItem.getDurationCount() && i < items.size()) {
+					removedTime += items.get(i).getDurationCount();
 					removedBeams.add(items.get(i).getBeam());
 					items.remove(i);
 				}
@@ -167,21 +167,21 @@ public class Voice {
 				
 				items.add(i++, newItem);
 				
-				if(removedTime > newItem.getDuration()) {
-					List<Rest> rests = createRests(removedTime - newItem.getDuration());
+				if(removedTime > newItem.getDurationCount()) {
+					List<Rest> rests = createRests(removedTime - newItem.getDurationCount());
 					items.addAll(i, rests);
 					i += rests.size();
 				}
 				
-				if(removedTime < newItem.getDuration()) {
-					while(i < items.size() && items.get(i) instanceof Rest && removedTime < newItem.getDuration()) {
-						removedTime += items.get(i).getDuration();
+				if(removedTime < newItem.getDurationCount()) {
+					while(i < items.size() && items.get(i) instanceof Rest && removedTime < newItem.getDurationCount()) {
+						removedTime += items.get(i).getDurationCount();
 						removedBeams.add(items.get(i).getBeam());
 						items.remove(i);
 					}
 					
-					if(removedTime > newItem.getDuration()) {
-						List<Rest> rests = createRests(removedTime - newItem.getDuration());
+					if(removedTime > newItem.getDurationCount()) {
+						List<Rest> rests = createRests(removedTime - newItem.getDurationCount());
 						items.addAll(i, rests);
 						i += rests.size();
 					}
@@ -225,15 +225,15 @@ public class Voice {
 				
 				chord.setBeam(null);
 				
-				if(item.getDuration() < 8) {
+				if(item.getDurationCount() < 8) {
 					beamedChords.add(chord);
 					
-					if(time / beamDuration != (time + item.getDuration()) / beamDuration) {
+					if(time / beamDuration != (time + item.getDurationCount()) / beamDuration) {
 						addBeam(beamedChords);
 						beamedChords.clear();
 					}
 					
-					time += item.getDuration();
+					time += item.getDurationCount();
 				} else {
 					addBeam(beamedChords);
 					beamedChords.clear();	
@@ -275,7 +275,7 @@ public class Voice {
 	 */
 	public void collapseRests(Set<Rest> rests) {
 		replaceSpans(items, item -> rests.contains(item), replacementList -> {
-			int totalDuration = sum(map(replacementList, item -> item.getDuration()));
+			int totalDuration = sum(map(replacementList, item -> item.getDurationCount()));
 			return createRests(totalDuration);
 		});
 	}

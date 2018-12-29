@@ -53,7 +53,7 @@ public class Rest implements CanvasItem, Selectable {
 	}
 
 	@Override
-	public int getDuration() {
+	public int getDurationCount() {
 		return duration.getDurationCount();
 	}
 	

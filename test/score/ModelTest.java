@@ -222,7 +222,7 @@ public class ModelTest {
 			CanvasItem actualItem = actual.get(i);
 			
 			assertEquals(expectedItem.getClass(), actualItem.getClass());
-			assertEquals(expectedItem.getDuration(), actualItem.getDuration());
+			assertEquals(expectedItem.getDurationCount(), actualItem.getDurationCount());
 		}
 	}
 }

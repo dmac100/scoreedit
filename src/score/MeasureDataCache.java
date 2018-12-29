@@ -8,6 +8,7 @@ public class MeasureDataCache {
 	private final Map<Object, Measure> itemMeasures = new HashMap<>();
 	private final Map<Object, Voice> itemVoices = new HashMap<>();
 	private final Map<Object, Integer> itemStartTimes = new HashMap<>();
+	private final Map<Object, Integer> measureStartTimes = new HashMap<>();
 	private final Map<Note, Chord> noteChords = new HashMap<>();
 	
 	public MeasureDataCache(List<Measure> measures) {
@@ -15,6 +16,8 @@ public class MeasureDataCache {
 		
 		for(Measure measure:measures) {
 			int maxVoiceTime = 0;
+			
+			measureStartTimes.put(measure, measureTime);
 			
 			for(Voice voice:measure.getVoices()) {
 				int voiceTime = 0;
@@ -33,7 +36,7 @@ public class MeasureDataCache {
 						}
 					}
 					
-					voiceTime += item.getDuration();
+					voiceTime += item.getDurationCount();
 				}
 				
 				maxVoiceTime = Math.max(maxVoiceTime, voiceTime);
@@ -57,5 +60,9 @@ public class MeasureDataCache {
 
 	public Chord getChord(Note note) {
 		return noteChords.get(note);
+	}
+
+	public int getMeasureStartTime(Measure measure) {
+		return measureStartTimes.get(measure);
 	}
 }

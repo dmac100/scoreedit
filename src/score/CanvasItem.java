@@ -17,7 +17,7 @@ public interface CanvasItem {
 		return new AlignmentBox(0, 0, 0, 0);
 	}
 	
-	public default int getDuration() {
+	public default int getDurationCount() {
 		return 0;
 	}
 	

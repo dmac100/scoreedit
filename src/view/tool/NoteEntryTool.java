@@ -61,7 +61,7 @@ public class NoteEntryTool implements Tool {
 			CanvasItem existingItem = voice.getItemAt(startTime);
 			if(existingItem instanceof Chord) {
 				Chord chord = ((Chord) existingItem);
-				if(chord.getDuration() == duration.getDurationCount()) {
+				if(chord.getDurationCount() == duration.getDurationCount()) {
 					Note note = new Note(pitchWithAccidentals, duration);
 					chord.addNote(note);
 					

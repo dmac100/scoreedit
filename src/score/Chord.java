@@ -73,8 +73,12 @@ public class Chord implements CanvasItem {
 	}
 	
 	@Override
-	public int getDuration() {
+	public int getDurationCount() {
 		return duration.getDurationCount();
+	}
+	
+	public Duration getDuration() {
+		return duration;
 	}
 	
 	public void setDuration(Duration duration) {

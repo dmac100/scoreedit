@@ -43,7 +43,7 @@ public class NoteLayout {
 					AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
 					item.setAccidentals(measureAccidentals);
 					itemsAtCount.get(count).add(new VoiceAndItem(voice, item, alignmentBox));
-					count += item.getDuration();
+					count += item.getDurationCount();
 				}
 			}
 		}
