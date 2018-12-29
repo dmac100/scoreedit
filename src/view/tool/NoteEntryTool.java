@@ -18,7 +18,6 @@ import score.Chord;
 import score.Clef;
 import score.Duration;
 import score.Duration.DurationType;
-import score.KeySig;
 import score.Measure;
 import score.Model;
 import score.Note;
@@ -59,13 +58,26 @@ public class NoteEntryTool implements Tool {
 			
 			Pitch pitchWithAccidentals = voice.getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), startTime);
 			
+			CanvasItem existingItem = voice.getItemAt(startTime);
+			if(existingItem instanceof Chord) {
+				Chord chord = ((Chord) existingItem);
+				if(chord.getDuration() == duration.getDurationCount()) {
+					Note note = new Note(pitchWithAccidentals, duration);
+					chord.addNote(note);
+					
+					model.selectItems(Arrays.asList(note), false, false);
+					composite.redraw();
+					
+					return;
+				}
+			}
+
 			Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
 			voice.insertItem(item, startTime);
 			
 			measure.autoBeam();
 			
 			model.selectItems(item.getNotes(), false, false);
-			
 			composite.redraw();
 		}
 	}

@@ -1,6 +1,7 @@
 package score;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static score.Duration.DurationType.EIGHTH;
 import static score.Duration.DurationType.QUARTER;
@@ -133,6 +134,18 @@ public class VoiceTest {
 		voice.insertItem(Item(QUARTER), 4);
 		
 		assertItemsEquals(Arrays.asList(Rest(EIGHTH), Item(DurationType.QUARTER)), voice.getItems());
+	}
+	
+	@Test
+	public void getItemAt() {
+		// [#.#]
+		Voice voice = new Voice(Clef.TREBLE, Arrays.asList(Item(QUARTER), Rest(QUARTER), Item(QUARTER)));
+		
+		assertTrue(voice.getItemAt(0) instanceof Chord);
+		assertTrue(voice.getItemAt(8) instanceof Rest);
+		assertTrue(voice.getItemAt(16) instanceof Chord);
+		assertTrue(voice.getItemAt(4) == null);
+		assertTrue(voice.getItemAt(24) == null);
 	}
 	
 	private static Chord Item(DurationType durationType) {

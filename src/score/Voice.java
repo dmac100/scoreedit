@@ -95,6 +95,20 @@ public class Voice {
 		throw new NoSuchElementException("Item not found: " + item);
 	}
 
+	public CanvasItem getItemAt(int startTime) {
+		int time = 0;
+		for(CanvasItem item:items) {
+			if(time == startTime && item.includeInLayout()) {
+				return item;
+			}
+			if(time > startTime) {
+				return null;
+			}
+			time += item.getDuration();
+		}
+		return null;
+	}
+	
 	public void removeItem(CanvasItem item) {
 		items.remove(item);
 	}

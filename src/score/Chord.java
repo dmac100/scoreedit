@@ -337,4 +337,8 @@ public class Chord implements CanvasItem {
 	public List<Note> getNotes() {
 		return new ArrayList<>(notes);
 	}
+	
+	public void addNote(Note note) {
+		notes.add(note);
+	}
 }
