@@ -1,9 +1,6 @@
 package score;
 
-import static score.Duration.DurationType.EIGHTH;
-import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
-import static score.Duration.DurationType.WHOLE;
 import static util.CollectionUtil.any;
 import static util.CollectionUtil.maxBy;
 import static util.XmlUtil.addElement;
@@ -39,16 +36,16 @@ public class Model {
 	public Model() {
 		for(int x = 0; x < 32; x++) {
 			Voice treble = new Voice(Clef.TREBLE, Arrays.asList(
-				new Chord(Arrays.asList(new Note(new Pitch("C4"),  new Duration(WHOLE))), new Duration(WHOLE)),
-				new Chord(Arrays.asList(new Note(new Pitch("D4"),  new Duration(HALF))), new Duration(HALF)),
-				new Chord(Arrays.asList(new Note(new Pitch("E4"),  new Duration(QUARTER))), new Duration(QUARTER)),
-				new Chord(Arrays.asList(new Note(new Pitch("F4"),  new Duration(EIGHTH))), new Duration(EIGHTH))
+				new Rest(new Duration(QUARTER)),
+				new Rest(new Duration(QUARTER)),
+				new Rest(new Duration(QUARTER)),
+				new Rest(new Duration(QUARTER))
 			));
 			Voice bass = new Voice(Clef.BASS, Arrays.asList(
-				new Rest(new Duration(WHOLE)),
-				new Rest(new Duration(HALF)),
 				new Rest(new Duration(QUARTER)),
-				new Rest(new Duration(EIGHTH))
+				new Rest(new Duration(QUARTER)),
+				new Rest(new Duration(QUARTER)),
+				new Rest(new Duration(QUARTER))
 			));
 			measures.add(new Measure(
 				Arrays.asList(treble, bass),
@@ -56,8 +53,6 @@ public class Model {
 				new KeySig(0)
 			));
 		}
-		
-		measures.forEach(measure -> measure.autoBeam());
 		
 		addSelectionChangedHandler(this::updateLastPitchFromSelection);
 		addSelectionChangedHandler(this::updateDurationFromSelection);

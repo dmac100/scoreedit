@@ -13,27 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import score.Duration.DurationType;
 
 public class ModelTest {
 	private Model model = new Model();
-	
-	@Before
-	public void before() {
-		for(Measure measure:model.getMeasures()) {
-			for(Voice voice:measure.getVoices()) {
-				voice.getItems().forEach(item -> voice.removeItem(item));
-				
-				voice.insertItem(Rest(QUARTER), 0);
-				voice.insertItem(Rest(QUARTER), 8);
-				voice.insertItem(Rest(QUARTER), 16);
-				voice.insertItem(Rest(QUARTER), 24);
-			}
-		}
-	}
 	
 	@Test
 	public void saveLoadSaveRoundTrip() throws Exception {
