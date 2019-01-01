@@ -1,8 +1,10 @@
 package score;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static score.Duration.DurationType.EIGHTH;
 import static score.Duration.DurationType.HALF;
 import static score.Duration.DurationType.QUARTER;
 import static util.CollectionUtil.filter;
@@ -190,6 +192,31 @@ public class ModelTest {
 		}
 		
 		assertTrue(new ArrayList<>(model.getSelectedItems()).get(0) instanceof Note);
+	}
+	
+	@Test
+	public void autoBeam() {
+		Voice voice = model.getMeasures().get(0).getVoices().get(0);
+		
+		voice.insertItem(Item(EIGHTH), 0);
+		voice.insertItem(Item(EIGHTH), 4);
+		voice.insertItem(Item(EIGHTH), 8);
+		voice.insertItem(Item(EIGHTH), 16);
+		
+		model.getMeasures().get(0).autoBeam();
+
+		List<Chord> chords = new ArrayList<>();
+		
+		for(CanvasItem item:voice.getItems()) {
+			if(item instanceof Chord) {
+				chords.add((Chord) item);
+			}
+		}
+		
+		assertEquals(4, chords.size());
+		assertEquals(chords.get(0).getBeam(), chords.get(1).getBeam());
+		assertEquals(chords.get(2).getBeam(), chords.get(3).getBeam());
+		assertNotEquals(chords.get(1).getBeam(), chords.get(2).getBeam());
 	}
 	
 	public List<CanvasItem> getFirstMeasureItems() {

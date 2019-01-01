@@ -107,6 +107,8 @@ public class Model {
 				}
 			}
 		});
+		
+		measures.forEach(Measure::autoBeam);
 	}
 
 	public Duration getDuration() {

@@ -238,7 +238,7 @@ public class Voice {
 					addBeam(beamedChords);
 					beamedChords.clear();	
 				}
-			} else {
+			} else if(item.includeInLayout()) {
 				addBeam(beamedChords);
 				beamedChords.clear();
 			}
