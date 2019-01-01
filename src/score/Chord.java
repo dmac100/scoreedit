@@ -214,15 +214,13 @@ public class Chord implements CanvasItem {
 			maxScaleNumber = Math.max(maxScaleNumber, note.getScaleNumber());
 		}
 		
-		if(stem.getDirection() == StemDirection.DOWN) {
-			stem.setStartY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81);
-			stem.setEndY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60);
-			stem.setEndY(Math.max(stem.getEndY(), startY + 33));
-		} else {
-			stem.setStartY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80);
-			stem.setEndY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60);
-			stem.setEndY(Math.min(stem.getEndY(), startY + 33));
-		}
+		stem.setDownStartY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81);
+		stem.setDownEndY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60);
+		stem.setDownEndY(Math.max(stem.getDownEndY(), startY + 33));
+		
+		stem.setUpStartY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80);
+		stem.setUpEndY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60);
+		stem.setUpEndY(Math.min(stem.getUpEndY(), startY + 33));
 		
 		return stem;
 	}

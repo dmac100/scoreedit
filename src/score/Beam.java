@@ -48,7 +48,7 @@ public class Beam {
 		for(int i = 0; i < stems.size(); i++) {
 			Stem stem = stems.get(i);
 			stemStartX[i] = getStemStartX(stems.get(i), direction);
-			canvas.drawLine(3, SWT.CAP_ROUND, stemStartX[i], stem.getStartY(), stemStartX[i], beamY);
+			canvas.drawLine(3, SWT.CAP_ROUND, stemStartX[i], getStartY(stem, direction), stemStartX[i], beamY);
 		}
 
 		int y = beamY;
@@ -70,6 +70,10 @@ public class Beam {
 				}
 			}
 		}
+	}
+
+	private int getStartY(Stem stem, StemDirection direction) {
+		return (direction == StemDirection.UP) ? stem.getUpStartY() : stem.getDownStartY();
 	}
 
 	private int getFlagCount(DurationType duration) {

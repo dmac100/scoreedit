@@ -1,5 +1,7 @@
 package score;
 
+import score.Stem.StemDirection;
+
 public class Stem {
 	public enum StemDirection {
 		UP, DOWN
@@ -8,8 +10,10 @@ public class Stem {
 	private StemDirection direction;
 	private Duration duration;
 	private int startX;
-	private int startY;
-	private int endY;
+	private int upStartY;
+	private int upEndY;
+	private int downStartY;
+	private int downEndY;
 	
 	public StemDirection getDirection() {
 		return direction;
@@ -34,20 +38,44 @@ public class Stem {
 	public void setStartX(int startX) {
 		this.startX = startX;
 	}
-	
+
+	public int getUpStartY() {
+		return upStartY;
+	}
+
+	public void setUpStartY(int upStartY) {
+		this.upStartY = upStartY;
+	}
+
+	public int getUpEndY() {
+		return upEndY;
+	}
+
+	public void setUpEndY(int upEndY) {
+		this.upEndY = upEndY;
+	}
+
+	public int getDownStartY() {
+		return downStartY;
+	}
+
+	public void setDownStartY(int downStartY) {
+		this.downStartY = downStartY;
+	}
+
+	public int getDownEndY() {
+		return downEndY;
+	}
+
+	public void setDownEndY(int downEndY) {
+		this.downEndY = downEndY;
+	}
+
 	public int getStartY() {
-		return startY;
+		return (direction == StemDirection.UP) ? upStartY : downStartY;
 	}
-	
-	public void setStartY(int startY) {
-		this.startY = startY;
-	}
-	
+
 	public int getEndY() {
-		return endY;
-	}
-	
-	public void setEndY(int endY) {
-		this.endY = endY;
+		return (direction == StemDirection.UP) ? upEndY : downEndY;
 	}
 }
