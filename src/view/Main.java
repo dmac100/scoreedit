@@ -175,6 +175,8 @@ public class Main {
 						model.setDurationType(DurationType.THIRTYSECOND);
 					} else if(event.keyCode == '.') {
 						model.setDots((model.getDots() == 1) ? 0 : 1);
+					} else if(event.keyCode == 'r') {
+						model.setRest(!model.getRest());
 					} else if(event.keyCode >= 'a' && event.keyCode <= 'g') {
 						model.insertNote(Character.toUpperCase((char) event.keyCode));
 					} else if(event.keyCode == SWT.ARROW_UP) {
@@ -266,6 +268,17 @@ public class Main {
 			}
 		});
 		
+		new ToolBar(toolbar, SWT.SEPARATOR);
+		
+		ToolItem restItem = new ToolItem(toolbar, SWT.CHECK);
+		restItem.setImage(ToolbarImages.getRestImage());
+		restItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				model.setRest(restItem.getSelection());
+				composite.redraw();
+			}
+		});
+		
 		wholeItem.setSelection(model.getDurationType() == DurationType.WHOLE);
 		halfItem.setSelection(model.getDurationType() == DurationType.HALF);
 		quarterItem.setSelection(model.getDurationType() == DurationType.QUARTER);
@@ -274,6 +287,7 @@ public class Main {
 		thirtySecondItem.setSelection(model.getDurationType() == DurationType.THIRTYSECOND);
 		
 		dotItem.setSelection(model.getDots() == 1);
+		restItem.setSelection(model.getRest());
 	}
 	
 	private ToolItem addToolbarRadioItem(ToolBar toolbar, Image image, Runnable runnable) {

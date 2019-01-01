@@ -41,6 +41,12 @@ public class ToolbarImages {
 		});
 	}
 	
+	public static Image getRestImage() {
+		return createImage(gc -> {
+			gc.drawText(FetaFont.QUARTERREST, 10, -60, true);	
+		});
+	}
+	
 	public static Image getInsertImage() {
 		return createImage(gc -> {
 			gc.drawText("N", 0, 0, true);	

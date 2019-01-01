@@ -22,6 +22,7 @@ import score.Measure;
 import score.Model;
 import score.Note;
 import score.Pitch;
+import score.Rest;
 import score.Voice;
 import view.FetaFont;
 import view.ScoreCanvas;
@@ -56,29 +57,39 @@ public class NoteEntryTool implements Tool {
 			int startTime = measure.getStartTime(item);
 			Duration duration = model.getDuration();
 			
-			Pitch pitchWithAccidentals = voice.getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), startTime);
-			
-			CanvasItem existingItem = voice.getItemAt(startTime);
-			if(existingItem instanceof Chord) {
-				Chord chord = ((Chord) existingItem);
-				if(chord.getDurationCount() == duration.getDurationCount()) {
-					Note note = new Note(pitchWithAccidentals, duration);
-					chord.addNote(note);
-					
-					model.selectItems(Arrays.asList(note), false, false);
-					composite.redraw();
-					
-					return;
+			if(model.getRest()) {
+				Rest item = new Rest(duration);
+				voice.insertItem(item, startTime);
+				
+				model.selectItems(Arrays.asList(item), false, false);
+				composite.redraw();
+				
+				return;
+			} else {
+				Pitch pitchWithAccidentals = voice.getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), startTime);
+				
+				CanvasItem existingItem = voice.getItemAt(startTime);
+				if(existingItem instanceof Chord) {
+					Chord chord = ((Chord) existingItem);
+					if(chord.getDurationCount() == duration.getDurationCount()) {
+						Note note = new Note(pitchWithAccidentals, duration);
+						chord.addNote(note);
+						
+						model.selectItems(Arrays.asList(note), false, false);
+						composite.redraw();
+						
+						return;
+					}
 				}
+	
+				Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
+				voice.insertItem(item, startTime);
+				
+				measure.autoBeam();
+				
+				model.selectItems(item.getNotes(), false, false);
+				composite.redraw();
 			}
-
-			Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
-			voice.insertItem(item, startTime);
-			
-			measure.autoBeam();
-			
-			model.selectItems(item.getNotes(), false, false);
-			composite.redraw();
 		}
 	}
 	
@@ -121,11 +132,15 @@ public class NoteEntryTool implements Tool {
 					}
 					
 					this.measure = measure;
-					this.pitch = new Pitch(scaleNumber);
 					this.item = item;
 					this.clef = clef;
+					this.pitch = new Pitch(scaleNumber);
 					
-					drawNote(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(model.getDurationType()));
+					if(model.getRest()) {
+						drawRest(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(model.getDurationType()));
+					} else {
+						drawNote(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(model.getDurationType()));
+					}
 				}
 			}
 		}
@@ -147,6 +162,14 @@ public class NoteEntryTool implements Tool {
 			startX -= 5;
 		}
 		gc.drawText(FetaFont.getNoteHead(duration), startX, startY - (scaleNumber * 8) - 71, true);
+	}
+	
+	private void drawRest(GC gc, int startX, int startY, int scaleNumber, Duration duration) {
+		if(duration.getType() == DurationType.WHOLE) {
+			gc.drawText(FetaFont.getRest(duration), startX, startY - 134, true);
+		} else {
+			gc.drawText(FetaFont.getRest(duration), startX, startY - 119, true);
+		}
 	}
 	
 	private void drawLedgers(GC gc, int startX, int startY, int ledgersBelow, int ledgersAbove) {

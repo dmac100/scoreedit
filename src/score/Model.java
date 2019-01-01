@@ -32,6 +32,7 @@ public class Model {
 	private final List<Runnable> selectionChangedHandlers = new ArrayList<>();
 	
 	private Pitch lastPitch = new Pitch("C4");
+	private boolean selectedRest = false;
 	private DurationType selectedDurationType = QUARTER;
 	private int dots = 0;
 	
@@ -77,6 +78,14 @@ public class Model {
 		updateSelectedItemsDuration();
 	}
 	
+	public boolean getRest() {
+		return selectedRest;
+	}
+
+	public void setRest(boolean rest) {
+		this.selectedRest = rest;
+	}
+
 	public int getDots() {
 		return dots;
 	}
