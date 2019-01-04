@@ -55,6 +55,9 @@ import view.tool.NoteEntryTool;
 import view.tool.SelectionTool;
 import view.tool.Tool;
 
+/**
+ * Handles the main window, toolbar, menubar, and keyboard shortcuts.
+ */
 public class Main {
 	private final Shell shell;
 	private final Composite composite;
@@ -154,55 +157,7 @@ public class Main {
 		
 		composite.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
-				if(event.stateMask == 0) {
-					if(event.keyCode == 'n') {
-						currentTool = noteEntryTool;
-					} else if(event.keyCode == SWT.ESC) {
-						currentTool = selectionTool;
-					} else if(event.keyCode == SWT.DEL) {
-						model.deleteSelection(true);
-					} else if(event.keyCode == '1') {
-						model.setDurationType(DurationType.WHOLE);
-					} else if(event.keyCode == '2') {
-						model.setDurationType(DurationType.HALF);
-					} else if(event.keyCode == '3') {
-						model.setDurationType(DurationType.QUARTER);
-					} else if(event.keyCode == '4') {
-						model.setDurationType(DurationType.EIGHTH);
-					} else if(event.keyCode == '5') {
-						model.setDurationType(DurationType.SIXTEENTH);
-					} else if(event.keyCode == '6') {
-						model.setDurationType(DurationType.THIRTYSECOND);
-					} else if(event.keyCode == '.') {
-						model.setDots((model.getDots() == 1) ? 0 : 1);
-					} else if(event.keyCode == 'r') {
-						model.setRest(!model.getRest());
-					} else if(event.keyCode >= 'a' && event.keyCode <= 'g') {
-						model.insertNote(Character.toUpperCase((char) event.keyCode));
-					} else if(event.keyCode == SWT.ARROW_UP) {
-						model.shiftSelectionPitch(1);
-					} else if(event.keyCode == SWT.ARROW_DOWN) {
-						model.shiftSelectionPitch(-1);
-					}
-				} else if(event.stateMask == SWT.CONTROL) {
-					if(event.keyCode == SWT.DEL) {
-						model.deleteSelection(false);
-					} else if(event.keyCode == SWT.ARROW_UP) {
-						model.shiftSelectionOctave(1);
-					} else if(event.keyCode == SWT.ARROW_DOWN) {
-						model.shiftSelectionOctave(-1);
-					}
-				} else if(event.stateMask == SWT.SHIFT) {
-					if(event.keyCode >= 'a' && event.keyCode <= 'g') {
-						model.addNoteToSelectChords(Character.toUpperCase((char) event.keyCode));
-					}
-				}
-				
-				if(event.keyCode == SWT.ARROW_LEFT) {
-					model.selectPrev((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
-				} else if(event.keyCode == SWT.ARROW_RIGHT) {
-					model.selectNext((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
-				}
+				onKeyPressed(event);
 				
 				composite.redraw();
 				refreshToolbarItems(toolbar);
@@ -210,6 +165,58 @@ public class Main {
 		});
 		
 		createMenu();
+	}
+	
+	private void onKeyPressed(KeyEvent event) {
+		if(event.stateMask == 0) {
+			if(event.keyCode == 'n') {
+				currentTool = noteEntryTool;
+			} else if(event.keyCode == SWT.ESC) {
+				currentTool = selectionTool;
+			} else if(event.keyCode == SWT.DEL) {
+				model.deleteSelection(true);
+			} else if(event.keyCode == '1') {
+				model.setDurationType(DurationType.WHOLE);
+			} else if(event.keyCode == '2') {
+				model.setDurationType(DurationType.HALF);
+			} else if(event.keyCode == '3') {
+				model.setDurationType(DurationType.QUARTER);
+			} else if(event.keyCode == '4') {
+				model.setDurationType(DurationType.EIGHTH);
+			} else if(event.keyCode == '5') {
+				model.setDurationType(DurationType.SIXTEENTH);
+			} else if(event.keyCode == '6') {
+				model.setDurationType(DurationType.THIRTYSECOND);
+			} else if(event.keyCode == '.') {
+				model.setDots((model.getDots() == 1) ? 0 : 1);
+			} else if(event.keyCode == 'r') {
+				model.setRest(!model.getRest());
+			} else if(event.keyCode >= 'a' && event.keyCode <= 'g') {
+				model.insertNote(Character.toUpperCase((char) event.keyCode));
+			} else if(event.keyCode == SWT.ARROW_UP) {
+				model.shiftSelectionPitch(1);
+			} else if(event.keyCode == SWT.ARROW_DOWN) {
+				model.shiftSelectionPitch(-1);
+			}
+		} else if(event.stateMask == SWT.CONTROL) {
+			if(event.keyCode == SWT.DEL) {
+				model.deleteSelection(false);
+			} else if(event.keyCode == SWT.ARROW_UP) {
+				model.shiftSelectionOctave(1);
+			} else if(event.keyCode == SWT.ARROW_DOWN) {
+				model.shiftSelectionOctave(-1);
+			}
+		} else if(event.stateMask == SWT.SHIFT) {
+			if(event.keyCode >= 'a' && event.keyCode <= 'g') {
+				model.addNoteToSelectChords(Character.toUpperCase((char) event.keyCode));
+			}
+		}
+		
+		if(event.keyCode == SWT.ARROW_LEFT) {
+			model.selectPrev((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
+		} else if(event.keyCode == SWT.ARROW_RIGHT) {
+			model.selectNext((event.stateMask & (SWT.SHIFT)) > 0, (event.stateMask & (SWT.CONTROL)) > 0);
+		}
 	}
 	
 	private void refreshToolbarItems(ToolBar toolbar) {

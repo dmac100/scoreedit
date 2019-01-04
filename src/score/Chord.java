@@ -21,6 +21,9 @@ import score.layout.AlignmentBox;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * A chord containing one of more notes.
+ */
 public class Chord implements VoiceItem {
 	private List<Note> notes;
 	private Duration duration;
@@ -111,6 +114,9 @@ public class Chord implements VoiceItem {
 		drawNotes(canvas, stem, flippedNotes, startX + accidentalLayout.size() * ACCIDENTAL_SPACING + (shiftStemRight ? 19 : 0), startY);
 	}
 	
+	/**
+	 * Draw accidentals based on the accidental layout.
+	 */
 	private void drawAccidentals(ScoreCanvas canvas, List<List<Note>> accidentalLayout, int startX, int startY) {
 		int x = startX + accidentalLayout.size() * ACCIDENTAL_SPACING;
 		for(List<Note> notes:accidentalLayout) {
@@ -122,11 +128,15 @@ public class Chord implements VoiceItem {
 		}
 	}
 	
+	/**
+	 * Lays out accidentals from right to left, grouping accidentals that don't overlap vertically together.
+	 */
 	private List<List<Note>> getAccidentalLayout(MeasureAccidentals measureAccidentals) {
 		List<List<Note>> layout = new ArrayList<>();
 	
 		measureAccidentals = new MeasureAccidentals(measureAccidentals);
 		
+		// Finds the notes needed given the current accidentals, and updates accidentals.
 		List<Note> notesRemaining = new ArrayList<>();
 		for(Note note:notes) {
 			Accidental accidental = measureAccidentals.getAccidental(note.getPitch());
@@ -136,8 +146,10 @@ public class Chord implements VoiceItem {
 			measureAccidentals.setAccidental(note.getPitch());
 		}
 		
+		// Try groups notes with same number of sharps and flats.
 		Collections.sort(notesRemaining, Comparator.comparing(note -> note.getSharps()));
 		
+		// Orders accidentals on the same scale number on the order they appear in the measure.
 		Collections.sort(notesRemaining, (a, b) -> {
 			if(a.getPitch().getScaleNumber() == b.getPitch().getScaleNumber()) {
 				return Integer.compare(notes.indexOf(b), notes.indexOf(a));
@@ -146,6 +158,7 @@ public class Chord implements VoiceItem {
 			return 0;
 		});
 	
+		// Add each note to the layout, moving to the next position when they overlap.
 		while(!notesRemaining.isEmpty()) {
 			Set<Integer> usedScaleNumbers = new HashSet<>();
 			List<Note> nextNotes = new ArrayList<>();
@@ -190,9 +203,12 @@ public class Chord implements VoiceItem {
 			}
 		}
 		
-		return new AlignmentBox(box.width, box.height, accidentalLayout.size() * ACCIDENTAL_SPACING, box.y);
+		return new AlignmentBox(box.width, accidentalLayout.size() * ACCIDENTAL_SPACING);
 	}
 	
+	/**
+	 * Returns the stem for this chord, covering every note in the chord.
+	 */
 	private Stem getStem(int startX, int startY) {
 		Stem stem = new Stem();
 		int downCount = 0;
@@ -207,6 +223,7 @@ public class Chord implements VoiceItem {
 		
 		stem.setStartX((stem.getDirection() == StemDirection.DOWN) ? (startX + 1) : startX + 19);
 
+		// Find lowest and highest notes in the chord.
 		int minScaleNumber = Integer.MAX_VALUE;
 		int maxScaleNumber = Integer.MIN_VALUE;
 		for(Note note:notes) {
@@ -214,10 +231,12 @@ public class Chord implements VoiceItem {
 			maxScaleNumber = Math.max(maxScaleNumber, note.getScaleNumber());
 		}
 		
+		// Set down stem position.
 		stem.setDownStartY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 81);
 		stem.setDownEndY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80 + 60);
 		stem.setDownEndY(Math.max(stem.getDownEndY(), startY + 33));
 		
+		// Set up stem position.
 		stem.setUpStartY(startY + -((minScaleNumber - clef.getLowScaleNumber()) * 8) + 80);
 		stem.setUpEndY(startY + -((maxScaleNumber - clef.getLowScaleNumber()) * 8) + 80 - 60);
 		stem.setUpEndY(Math.min(stem.getUpEndY(), startY + 33));
@@ -225,6 +244,9 @@ public class Chord implements VoiceItem {
 		return stem;
 	}
 	
+	/**
+	 * Draw the stem of the chord.
+	 */
 	private void drawStem(ScoreCanvas canvas, Stem stem) {
 		if(duration.getType() == DurationType.WHOLE) {
 			return;
@@ -234,6 +256,10 @@ public class Chord implements VoiceItem {
 		canvas.drawText(FetaFont.getFlags(duration, stem.getDirection()), stem.getStartX(), stem.getEndY() - 150, false);
 	}
 
+	/**
+	 * Draw every note in the chord including note heads and ledger lines, where flipped notes are facing the opposite
+	 * way on the stem than normal. 
+	 */
 	private void drawNotes(ScoreCanvas canvas, Stem stem, Set<Note> flippedNotes, int startX, int startY) {
 		int ledgersAbove = 0;
 		int ledgersBelow = 0;
@@ -257,6 +283,10 @@ public class Chord implements VoiceItem {
 		drawLedgers(canvas, stem, startX, startY, ledgersBelow, ledgersAbove, fatLedgersAbove, fatLedgersBelow);
 	}
 	
+	/**
+	 * Returns which notes on the stem to flip so that there are no notes within a semitone that are on the same
+	 * side of the stem.
+	 */
 	private Set<Note> getFlippedNotes(Stem stem) {
 		List<Note> sortedNotes = new ArrayList<>(notes);
 		
@@ -284,6 +314,10 @@ public class Chord implements VoiceItem {
 		return flippedNotes;
 	}
 	
+	/**
+	 * Draw a number of ledger lines above or below the staff. Either single ledger lines, or fat ledger lines
+	 * that can contain notes on both sides of the stem.
+	 */
 	private void drawLedgers(ScoreCanvas canvas, Stem stem, int startX, int startY, int ledgersBelow, int ledgersAbove, int fatLedgersAbove, int fatLedgersBelow) {
 		for(int i = 0; i < ledgersAbove; i++) {
 			canvas.drawLine(

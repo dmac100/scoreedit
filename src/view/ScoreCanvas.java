@@ -15,6 +15,10 @@ import score.Measure;
 import score.Selectable;
 import score.layout.Spacer;
 
+/**
+ * A canvas drawn on a SWT graphics context. Draws all the items, and
+ * stores the position of each item and measure.
+ */
 public class ScoreCanvas {
 	public static final int PAGE_WIDTH = 1950;
 	public static final int SYSTEM_SPACING = 350;

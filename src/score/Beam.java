@@ -9,6 +9,10 @@ import score.Duration.DurationType;
 import score.Stem.StemDirection;
 import view.ScoreCanvas;
 
+/**
+ * A beam connecting multiple chords together. Items that are beamed together share the same instance
+ * of this class, and add their stems as they are being drawn. Then the beam is drawn using these stems. 
+ */
 public class Beam {
 	private List<Stem> stems = new ArrayList<>();
 	
@@ -24,7 +28,8 @@ public class Beam {
 		int upDirections = 0;
 		int topY = Integer.MAX_VALUE;
 		int bottomY = -Integer.MIN_VALUE;
-		
+	
+		// Find lowest and highest stems and number of up and down stems.
 		for(Stem stem:stems) {
 			upDirections += (stem.getDirection() == StemDirection.UP) ? 1 : -1;
 			
@@ -37,13 +42,16 @@ public class Beam {
 		
 		StemDirection direction = (upDirections > 0) ? StemDirection.UP : StemDirection.DOWN;
 		
+		// Set beam position based on whether most stems are up or down.
 		int beamY = (direction == StemDirection.UP) ? topY : bottomY;
 		
+		// Set number of flags for each stem.
 		int[] flags = new int[stems.size()];
 		for(int i = 0; i < stems.size(); i++) {
 			flags[i] = getFlagCount(stems.get(i).getDuration().getType());
 		}
 		
+		// Set horizontal start position of each stem and draw stems.
 		int[] stemStartX = new int[stems.size()];
 		for(int i = 0; i < stems.size(); i++) {
 			Stem stem = stems.get(i);
@@ -53,6 +61,7 @@ public class Beam {
 
 		int y = beamY;
 
+		// Draw horizontal beams and flags.
 		for(int i = 0; i < stems.size(); i++) {
 			for(int j = 1; j <= 3; j++) {
 				if(j <= flags[i]) {

@@ -3,6 +3,9 @@ package score;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * The current accidentals within a voice for every pitch.
+ */
 public class MeasureAccidentals {
 	public enum Accidental {
 		NONE, NATURAL, SHARP, FLAT, DOUBLESHARP, DOUBLEFLAT
@@ -14,6 +17,9 @@ public class MeasureAccidentals {
 		this.sharps = new LinkedHashMap<>(measureAccidentals.sharps);
 	}
 	
+	/**
+	 * Sets default accidentals from a key signature.
+	 */
 	public MeasureAccidentals(KeySig keySig) {
 		this.sharps = new LinkedHashMap<>();
 		
@@ -30,6 +36,9 @@ public class MeasureAccidentals {
 		}
 	}
 
+	/**
+	 * Returns the accidental for a pitch.
+	 */
 	public Accidental getAccidental(Pitch pitch) {
 		Pitch plainPitch = new Pitch(pitch.getName(), pitch.getOctave(), 0);
 		
@@ -40,12 +49,18 @@ public class MeasureAccidentals {
 		return Accidental.NONE;
 	}
 	
+	/**
+	 * Sets the accidental for a pitch.
+	 */
 	public void setAccidental(Pitch pitch) {
 		Pitch plainPitch = new Pitch(pitch.getName(), pitch.getOctave(), 0);
 		
 		sharps.put(plainPitch, pitch.getSharps());
 	}
 
+	/**
+	 * Returns the accidental for a number of sharps, or flats for a negative value.
+	 */
 	private Accidental getAccidental(int sharps) {
 		switch(sharps) {
 			case 0: return Accidental.NATURAL;

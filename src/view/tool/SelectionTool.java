@@ -14,6 +14,9 @@ import score.Model;
 import score.Selectable;
 import view.ScoreCanvas;
 
+/**
+ * Allows selection of notes by clicking on individual notes or dragging a box around them.
+ */
 public class SelectionTool implements Tool {
 	private boolean mouseDown = false;
 	private float mouseDownX;
@@ -41,6 +44,7 @@ public class SelectionTool implements Tool {
 		if(button == 1) {
 			if(mouseDown) {
 				if(x == mouseDownX && y == mouseDownY) {
+					// Select individual item from click.
 					Selectable item = scoreCanvas.getItemAt((int) mouseDownX, (int) mouseDownY);
 					if(item != null) {
 						model.selectItems(Arrays.asList(item), shift, control);
@@ -53,6 +57,7 @@ public class SelectionTool implements Tool {
 					float x2 = Math.max(mouseDownX, x);
 					float y2 = Math.max(mouseDownY, y);
 					
+					// Update selectio based on finished drag.
 					List<Selectable> items = scoreCanvas.getItemsInRectangle(new Rectangle((int) x1, (int) y1, (int) (x2 - x1), (int) (y2 - y1)));
 					model.deselectAll();
 					model.selectItems(items, shift, control);

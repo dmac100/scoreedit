@@ -12,6 +12,9 @@ import score.layout.AlignmentBox;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * A rest item.
+ */
 public class Rest implements VoiceItem, Selectable {
 	private Duration duration;
 	
@@ -49,7 +52,7 @@ public class Rest implements VoiceItem, Selectable {
 	
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(25 + duration.getDots() * 10, 50, 0, 7);
+		return new AlignmentBox(25 + duration.getDots() * 10, 0);
 	}
 
 	@Override

@@ -7,6 +7,9 @@ import org.jdom2.Element;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * The time signature of a measure.
+ */
 public class TimeSig {
 	private final int upperCount;
 	private final int lowerCount;

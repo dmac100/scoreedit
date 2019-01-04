@@ -7,16 +7,24 @@ import java.util.List;
 
 import score.Measure;
 
+/**
+ * Lays out measures across multiple lines.
+ */
 public class MeasureLayout {
 	public static class Row {
 		private List<Measure> measures = new ArrayList<>();
-		private int width;
 		private int extraWidth;
 		
+		/**
+		 * Returns all the measures in this row.
+		 */
 		public List<Measure> getMeasures() {
 			return measures;
 		}
 		
+		/**
+		 * Returns the extra width needed to be added in total to the measures in this row to reach the page width.
+		 */
 		public int getExtraWidth() {
 			return extraWidth;
 		}
@@ -33,9 +41,11 @@ public class MeasureLayout {
 		
 		Measure previousMeasureOnLine = null;
 		
+		// Add each measure to current row, or a new row.
 		for(Measure measure:measures) {
 			int measureWidth = measure.getWidth(previousMeasureOnLine, previousMeasure);
 			
+			// Create new row after page with is reached.
 			if(width + measureWidth + MEASURE_SPACING > pageWidth) {
 				if(!row.getMeasures().isEmpty()) {
 					row = new Row();
@@ -49,8 +59,7 @@ public class MeasureLayout {
 			
 			width += measureWidth + MEASURE_SPACING;
 			row.measures.add(measure);
-			row.width = width;
-			row.extraWidth = pageWidth - row.width;
+			row.extraWidth = pageWidth - width;
 			
 			previousMeasure = measure;
 			previousMeasureOnLine = measure;

@@ -7,6 +7,9 @@ import javax.sound.midi.Synthesizer;
 import score.Chord;
 import score.Note;
 
+/**
+ * Plays items using Java's MIDI output.
+ */
 public class Synth {
 	private final int tempo = 10;
 	

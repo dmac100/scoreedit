@@ -23,6 +23,9 @@ import org.jdom2.Element;
 
 import score.Duration.DurationType;
 
+/**
+ * A voice of the items within a clef for a measure.
+ */
 public class Voice {
 	private Clef clef;
 	private List<VoiceItem> items;
@@ -54,9 +57,13 @@ public class Voice {
 		return new ArrayList<>(items);
 	}
 	
+	/**
+	 * Returns what sharps or flats a pitch would have if inserted at a start time based on the key signature and previous accidentals.
+	 */
 	public Pitch getPitchWithSharpsOrFlats(Pitch pitch, KeySig keySig, int startTime) {
 		Pitch pitchWithSharpsOrFlats = null;
 		
+		// Take accidentals from matching pitches up to the start time.
 		int time = 0;
 		for(VoiceItem item:items) {
 			for(Note note:item.getNotes()) {
@@ -75,6 +82,7 @@ public class Voice {
 			return pitchWithSharpsOrFlats;
 		}
 		
+		// Otherwise, take accidentals from key signature.
 		for(Pitch keySigPitch:keySig.getPitches()) {
 			if(pitch.getName() == keySigPitch.getName()) {
 				return new Pitch(pitch.getName(), pitch.getOctave(), (keySig.getFifths() > 1) ? 1 : -1);
@@ -84,6 +92,9 @@ public class Voice {
 		return pitch;
 	}
 	
+	/**
+	 * Returns the start time of an item within this voice.
+	 */
 	public int getStartTime(VoiceItem item) {
 		int time = 0;
 		for(VoiceItem voiceItem:items) {
@@ -95,6 +106,9 @@ public class Voice {
 		throw new NoSuchElementException("Item not found: " + item);
 	}
 
+	/**
+	 * Returns the item in this voice at a start time, or null if there is none.
+	 */
 	public VoiceItem getItemAt(int startTime) {
 		int time = 0;
 		for(VoiceItem item:items) {
@@ -109,10 +123,16 @@ public class Voice {
 		return null;
 	}
 	
+	/**
+	 * Removes an item within this voice.
+	 */
 	public void removeItem(VoiceItem item) {
 		items.remove(item);
 	}
 	
+	/**
+	 * Removes an item within this voice and replaces it with another.
+	 */
 	public void replaceItem(VoiceItem oldItem, VoiceItem newItem) {
 		int index = items.indexOf(oldItem);
 		if(index >= 0) {
@@ -120,14 +140,21 @@ public class Voice {
 			items.add(index, newItem);
 		}
 	}
-	
+
+	/**
+	 * Inserts a new item before another in this voice.
+	 */
 	public void insertItemBefore(VoiceItem oldItem, VoiceItem newItem) {
 		int index = items.indexOf(oldItem);
 		if(index >= 0) {
 			items.add(index, newItem);
 		}
 	}
-	
+
+	/**
+	 * Inserts a new item at a start time, overwriting any existing items at the same time, inserting
+	 * extra rests as necessary.
+	 */
 	public void insertItem(VoiceItem newItem, int startTime) {
 		Set<Beam> removedBeams = new HashSet<>();
 		
@@ -141,22 +168,26 @@ public class Voice {
 			if(time > startTime) {
 				i--;
 				
+				// If the new item doesn't have a duration, then simply add it in this position and return.
 				if(newItem.getDurationCount() == 0) {
 					items.add(i, newItem);
 					return;
 				}
 				
+				// Remove current item at this position.
 				int removedTime = item.getDurationCount();
 				time -= items.get(i).getDurationCount();
 				removedBeams.add(items.get(i).getBeam());
 				items.remove(i);
 				
+				// Remove additional items until duration of new item is reached or we run out of items.
 				while(removedTime < newItem.getDurationCount() && i < items.size()) {
 					removedTime += items.get(i).getDurationCount();
 					removedBeams.add(items.get(i).getBeam());
 					items.remove(i);
 				}
 				
+				// Add any rests before new item.
 				if(startTime > time) {
 					List<Rest> rests = createRests(startTime - time);
 					items.addAll(i, rests);
@@ -165,14 +196,17 @@ public class Voice {
 					removedTime -= (startTime - time);
 				}
 				
+				// Add new item.
 				items.add(i++, newItem);
 				
+				// Add any rests after new item.
 				if(removedTime > newItem.getDurationCount()) {
 					List<Rest> rests = createRests(removedTime - newItem.getDurationCount());
 					items.addAll(i, rests);
 					i += rests.size();
 				}
 				
+				// Remove rests after the new item that overlap its duration.
 				if(removedTime < newItem.getDurationCount()) {
 					while(i < items.size() && items.get(i) instanceof Rest && removedTime < newItem.getDurationCount()) {
 						removedTime += items.get(i).getDurationCount();
@@ -193,6 +227,7 @@ public class Voice {
 			}
 		}
 		
+		// Start time is after the duration of all the items. Add new rests and then the new item at the end.
 		if(startTime > time) {
 			List<Rest> rests = createRests(startTime - time);
 			items.addAll(i, rests);
@@ -204,6 +239,9 @@ public class Voice {
 		removeBeams(removedBeams);
 	}
 	
+	/**
+	 * Remove all given beams from each item in this voice.
+	 */
 	private void removeBeams(Set<Beam> beams) {
 		for(VoiceItem item:items) {
 			if(item instanceof Chord && item.getBeam() != null) {
@@ -214,6 +252,9 @@ public class Voice {
 		}
 	}
 	
+	/**
+	 * Beam any note below a quarter note aligned to boundaries of the beam duration.
+	 */
 	public void autoBeam(int beamDuration) {
 		List<Chord> beamedChords = new ArrayList<>();
 		
@@ -225,7 +266,7 @@ public class Voice {
 				
 				chord.setBeam(null);
 				
-				if(item.getDurationCount() < 8) {
+				if(item.getDurationCount() < Duration.WHOLEDURATIONCOUNT / 4) {
 					beamedChords.add(chord);
 					
 					if(time / beamDuration != (time + item.getDurationCount()) / beamDuration) {
@@ -247,6 +288,9 @@ public class Voice {
 		addBeam(beamedChords);
 	}
 	
+	/**
+	 * Set the beam of all beamed chords to a new beam, if there are more than one.
+	 */
 	private static void addBeam(List<Chord> beamedChords) {
 		if(beamedChords.size() > 1) {
 			Beam beam = new Beam();
@@ -254,6 +298,9 @@ public class Voice {
 		}
 	}
 
+	/**
+	 * Rests a list of rests with a duration adding up to the given duration.
+	 */
 	private static List<Rest> createRests(int duration) {
 		int remaining = duration;
 		List<Rest> rests = new ArrayList<>();

@@ -9,6 +9,10 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Stores a transformation that is updated by dragging or using the mouse wheel to
+ * allow panning and zooming of the canvas.
+ */
 public class PanAndZoomHandler {
 	private Control control;
 	
@@ -19,6 +23,7 @@ public class PanAndZoomHandler {
 	public PanAndZoomHandler(Control control) {
 		this.control = control;
 	
+		// Update scaling when the mouse wheel is moved.
 		control.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseScrolled(MouseEvent event) {
 				if((event.stateMask & SWT.CTRL) > 0) {
@@ -41,6 +46,7 @@ public class PanAndZoomHandler {
 			}
 		});
 		
+		// Update panning when the mouse is dragged.
 		class Handler implements MouseListener, MouseMoveListener {
 			private boolean mouseDown = false;
 			private int mouseDownX;

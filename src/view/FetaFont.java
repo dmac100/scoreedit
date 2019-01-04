@@ -3,6 +3,9 @@ package view;
 import score.Duration;
 import score.Stem.StemDirection;
 
+/**
+ * Stores the unicode characters that represent each musical item within the feta font.
+ */
 public class FetaFont {
 	public static final String TREBLECLEF = "\uE050";
 	public static final String BASSCLEF = "\uE062";

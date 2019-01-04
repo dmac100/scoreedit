@@ -17,6 +17,9 @@ import score.Duration;
 import score.Duration.DurationType;
 import score.Stem.StemDirection;
 
+/**
+ * Creates and caches the images used in the toolbar.
+ */
 public class ToolbarImages {
 	private static final Map<DurationType, Image> durationTypeImages = new HashMap<>();
 	
@@ -52,7 +55,10 @@ public class ToolbarImages {
 			gc.drawText("N", 0, 0, true);	
 		});
 	}
-	
+
+	/**
+	 * Creates a transparent image using a GC by calling the given callback.
+	 */
 	private static Image createImage(Consumer<GC> callback) {
 		ImageData imageData = new ImageData(25, 30, 24, new PaletteData(0xff0000, 0x00ff00, 0x0000ff));
 		imageData.setAlpha(0, 0, 0);

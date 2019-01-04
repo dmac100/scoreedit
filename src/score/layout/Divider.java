@@ -1,5 +1,9 @@
 package score.layout;
 
+/**
+ * Divides a quotient by a divisor and distributes the remainder across each divisor, giving
+ * integer results.
+ */
 public class Divider {
 	private final int quotient;
 	private final int remainder;
@@ -13,6 +17,9 @@ public class Divider {
 		this.remainder = dividend % divisor;
 	}
 	
+	/**
+	 * Returns the next divisor, with a possible partial remainder added.
+	 */
 	public int next() {
 		count++;
 		

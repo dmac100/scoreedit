@@ -10,6 +10,10 @@ import org.jdom2.Element;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * The key signature for a measure. Stores the number of fifths where a positive value is the number of sharps in the key signature,
+ * and a negative value is the number of flats.
+ */
 public class KeySig {
 	private final List<Pitch> sharps = Arrays.asList(new Pitch("F5"), new Pitch("C5"), new Pitch("G5"), new Pitch("D5"), new Pitch("A4"), new Pitch("E5"), new Pitch("B4"));
 	private final List<Pitch> flats = Arrays.asList(new Pitch("B4"), new Pitch("E5"), new Pitch("A4"), new Pitch("D5"), new Pitch("G4"), new Pitch("C5"), new Pitch("F4"));

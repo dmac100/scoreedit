@@ -1,8 +1,11 @@
 package score.layout;
 
-import score.VoiceItem;
 import score.MeasureAccidentals;
+import score.VoiceItem;
 
+/**
+ * An item to add extra horizontal spacing between items.
+ */
 public class Spacer implements VoiceItem {
 	private final int spacing;
 	
@@ -12,6 +15,6 @@ public class Spacer implements VoiceItem {
 	
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(spacing, 0, 0, 32);
+		return new AlignmentBox(spacing, 0);
 	}
 }

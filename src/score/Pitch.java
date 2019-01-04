@@ -7,6 +7,10 @@ import java.util.Objects;
 
 import org.jdom2.Element;
 
+/**
+ * A musical pitch that a note can have. Stores the name, octave, and the number of sharps (flats if negative).
+ * For example, middle C would be 'C4', with 'C4#' and 'C4b' a semitone above and below it.
+ */
 public class Pitch {
 	private final char name;
 	private final int octave;
@@ -45,6 +49,9 @@ public class Pitch {
 		sharps = Integer.parseInt(parent.getChildText("sharps"));
 	}
 	
+	/**
+	 * Returns the number to pass to a MIDI device to play this pitch.
+	 */
 	public int getMidiNumber() {
 		int midiNumber = (name < 'C') ? (name - 'A') + 5 : (name - 'C');
 		midiNumber *= 2;
@@ -57,6 +64,9 @@ public class Pitch {
 		return midiNumber;
 	}
 	
+	/**
+	 * Returns the pitch a semitone above this one.
+	 */
 	public Pitch nextSemitone() {
 		if(sharps < 0) {
 			return new Pitch(name, octave, sharps + 1);
@@ -71,6 +81,9 @@ public class Pitch {
 		}
 	}
 	
+	/**
+	 * Returns the pitch a semitone below this one.
+	 */
 	public Pitch prevSemitone() {
 		if(sharps > 0) {
 			return new Pitch(name, octave, sharps - 1);
@@ -85,10 +98,16 @@ public class Pitch {
 		}
 	}
 
+	/**
+	 * Returns the next note name, wrapping from 'G' back to 'A'.
+	 */
 	private char nextName(char name) {
 		return (name < 'G') ? (char) (name + 1) : 'A';
 	}
 	
+	/**
+	 * Returns the previous note name, wrapping from 'A' back to 'G'.
+	 */
 	private char prevName(char name) {
 		return (name > 'A') ? (char) (name - 1) : 'G';
 	}
@@ -105,6 +124,10 @@ public class Pitch {
 		return sharps;
 	}
 	
+	/**
+	 * Returns a number indicating where this pitch is in a scale. Notes with the same name and octave
+	 * have the same number.
+	 */
 	public int getScaleNumber() {
 		return (name - 'A') + octave * 7 - ((name >= 'C') ? 7 : 0);
 	}

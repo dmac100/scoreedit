@@ -25,6 +25,9 @@ import org.jdom2.output.XMLOutputter;
 
 import score.Duration.DurationType;
 
+/**
+ * Contains the score, the selected items, and the currently selected toolbar items.
+ */
 public class Model {
 	private final List<Measure> measures = new ArrayList<>();
 	private final Set<Selectable> selectedItems = new HashSet<>();
@@ -95,6 +98,10 @@ public class Model {
 		updateSelectedItemsDuration();
 	}
 	
+	/**
+	 * Updates the duration of the selected item, shifting the next
+	 * items along.
+	 */
 	private void updateSelectedItemsDuration() {
 		Set<Selectable> selectedItems = getSelectedItems();
 		
@@ -123,7 +130,10 @@ public class Model {
 	public Duration getDuration() {
 		return new Duration(getDurationType(), getDots());
 	}
-	
+
+	/**
+	 * Sets the selected duration to match the selected items.
+	 */
 	private void updateDurationFromSelection() {
 		getCurrentSelectedNotes().forEach(note -> {
 			Duration duration = note.getDuration();
@@ -132,12 +142,18 @@ public class Model {
 		});
 	}
 	
+	/**
+	 * Sets the selected pitch to match the selected items.
+	 */
 	private void updateLastPitchFromSelection() {
 		getCurrentSelectedNotes().forEach(note -> {
 			lastPitch = note.getPitch();
 		});
 	}
 	
+	/**
+	 * Returns all the individual notes within the selected items.
+	 */
 	public List<Note> getCurrentSelectedNotes() {
 		Set<Selectable> selectedItems = getSelectedItems();
 		MeasureDataCache measureDataCache = new MeasureDataCache(getMeasures());
@@ -160,6 +176,9 @@ public class Model {
 		}
 	}
 	
+	/**
+	 * Inserts a note by its name at the cursor location and advanced the cursor.
+	 */
 	public void insertNote(char name) {
 		Cursor cursor = findOrCreateCursor();
 		
@@ -182,6 +201,9 @@ public class Model {
 		fireSelectionChangedHandlers();
 	}
 	
+	/**
+	 * Adds a note by its name to the selected chords.
+	 */
 	public void addNoteToSelectChords(char name) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
 		
@@ -199,7 +221,10 @@ public class Model {
 		
 		fireSelectionChangedHandlers();
 	}
-	
+
+	/**
+	 * Returns all the chords in the current selection.
+	 */
 	private Collection<Chord> getSelectedChords() {
 		Set<Selectable> selectedItems = getSelectedItems();
 		Set<Chord> selectedChords = new LinkedHashSet<>();
@@ -213,6 +238,9 @@ public class Model {
 		return selectedChords;
 	}
 
+	/**
+	 * Returns the new pitch by its name, setting the octave to be closest to the previous pitch.
+	 */
 	private Pitch getNewPitch(char name) {
 		Pitch newPitch = new Pitch(name, lastPitch.getOctave(), 0);
 		for(int d = -1; d <= 1; d++) {
@@ -224,6 +252,9 @@ public class Model {
 		return newPitch;
 	}
 
+	/**
+	 * Returns the cursor in the score, or creates a new one.
+	 */
 	private Cursor findOrCreateCursor() {
 		Cursor cursor = findCursor();
 		
@@ -239,7 +270,10 @@ public class Model {
 		
 		return cursor;
 	}
-	
+
+	/**
+	 * Returns the cursor in the score.
+	 */
 	private Cursor findCursor() {
 		for(Measure measure:getMeasures()) {
 			for(Voice voice:measure.getVoices()) {
@@ -268,7 +302,10 @@ public class Model {
 			measures.add(new Measure(measureElement));
 		}
 	}
-	
+
+	/**
+	 * Deletes all the items in the selection, optionally replacing them with rests.
+	 */
 	public void deleteSelection(boolean replaceWithRests) {
 		Set<Rest> collapsableRests = new HashSet<>();
 		
@@ -312,6 +349,7 @@ public class Model {
 			}
 		});
 		
+		// Replace multiple rests with others of the same duration.
 		for(Measure measure:measures) {
 			for(Voice voice:measure.getVoices()) {
 				voice.collapseRests(collapsableRests);
@@ -321,6 +359,9 @@ public class Model {
 		measures.forEach(measure -> measure.autoBeam());
 	}
 	
+	/**
+	 * Visit every item in the score.
+	 */
 	public void visitItems(ItemVisitor itemVisitor) {
 		for(Measure measure:measures) {
 			itemVisitor.visitMeasure(measure);
@@ -348,7 +389,10 @@ public class Model {
 	private void fireSelectionChangedHandlers() {
 		selectionChangedHandlers.forEach(Runnable::run);
 	}
-	
+
+	/**
+	 * Shift selection up or down in pitch by a number of semitones.
+	 */
 	public void shiftSelectionPitch(int shiftCount) {
 		visitItems(new ItemVisitor() {
 			public void visitNote(Note note) {
@@ -369,6 +413,9 @@ public class Model {
 		fireSelectionChangedHandlers();
 	}
 	
+	/**
+	 * Shift selection up or down in pitch by a number of octaves.
+	 */
 	public void shiftSelectionOctave(int shiftCount) {
 		visitItems(new ItemVisitor() {
 			public void visitNote(Note note) {
@@ -382,13 +429,18 @@ public class Model {
 		fireSelectionChangedHandlers();
 	}
 
+	/**
+	 * Change the selected items. Use shift to expand the selection, or control to add to the selection.
+	 */
 	public void selectItems(List<? extends Selectable> items, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
-		
+
+		// Deselect all if no modifier.
 		if(!control && !shift) {
 			deselectAll();
 		}
 		
+		// Add to selection with control.
 		if(control) {
 			items.forEach(item -> {
 				if(selectedItems.contains(item)) {
@@ -404,10 +456,13 @@ public class Model {
 			return;
 		}
 		
+		// Add new items to selection.
 		items.forEach(item -> selectItem(item));
 		
+		// Expand selection with shift.
 		if(shift) {
 			if(!selectedItems.isEmpty()) {
+				// Find min and max time bounds.
 				int minTime = Integer.MAX_VALUE;
 				int maxTime = Integer.MIN_VALUE;
 				Set<Clef> clefs = new HashSet<>();
@@ -418,6 +473,7 @@ public class Model {
 					maxTime = Math.max(maxTime, startTime);
 				}
 				
+				// Select all items between min and max time.
 				for(Selectable item:getAllSelectableItems()) {
 					int startTime = measureDataCache.getStartTime(item);
 					Clef clef = measureDataCache.getVoice(item).getClef();
@@ -432,6 +488,9 @@ public class Model {
 		updateCursorToSelection();
 	}
 
+	/**
+	 * Updates the cursor so that it is at the beginning of the current selection.
+	 */
 	private void updateCursorToSelection() {
 		visitItems(new ItemVisitor() {
 			private Cursor cursor = findCursor();
@@ -494,6 +553,9 @@ public class Model {
 		item.setSelected(false);
 	}
 	
+	/**
+	 * Returns all the items that are selectable in the score.
+	 */
 	private Set<Selectable> getAllSelectableItems() {
 		Set<Selectable> items = new HashSet<>();
 		visitItems(new ItemVisitor() {
@@ -508,14 +570,24 @@ public class Model {
 		return items;
 	}
 
+	/**
+	 * Selects the previous item in time to the current selection.
+	 */
 	public void selectPrev(boolean shift, boolean control) {
 		selectPrevNext(-1, shift, control);
 	}
 	
+	/**
+	 * Selects the next item in time to the current selection.
+	 */
 	public void selectNext(boolean shift, boolean control) {
 		selectPrevNext(1, shift, control);
 	}
 	
+	/**
+	 * Selects either the previous or next item in time to the current selection.
+	 * Where d is 1 for next, or -1 for previous.
+	 */
 	private void selectPrevNext(int d, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
 		
@@ -523,6 +595,7 @@ public class Model {
 		
 		Selectable startSelectable = maxBy(selectedItems, item -> measureDataCache.getStartTime(item) * d);
 		
+		// Find the first selected item.
 		if(startSelectable instanceof Note) {
 			selectedItem = measureDataCache.getChord((Note) startSelectable);
 		} else if(startSelectable instanceof Rest) {
@@ -537,6 +610,7 @@ public class Model {
 			int voiceIndex = measure.getVoices().indexOf(voice);
 			int itemIndex = voice.getItems().indexOf(selectedItem);
 			
+			// Search for the next item beside the selected item.
 			while(measureIndex >= 0 && measureIndex < measures.size()) {
 				List<VoiceItem> items = voice.getItems();
 				
@@ -553,6 +627,7 @@ public class Model {
 				
 				measureIndex += d;
 				
+				// Try next measure.
 				if(measureIndex >= 0 && measureIndex < measures.size()) {
 					measure = measures.get(measureIndex);
 					voice = measure.getVoices().get(voiceIndex);

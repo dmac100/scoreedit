@@ -5,7 +5,12 @@ import static util.XmlUtil.addElement;
 
 import org.jdom2.Element;
 
+/**
+ * The duration of a voice item such as a chord or rest, stored as a type and number of dots.
+ */
 public class Duration {
+	public static final int WHOLEDURATIONCOUNT = 32;
+	
 	public enum DurationType {
 		WHOLE(1),
 		HALF(2),
@@ -58,7 +63,7 @@ public class Duration {
 	}
 
 	public int getDurationCount() {
-		int count = 32 / type.getDenominator();
+		int count = WHOLEDURATIONCOUNT / type.getDenominator();
 		int dotValue = count;
 		for(int dot = 0; dot < dots; dot++) {
 			dotValue /= 2;

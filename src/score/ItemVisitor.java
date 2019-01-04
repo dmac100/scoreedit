@@ -1,5 +1,8 @@
 package score;
 
+/**
+ * Visitor for all items within score.
+ */
 public interface ItemVisitor {
 	public default void visitMeasure(Measure measure) {}
 	public default void visitVoice(Voice voice) {}

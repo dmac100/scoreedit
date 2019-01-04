@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Reads all measures a caches calculated values from them.
+ */
 public class MeasureDataCache {
 	private final Map<Object, Measure> itemMeasures = new HashMap<>();
 	private final Map<Object, Voice> itemVoices = new HashMap<>();
@@ -46,22 +49,37 @@ public class MeasureDataCache {
 		}
 	}
 	
+	/**
+	 * Returns the start time of an item from the beginning of the score.
+	 */
 	public int getStartTime(Object item) {
 		return itemStartTimes.get(item);
 	}
 	
+	/**
+	 * Returns the measure that contains an item.
+	 */
 	public Measure getMeasure(Object item) {
 		return itemMeasures.get(item);
 	}
 
+	/**
+	 * Returns the voice that contains an item.
+	 */
 	public Voice getVoice(Object item) {
 		return itemVoices.get(item);
 	}
 
+	/**
+	 * Returns the chord that contains a note.
+	 */
 	public Chord getChord(Note note) {
 		return noteChords.get(note);
 	}
 
+	/**
+	 * Returns the start time of a measure from the beginning of a score.
+	 */
 	public int getMeasureStartTime(Measure measure) {
 		return measureStartTimes.get(measure);
 	}

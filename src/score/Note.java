@@ -9,6 +9,9 @@ import score.Duration.DurationType;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * An individual note within a chord.
+ */
 public class Note implements Selectable {
 	private Pitch pitch;
 	private Duration duration;

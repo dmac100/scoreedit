@@ -1,7 +1,8 @@
 package score;
 
-import score.Stem.StemDirection;
-
+/**
+ * The stem location for a chord, storing both up and down directions in case it needs to be flipped.
+ */
 public class Stem {
 	public enum StemDirection {
 		UP, DOWN

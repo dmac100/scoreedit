@@ -12,9 +12,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.jdom2.Element;
 
 import score.layout.AlignmentBox;
-import score.layout.NoteLayout;
+import score.layout.ItemLayout;
 import view.ScoreCanvas;
 
+/**
+ * A single measure containing the voices for each clef.
+ */
 public class Measure {
 	private List<Voice> voices;
 	private TimeSig timeSig;
@@ -47,17 +50,17 @@ public class Measure {
 		
 		timeSig.draw(canvas, startX + keySigWidth, startY, previousMeasure);
 		
-		new NoteLayout(keySig, voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
+		// Find position of each item for each voice.
+		new ItemLayout(keySig, voices, extraWidth).getVoiceItems().forEach((voice, items) -> {
 			List<Beam> beams = getBeams(items);
 			
 			beams.forEach(beam -> beam.clearStems());
 			
+			// Draw item and advance to next item.
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
 			for(VoiceItem item:items) {
 				item.draw(canvas, x, startY + voice.getClef().getOffset(), measureAccidentals);
-				
-				//item.getAlignmentBox(measureAccidentals).draw(gc, x, startY + voice.getClef().getOffset());
 				
 				AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
 				
@@ -68,12 +71,16 @@ public class Measure {
 				item.setAccidentals(measureAccidentals);
 			}
 			
+			// Draw any beams that have been added.
 			for(Beam beam:beams) {
 				beam.draw(canvas);
 			}
 		});
 	}
 	
+	/**
+	 * Returns all the unique beams that are contained in items.
+	 */
 	private static List<Beam> getBeams(List<VoiceItem> items) {
 		Set<Beam> beams = new LinkedHashSet<>();
 		for(VoiceItem item:items) {
@@ -89,13 +96,17 @@ public class Measure {
 		return new Rectangle(startX, startY, getWidth(previousMeasureOnLine, previousMeasure), 8*8);
 	}
 	
+	/**
+	 * Returns the width of this measure, given the previous measure, and the previous on the same line if any.
+	 * Adds the width of all items, and any key signatures or time signatures that need to be added.
+	 */
 	public int getWidth(Measure previousMeasureOnLine, Measure previousMeasure) {
 		int maxWidth = 0;
 		
 		int timeSigWidth = timeSig.getWidth(previousMeasureOnLine, previousMeasure);
 		int keySigWidth = keySig.getWidth(previousMeasureOnLine, previousMeasure);
 		
-		for(List<VoiceItem> items:new NoteLayout(keySig, voices, 0).getVoiceItems().values()) {
+		for(List<VoiceItem> items:new ItemLayout(keySig, voices, 0).getVoiceItems().values()) {
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int width = timeSigWidth + keySigWidth;
 			for(VoiceItem item:items) {
@@ -107,7 +118,10 @@ public class Measure {
 		return maxWidth;
 	}
 	
-	public Set<VoiceItem> getCanvasItems() {
+	/**
+	 * Returns all the items of every voice in this measure.
+	 */
+	public Set<VoiceItem> getVoiceItems() {
 		Set<VoiceItem> items = new LinkedHashSet<>();
 		for(Voice voice:voices) {
 			items.addAll(voice.getItems());
@@ -131,12 +145,18 @@ public class Measure {
 		this.keySig = keySig;
 	}
 	
+	/**
+	 * Auto beams every voice in this measure.
+	 */
 	public void autoBeam() {
 		for(Voice voice:voices) {
-			voice.autoBeam(32 / timeSig.getLowerCount());
+			voice.autoBeam(Duration.WHOLEDURATIONCOUNT / timeSig.getLowerCount());
 		}
 	}
 	
+	/**
+	 * Returns the voice that contains the given item.
+	 */
 	public Voice getVoice(VoiceItem item) {
 		for(Voice voice:voices) {
 			for(VoiceItem voiceItem:voice.getItems()) {
@@ -151,7 +171,10 @@ public class Measure {
 	public List<Voice> getVoices() {
 		return voices;
 	}
-	
+
+	/**
+	 * Returns all the voices with the given clef.
+	 */
 	public List<Voice> getVoices(Clef clef) {
 		List<Voice> voices = new ArrayList<>();
 		for(Voice voice:this.voices) {
@@ -161,7 +184,10 @@ public class Measure {
 		}
 		return voices;
 	}
-	
+
+	/**
+	 * Returns the start time of an the given item.
+	 */
 	public int getStartTime(VoiceItem item) {
 		return getVoice(item).getStartTime(item);
 	}

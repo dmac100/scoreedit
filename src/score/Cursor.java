@@ -2,6 +2,9 @@ package score;
 
 import score.layout.AlignmentBox;
 
+/**
+ * The cursor representing where new notes will be added within a voice.
+ */
 public class Cursor implements VoiceItem {
 	private final Measure measure;
 	private final Voice voice;
@@ -21,7 +24,7 @@ public class Cursor implements VoiceItem {
 
 	@Override
 	public AlignmentBox getAlignmentBox(MeasureAccidentals measureAccidentals) {
-		return new AlignmentBox(0, 0, 0, 0);
+		return new AlignmentBox(0, 0);
 	}
 
 	@Override

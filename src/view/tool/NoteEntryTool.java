@@ -27,6 +27,9 @@ import score.Voice;
 import view.FetaFont;
 import view.ScoreCanvas;
 
+/**
+ * Allows the user to enter notes by clicking on the staffs.
+ */
 public class NoteEntryTool implements Tool {
 	private final Composite composite;
 	private final Model model;
@@ -61,6 +64,7 @@ public class NoteEntryTool implements Tool {
 				Rest item = new Rest(duration);
 				voice.insertItem(item, startTime);
 				
+				// Insert a rest at the selection position.
 				model.selectItems(Arrays.asList(item), false, false);
 				composite.redraw();
 				
@@ -72,6 +76,7 @@ public class NoteEntryTool implements Tool {
 				if(existingItem instanceof Chord) {
 					Chord chord = ((Chord) existingItem);
 					if(chord.getDurationCount() == duration.getDurationCount()) {
+						// Add note to existing chord.
 						Note note = new Note(pitchWithAccidentals, duration);
 						chord.addNote(note);
 						
@@ -82,6 +87,7 @@ public class NoteEntryTool implements Tool {
 					}
 				}
 	
+				// Insert a new note at the selection position.
 				Chord item = new Chord(clef, Arrays.asList(new Note(pitchWithAccidentals, duration)), duration);
 				voice.insertItem(item, startTime);
 				
@@ -113,6 +119,7 @@ public class NoteEntryTool implements Tool {
 		this.pitch = null;
 		this.item = null;
 		
+		// Find position of new item based on previous mouse location.
 		Measure measure = getClosestKey(measureBounds, mx, my);
 		if(measure != null) {
 			Rectangle measureRectangle = measureBounds.get(measure);
@@ -135,7 +142,8 @@ public class NoteEntryTool implements Tool {
 					this.item = item;
 					this.clef = clef;
 					this.pitch = new Pitch(scaleNumber);
-					
+	
+					// Draw indicator of next note or rest to be inserted.
 					if(model.getRest()) {
 						drawRest(gc, itemRectangle.x, measureRectangle.y + clef.getOffset(), pitch.getScaleNumber() - clef.getLowScaleNumber(), new Duration(model.getDurationType()));
 					} else {
@@ -196,12 +204,18 @@ public class NoteEntryTool implements Tool {
 		}
 	}
 
+	/**
+	 * Returns a copy of map containing only the given keys.
+	 */
 	private static <K, V> Map<K, V> filterKeys(Map<K, V> map, Collection<K> keys) {
 		Map<K, V> filteredMap = new HashMap<>();
 		keys.forEach(key -> filteredMap.put(key, map.get(key)));
 		return filteredMap;
 	}
 
+	/**
+	 * Returns the key of bounds that is closest to the given x and y coordinates.
+	 */
 	private static <T> T getClosestKey(Map<T, Rectangle> bounds, int x, int y) {
 		T closestKey = null;
 		int closestDistance = Integer.MAX_VALUE;
