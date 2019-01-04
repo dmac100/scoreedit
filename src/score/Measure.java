@@ -54,7 +54,7 @@ public class Measure {
 			
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int x = startX + timeSigWidth + keySigWidth;
-			for(CanvasItem item:items) {
+			for(VoiceItem item:items) {
 				item.draw(canvas, x, startY + voice.getClef().getOffset(), measureAccidentals);
 				
 				//item.getAlignmentBox(measureAccidentals).draw(gc, x, startY + voice.getClef().getOffset());
@@ -74,9 +74,9 @@ public class Measure {
 		});
 	}
 	
-	private static List<Beam> getBeams(List<CanvasItem> items) {
+	private static List<Beam> getBeams(List<VoiceItem> items) {
 		Set<Beam> beams = new LinkedHashSet<>();
-		for(CanvasItem item:items) {
+		for(VoiceItem item:items) {
 			Beam beam = item.getBeam();
 			if(beam != null) {
 				beams.add(beam);
@@ -95,10 +95,10 @@ public class Measure {
 		int timeSigWidth = timeSig.getWidth(previousMeasureOnLine, previousMeasure);
 		int keySigWidth = keySig.getWidth(previousMeasureOnLine, previousMeasure);
 		
-		for(List<CanvasItem> items:new NoteLayout(keySig, voices, 0).getVoiceItems().values()) {
+		for(List<VoiceItem> items:new NoteLayout(keySig, voices, 0).getVoiceItems().values()) {
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
 			int width = timeSigWidth + keySigWidth;
-			for(CanvasItem item:items) {
+			for(VoiceItem item:items) {
 				width += item.getAlignmentBox(measureAccidentals).getWidth();
 			}
 			maxWidth = Math.max(maxWidth, width);
@@ -107,8 +107,8 @@ public class Measure {
 		return maxWidth;
 	}
 	
-	public Set<CanvasItem> getCanvasItems() {
-		Set<CanvasItem> items = new LinkedHashSet<>();
+	public Set<VoiceItem> getCanvasItems() {
+		Set<VoiceItem> items = new LinkedHashSet<>();
 		for(Voice voice:voices) {
 			items.addAll(voice.getItems());
 		}
@@ -137,9 +137,9 @@ public class Measure {
 		}
 	}
 	
-	public Voice getVoice(CanvasItem item) {
+	public Voice getVoice(VoiceItem item) {
 		for(Voice voice:voices) {
-			for(CanvasItem voiceItem:voice.getItems()) {
+			for(VoiceItem voiceItem:voice.getItems()) {
 				if(voiceItem == item) {
 					return voice;
 				}
@@ -162,7 +162,7 @@ public class Measure {
 		return voices;
 	}
 	
-	public int getStartTime(CanvasItem item) {
+	public int getStartTime(VoiceItem item) {
 		return getVoice(item).getStartTime(item);
 	}
 

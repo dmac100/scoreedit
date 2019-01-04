@@ -12,7 +12,7 @@ import score.layout.AlignmentBox;
 import view.FetaFont;
 import view.ScoreCanvas;
 
-public class Rest implements CanvasItem, Selectable {
+public class Rest implements VoiceItem, Selectable {
 	private Duration duration;
 	
 	private boolean selected;

@@ -57,7 +57,7 @@ public class ModelTest {
 		model.deleteSelection(true);
 		
 		// [####|....|....|####]
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(HALF), Item(QUARTER)), items);
 	}
 	
@@ -65,7 +65,7 @@ public class ModelTest {
 	public void insertNote() {
 		model.insertNote('C');
 		
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
 		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
@@ -77,7 +77,7 @@ public class ModelTest {
 		
 		model.insertNote('C');
 		
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Rest(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
 		assertEquals(new Pitch('C', 4, 1), ((Chord) items.get(0)).getNotes().get(0).getPitch());
@@ -91,7 +91,7 @@ public class ModelTest {
 		model.insertNote('D');
 		model.insertNote('E');
 		
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Item(QUARTER), Item(QUARTER), Rest(QUARTER)), items);
 		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
@@ -107,7 +107,7 @@ public class ModelTest {
 		
 		model.insertNote('C');
 		
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Rest(QUARTER), Rest(QUARTER), Item(QUARTER), Rest(QUARTER)), items);
 		assertEquals(new Pitch('C', 4, 0), ((Chord) items.get(2)).getNotes().get(0).getPitch());
@@ -124,7 +124,7 @@ public class ModelTest {
 		
 		model.insertNote('E');
 		
-		List<CanvasItem> items = getFirstMeasureItems();
+		List<VoiceItem> items = getFirstMeasureItems();
 		
 		assertItemsEquals(Arrays.asList(Item(QUARTER), Item(QUARTER), Rest(QUARTER), Rest(QUARTER)), items);
 		assertEquals(new Pitch('E', 4, 0), ((Chord) items.get(0)).getNotes().get(0).getPitch());
@@ -207,7 +207,7 @@ public class ModelTest {
 
 		List<Chord> chords = new ArrayList<>();
 		
-		for(CanvasItem item:voice.getItems()) {
+		for(VoiceItem item:voice.getItems()) {
 			if(item instanceof Chord) {
 				chords.add((Chord) item);
 			}
@@ -219,7 +219,7 @@ public class ModelTest {
 		assertNotEquals(chords.get(1).getBeam(), chords.get(2).getBeam());
 	}
 	
-	public List<CanvasItem> getFirstMeasureItems() {
+	public List<VoiceItem> getFirstMeasureItems() {
 		return filter(model.getMeasures().get(0).getVoices().get(0).getItems(), item -> !(item instanceof Cursor));
 	}
 	
@@ -239,14 +239,14 @@ public class ModelTest {
 		return new Rest(new Duration(durationType, dots));
 	}
 
-	private static void assertItemsEquals(List<CanvasItem> expected, List<CanvasItem> actual) {
+	private static void assertItemsEquals(List<VoiceItem> expected, List<VoiceItem> actual) {
 		if(expected.size() != actual.size()) {
 			fail("Expected size: " + expected.size() + ", actual size: " + actual.size());
 		}
 		
 		for(int i = 0; i < expected.size(); i++) {
-			CanvasItem expectedItem = expected.get(i);
-			CanvasItem actualItem = actual.get(i);
+			VoiceItem expectedItem = expected.get(i);
+			VoiceItem actualItem = actual.get(i);
 			
 			assertEquals(expectedItem.getClass(), actualItem.getClass());
 			assertEquals(expectedItem.getDurationCount(), actualItem.getDurationCount());

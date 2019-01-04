@@ -1,9 +1,9 @@
 package score.layout;
 
-import score.CanvasItem;
+import score.VoiceItem;
 import score.MeasureAccidentals;
 
-public class Spacer implements CanvasItem {
+public class Spacer implements VoiceItem {
 	private final int spacing;
 	
 	public Spacer(int spacing) {

@@ -25,9 +25,9 @@ import score.Duration.DurationType;
 
 public class Voice {
 	private Clef clef;
-	private List<CanvasItem> items;
+	private List<VoiceItem> items;
 
-	public Voice(Clef clef, List<CanvasItem> items) {
+	public Voice(Clef clef, List<VoiceItem> items) {
 		this.clef = clef;
 		this.items = new ArrayList<>(items);
 	}
@@ -50,7 +50,7 @@ public class Voice {
 		return clef;
 	}
 	
-	public List<CanvasItem> getItems() {
+	public List<VoiceItem> getItems() {
 		return new ArrayList<>(items);
 	}
 	
@@ -58,7 +58,7 @@ public class Voice {
 		Pitch pitchWithSharpsOrFlats = null;
 		
 		int time = 0;
-		for(CanvasItem item:items) {
+		for(VoiceItem item:items) {
 			for(Note note:item.getNotes()) {
 				if(new Pitch(note.getPitch().getScaleNumber()).equals(new Pitch(pitch.getScaleNumber()))) {
 					pitchWithSharpsOrFlats = note.getPitch();
@@ -84,9 +84,9 @@ public class Voice {
 		return pitch;
 	}
 	
-	public int getStartTime(CanvasItem item) {
+	public int getStartTime(VoiceItem item) {
 		int time = 0;
-		for(CanvasItem voiceItem:items) {
+		for(VoiceItem voiceItem:items) {
 			if(voiceItem == item) {
 				return time;
 			}
@@ -95,9 +95,9 @@ public class Voice {
 		throw new NoSuchElementException("Item not found: " + item);
 	}
 
-	public CanvasItem getItemAt(int startTime) {
+	public VoiceItem getItemAt(int startTime) {
 		int time = 0;
-		for(CanvasItem item:items) {
+		for(VoiceItem item:items) {
 			if(time == startTime && item.includeInLayout()) {
 				return item;
 			}
@@ -109,11 +109,11 @@ public class Voice {
 		return null;
 	}
 	
-	public void removeItem(CanvasItem item) {
+	public void removeItem(VoiceItem item) {
 		items.remove(item);
 	}
 	
-	public void replaceItem(CanvasItem oldItem, CanvasItem newItem) {
+	public void replaceItem(VoiceItem oldItem, VoiceItem newItem) {
 		int index = items.indexOf(oldItem);
 		if(index >= 0) {
 			items.remove(index);
@@ -121,21 +121,21 @@ public class Voice {
 		}
 	}
 	
-	public void insertItemBefore(CanvasItem oldItem, CanvasItem newItem) {
+	public void insertItemBefore(VoiceItem oldItem, VoiceItem newItem) {
 		int index = items.indexOf(oldItem);
 		if(index >= 0) {
 			items.add(index, newItem);
 		}
 	}
 	
-	public void insertItem(CanvasItem newItem, int startTime) {
+	public void insertItem(VoiceItem newItem, int startTime) {
 		Set<Beam> removedBeams = new HashSet<>();
 		
 		int i = 0;
 		
 		int time = 0;
 		while(i < items.size()) {
-			CanvasItem item = items.get(i++);
+			VoiceItem item = items.get(i++);
 			time += item.getDurationCount();
 			
 			if(time > startTime) {
@@ -205,7 +205,7 @@ public class Voice {
 	}
 	
 	private void removeBeams(Set<Beam> beams) {
-		for(CanvasItem item:items) {
+		for(VoiceItem item:items) {
 			if(item instanceof Chord && item.getBeam() != null) {
 				if(beams.contains(item.getBeam())) {
 					((Chord) item).setBeam(null);
@@ -219,7 +219,7 @@ public class Voice {
 		
 		int time = 0;
 		
-		for(CanvasItem item:getItems()) {
+		for(VoiceItem item:getItems()) {
 			if(item instanceof Chord) {
 				Chord chord = (Chord) item;
 				
@@ -326,7 +326,7 @@ public class Voice {
 	public void save(Element parent) {
 		List<Beam> beams = new ArrayList<>();
 		clef.save(addElement(parent, "clef"));
-		for(CanvasItem canvasItem:items) {
+		for(VoiceItem canvasItem:items) {
 			canvasItem.save(parent, beams);
 		}
 	}

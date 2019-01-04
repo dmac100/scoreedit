@@ -22,7 +22,7 @@ public class MeasureDataCache {
 			for(Voice voice:measure.getVoices()) {
 				int voiceTime = 0;
 				
-				for(CanvasItem item:voice.getItems()) {
+				for(VoiceItem item:voice.getItems()) {
 					itemMeasures.put(item, measure);
 					itemVoices.put(item, voice);
 					itemStartTimes.put(item, measureTime + voiceTime);

@@ -2,7 +2,7 @@ package score;
 
 import score.layout.AlignmentBox;
 
-public class Cursor implements CanvasItem {
+public class Cursor implements VoiceItem {
 	private final Measure measure;
 	private final Voice voice;
 	

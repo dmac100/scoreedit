@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import score.CanvasItem;
+import score.VoiceItem;
 import score.Chord;
 import score.Clef;
 import score.Duration;
@@ -37,7 +37,7 @@ public class NoteEntryTool implements Tool {
 	
 	private Measure measure = null;
 	private Pitch pitch = null;
-	private CanvasItem item = null;
+	private VoiceItem item = null;
 	private Clef clef = null;
 
 	public NoteEntryTool(Composite composite, Model model, ScoreCanvas scoreCanvas) {
@@ -68,7 +68,7 @@ public class NoteEntryTool implements Tool {
 			} else {
 				Pitch pitchWithAccidentals = voice.getPitchWithSharpsOrFlats(pitch, measure.getKeySig(), startTime);
 				
-				CanvasItem existingItem = voice.getItemAt(startTime);
+				VoiceItem existingItem = voice.getItemAt(startTime);
 				if(existingItem instanceof Chord) {
 					Chord chord = ((Chord) existingItem);
 					if(chord.getDurationCount() == duration.getDurationCount()) {
@@ -107,7 +107,7 @@ public class NoteEntryTool implements Tool {
 	@Override
 	public void paint(GC gc) {
 		Map<Measure, Rectangle> measureBounds = scoreCanvas.getMeasureBounds();
-		Map<CanvasItem, Rectangle> itemBounds = scoreCanvas.getItemBounds();
+		Map<VoiceItem, Rectangle> itemBounds = scoreCanvas.getItemBounds();
 		
 		this.measure = null;
 		this.pitch = null;
@@ -117,9 +117,9 @@ public class NoteEntryTool implements Tool {
 		if(measure != null) {
 			Rectangle measureRectangle = measureBounds.get(measure);
 			Clef clef = (my < measureRectangle.y + 8*8 + ScoreCanvas.STAFF_SPACING / 2) ? Clef.TREBLE : Clef.BASS;
-			Map<CanvasItem, Rectangle> measureItems = filterKeys(itemBounds, flatMap(measure.getVoices(clef), Voice::getItems));
+			Map<VoiceItem, Rectangle> measureItems = filterKeys(itemBounds, flatMap(measure.getVoices(clef), Voice::getItems));
 			
-			CanvasItem item = getClosestKey(measureItems, mx, my);
+			VoiceItem item = getClosestKey(measureItems, mx, my);
 			
 			if(item != null) {
 				Rectangle itemRectangle = itemBounds.get(item);

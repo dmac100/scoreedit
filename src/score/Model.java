@@ -243,7 +243,7 @@ public class Model {
 	private Cursor findCursor() {
 		for(Measure measure:getMeasures()) {
 			for(Voice voice:measure.getVoices()) {
-				for(CanvasItem item:voice.getItems()) {
+				for(VoiceItem item:voice.getItems()) {
 					if(item instanceof Cursor) {
 						return (Cursor) item;
 					}
@@ -326,7 +326,7 @@ public class Model {
 			itemVisitor.visitMeasure(measure);
 			for(Voice voice:measure.getVoices()) {
 				itemVisitor.visitVoice(voice);
-				for(CanvasItem item:voice.getItems()) {
+				for(VoiceItem item:voice.getItems()) {
 					if(item instanceof Chord) {
 						Chord chord = (Chord) item;
 						itemVisitor.visitChord(chord);
@@ -466,7 +466,7 @@ public class Model {
 				}
 			}
 			
-			private void visitItem(CanvasItem item) {
+			private void visitItem(VoiceItem item) {
 				if(!done) {
 					if(cursor != null) {
 						cursor.getVoice().removeItem(cursor);
@@ -519,7 +519,7 @@ public class Model {
 	private void selectPrevNext(int d, boolean shift, boolean control) {
 		MeasureDataCache measureDataCache = new MeasureDataCache(measures);
 		
-		CanvasItem selectedItem = null;
+		VoiceItem selectedItem = null;
 		
 		Selectable startSelectable = maxBy(selectedItems, item -> measureDataCache.getStartTime(item) * d);
 		
@@ -538,7 +538,7 @@ public class Model {
 			int itemIndex = voice.getItems().indexOf(selectedItem);
 			
 			while(measureIndex >= 0 && measureIndex < measures.size()) {
-				List<CanvasItem> items = voice.getItems();
+				List<VoiceItem> items = voice.getItems();
 				
 				while(itemIndex + d >= 0 && itemIndex + d < items.size()) {
 					itemIndex += d;

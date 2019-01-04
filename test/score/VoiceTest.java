@@ -164,14 +164,14 @@ public class VoiceTest {
 		return new Rest(new Duration(durationType, dots));
 	}
 
-	private static void assertItemsEquals(List<CanvasItem> expected, List<CanvasItem> actual) {
+	private static void assertItemsEquals(List<VoiceItem> expected, List<VoiceItem> actual) {
 		if(expected.size() != actual.size()) {
 			fail("Expected size: " + expected.size() + ", actual size: " + actual.size());
 		}
 		
 		for(int i = 0; i < expected.size(); i++) {
-			CanvasItem expectedItem = expected.get(i);
-			CanvasItem actualItem = actual.get(i);
+			VoiceItem expectedItem = expected.get(i);
+			VoiceItem actualItem = actual.get(i);
 			
 			assertEquals(expectedItem.getClass(), actualItem.getClass());
 			assertEquals(expectedItem.getDurationCount(), actualItem.getDurationCount());

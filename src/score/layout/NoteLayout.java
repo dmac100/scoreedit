@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import score.CanvasItem;
+import score.VoiceItem;
 import score.KeySig;
 import score.MeasureAccidentals;
 import score.Voice;
@@ -17,17 +17,17 @@ import score.Voice;
 public class NoteLayout {
 	private static class VoiceAndItem {
 		private final Voice voice;
-		private final CanvasItem item;
+		private final VoiceItem item;
 		private final AlignmentBox alignmentBox;
 		
-		public VoiceAndItem(Voice voice, CanvasItem item, AlignmentBox alignmentBox) {
+		public VoiceAndItem(Voice voice, VoiceItem item, AlignmentBox alignmentBox) {
 			this.voice = voice;
 			this.item = item;
 			this.alignmentBox = alignmentBox;
 		}
 	}
 	
-	private final Map<Voice, List<CanvasItem>> spacedItems = new LinkedHashMap<>();
+	private final Map<Voice, List<VoiceItem>> spacedItems = new LinkedHashMap<>();
 	
 	public NoteLayout(KeySig keySig, List<Voice> voices, int extraSpacing) {
 		Map<Voice, Integer> voiceWidths = new LinkedHashMap<>();
@@ -37,7 +37,7 @@ public class NoteLayout {
 		for(Voice voice:voices) {
 			int count = 0;
 			MeasureAccidentals measureAccidentals = new MeasureAccidentals(keySig);
-			for(CanvasItem item:voice.getItems()) {
+			for(VoiceItem item:voice.getItems()) {
 				if(item.includeInLayout()) {
 					itemsAtCount.computeIfAbsent(count, c -> new ArrayList<>());
 					AlignmentBox alignmentBox = item.getAlignmentBox(measureAccidentals);
@@ -84,7 +84,7 @@ public class NoteLayout {
 		});
 	}
 
-	public Map<Voice, List<CanvasItem>> getVoiceItems() {
+	public Map<Voice, List<VoiceItem>> getVoiceItems() {
 		return spacedItems;
 	}
 }

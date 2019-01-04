@@ -21,7 +21,7 @@ import score.layout.AlignmentBox;
 import view.FetaFont;
 import view.ScoreCanvas;
 
-public class Chord implements CanvasItem {
+public class Chord implements VoiceItem {
 	private List<Note> notes;
 	private Duration duration;
 	private Clef clef = Clef.TREBLE;

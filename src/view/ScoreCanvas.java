@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import score.CanvasItem;
+import score.VoiceItem;
 import score.Measure;
 import score.Selectable;
 import score.layout.Spacer;
@@ -25,7 +25,7 @@ public class ScoreCanvas {
 	private GC gc;
 	
 	private final Map<Measure, Rectangle> measureBounds = new HashMap<>();
-	private final Map<CanvasItem, Rectangle> itemBounds = new HashMap<>();
+	private final Map<VoiceItem, Rectangle> itemBounds = new HashMap<>();
 	private final Map<Selectable, Rectangle> selectableBounds = new HashMap<>();
 
 	public void reset(GC gc) {
@@ -60,7 +60,7 @@ public class ScoreCanvas {
 		measureBounds.put(measure, new Rectangle(x, y, width, height));
 	}
 
-	public void setItemBounds(CanvasItem item, int x, int y, int width, int height) {
+	public void setItemBounds(VoiceItem item, int x, int y, int width, int height) {
 		if(item instanceof Spacer) return;
 		
 		itemBounds.put(item, new Rectangle(x, y, width, height));
@@ -74,7 +74,7 @@ public class ScoreCanvas {
 		return measureBounds;
 	}
 	
-	public Map<CanvasItem, Rectangle> getItemBounds() {
+	public Map<VoiceItem, Rectangle> getItemBounds() {
 		return itemBounds;
 	}
 
